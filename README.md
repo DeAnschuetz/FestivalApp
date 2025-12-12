@@ -1,2 +1,3 @@
 # Gruppenname: Emotional Exceptions
-Name der App: Virtual Line Party Fast
+Name des 1. Frontends: Virtual Line Party Fast
+Name des 2. Frondends: FoodAppIndia
