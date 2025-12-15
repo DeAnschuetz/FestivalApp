@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>9</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1197</x>
+      <y>234</y>
+      <w>189</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>Users
+--
+-login_Nr: string
+-password: string
+-type: string</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>783</x>
+      <y>234</y>
+      <w>189</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>Foodcourt
+--
+-id: string
+-name: string
+-image: image
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>990</x>
+      <y>234</y>
+      <w>189</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>Products
+--
+-id: string
+-foodcourt_Id: sting
+-price: float
+-name: string
+-symbol: image
+-minimal_Warning: int
+-sub_Products: [Product]
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1638</x>
+      <y>234</y>
+      <w>189</w>
+      <h>153</h>
+    </coordinates>
+    <panel_attributes>Credit
+--
+-login_Nr: sting
+-ammount: float
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>783</x>
+      <y>567</y>
+      <w>189</w>
+      <h>135</h>
+    </coordinates>
+    <panel_attributes>FoodcourtWaitingTime
+--
+-foodcourt_Id: sting
+-waiting_Time: int
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1404</x>
+      <y>234</y>
+      <w>216</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>Notification
+--
+-id: string
+-login_Nr: sting
+-type: NotificationType
+-status: StatusType
+-message: string
+-order_Time: DateTime
+-pickup_Time: int
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>315</x>
+      <y>234</y>
+      <w>216</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>Order
+--
+-id: string
+-login_Nr: string
+-foodcourt_Id: string
+-status: OrderStatus
+-has_Prio: bool
+-total: float
+-waiting_Time: int
+-shared_with: string
+-order_Time: DateTime
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>315</x>
+      <y>567</y>
+      <w>216</w>
+      <h>135</h>
+    </coordinates>
+    <panel_attributes>OrderItem
+--
+-id: string
+-order_Id: string
+-product_Id: string #for Product Infos
+-price: float
+-count: int
+-extra: string
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>72</x>
+      <y>117</y>
+      <w>1755</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>Datamodell</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>549</x>
+      <y>234</y>
+      <w>216</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>Cart
+--
+-id: string
+-login_Nr: string
+-has_Prio: bool
+-total: float
+-waiting_Time: int</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>999</x>
+      <y>567</y>
+      <w>189</w>
+      <h>135</h>
+    </coordinates>
+    <panel_attributes>ProductCount
+--
+-product_Id: sting
+-count: int
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>549</x>
+      <y>567</y>
+      <w>216</w>
+      <h>135</h>
+    </coordinates>
+    <panel_attributes>CartItem
+--
+-id: string
+-cart_Id: string
+-product_Id: string #for Product Infos
+-price: float
+-count: int
+-extra: string</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>171</x>
+      <y>234</y>
+      <w>144</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>OrderStatus:
+-ordered
+-in_Progress
+-ready_for_Pickup
+-done
+-canceled
+-not_Ordered
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>81</x>
+      <y>567</y>
+      <w>216</w>
+      <h>135</h>
+    </coordinates>
+    <panel_attributes>OrderItem
+--
+-id: string
+-order_Id: string
+-product_Id: string #for Product Infos
+-orderd: bool
+-price: float
+-count: int
+-extra: string
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>1197</x>
+      <y>414</y>
+      <w>189</w>
+      <h>135</h>
+    </coordinates>
+    <panel_attributes>Login_Nr:
+User -&gt; V
+Admin -&gt; A
+Stand -&gt; F
+Example login_Nr.:
+V-123-456-789</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>1404</x>
+      <y>414</y>
+      <w>216</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>NotificationTypes:
+-ordered
+-ready
+-canceled
+
+Status:
+-new
+-read
+-removed</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1638</x>
+      <y>567</y>
+      <w>189</w>
+      <h>153</h>
+    </coordinates>
+    <panel_attributes>CreditHistory
+--
+-login_Nr: sting
+-old_Ammount: float
+-new_Ammount: float
+-timestamp: DateTime
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>315</x>
+      <y>738</y>
+      <w>216</w>
+      <h>135</h>
+    </coordinates>
+    <panel_attributes>OrderHistory
+--
+-id: string
+-order_Id: string
+-status_Change_Time: DateTime
+-old_Status: DateTime
+-new_Status: DateTime</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>333</x>
+      <y>405</y>
+      <w>36</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=1
+m2=n</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;180.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>99</x>
+      <y>405</y>
+      <w>270</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=n</panel_attributes>
+    <additional_attributes>270.0;10.0;270.0;90.0;10.0;90.0;10.0;180.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>567</x>
+      <y>405</y>
+      <w>36</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=n</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;180.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>297</x>
+      <y>405</y>
+      <w>72</w>
+      <h>351</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=1
+m2=n</panel_attributes>
+    <additional_attributes>50.0;10.0;50.0;90.0;10.0;90.0;10.0;340.0;50.0;340.0;50.0;370.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>801</x>
+      <y>405</y>
+      <w>36</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=n</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;180.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1017</x>
+      <y>405</y>
+      <w>36</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;180.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1215</x>
+      <y>144</y>
+      <w>657</w>
+      <h>441</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=n</panel_attributes>
+    <additional_attributes>10.0;100.0;10.0;10.0;710.0;10.0;710.0;430.0;500.0;430.0;500.0;470.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>603</x>
+      <y>405</y>
+      <w>450</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>470.0;10.0;470.0;100.0;10.0;100.0;10.0;180.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>369</x>
+      <y>405</y>
+      <w>684</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>730.0;10.0;730.0;100.0;10.0;100.0;10.0;180.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>333</x>
+      <y>180</y>
+      <w>504</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>530.0;60.0;530.0;10.0;10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>333</x>
+      <y>144</y>
+      <w>918</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>990.0;100.0;990.0;10.0;10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1215</x>
+      <y>144</y>
+      <w>243</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>240.0;100.0;240.0;10.0;10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1215</x>
+      <y>144</y>
+      <w>468</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>490.0;100.0;490.0;10.0;10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>567</x>
+      <y>144</y>
+      <w>684</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>10.0;100.0;10.0;10.0;730.0;10.0;730.0;100.0</additional_attributes>
+  </element>
+</diagram>
