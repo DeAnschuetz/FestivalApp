@@ -8,4 +8,5 @@ Mock Up VLPF
 -bekommt einen show hidden orders btn bei den order Filtermöglichkeiten
 
 # Besprechung 15.01.2026
-KLassendiagramm wird noch gefordert
+Klassendiagramm wird noch gefordert
+Datenmodell nochmal angucken und gegebenenfalls überarbeiten
