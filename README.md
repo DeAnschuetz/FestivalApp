@@ -6,3 +6,6 @@ Name des 2. Frondends: FoodAppIndia
 Mock Up VLPF 
 -bekommt noch einen Speicher Btn bei den Stand Settings
 -bekommt einen show hidden orders btn bei den order Filtermöglichkeiten
+
+# Besprechung 15.01.2026
+KLassendiagramm wird noch gefordert
