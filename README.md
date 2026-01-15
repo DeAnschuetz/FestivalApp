@@ -12,3 +12,5 @@ Mock Up VLPF
 -Klassendiagramm wird noch gefordert
 
 -Datenmodell nochmal angucken und gegebenenfalls überarbeiten
+
+-Sequenzdiagramm ergänzen
