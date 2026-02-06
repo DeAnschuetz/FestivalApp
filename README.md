@@ -15,3 +15,7 @@ Mock Up VLPF
 -Datenmodell nochmal angucken und gegebenenfalls überarbeiten
 
 -Sequenzdiagramm ergänzen
+
+# Besprechung 06.02.2026
+
+-Frage: Warum Strings als PK bsp. Produkt ID, Order ID
