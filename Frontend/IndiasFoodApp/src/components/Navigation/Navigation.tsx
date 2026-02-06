@@ -20,9 +20,9 @@ const Navigation = () => {
       >
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', mx: 8, py: 2}}>
          
-            <LocalShippingIcon fontSize="large" />
+            <LocalShippingIcon fontSize="large" onClick={() => navigate('/orders')} />
             <HomeIcon fontSize="large" onClick={() => navigate('/home')} />
-            <PersonIcon fontSize="large" />
+            <PersonIcon fontSize="large" onClick={() => navigate('/profile')} />
         
         </Toolbar>
       </AppBar>
