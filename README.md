@@ -15,3 +15,8 @@ Mock Up VLPF
 -Datenmodell nochmal angucken und gegebenenfalls überarbeiten
 
 -Sequenzdiagramm ergänzen
+
+# Besprechung 06.02.2026
+
+- Use Case: extend Beziehungen müssen alle anderst herum
+- wie ist place oder includes process order gemeint? ggf auch anderst herum?
