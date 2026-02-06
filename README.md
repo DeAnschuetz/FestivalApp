@@ -18,4 +18,5 @@ Mock Up VLPF
 
 # Besprechung 06.02.2026
 
--Frage: Warum Strings als PK bsp. Produkt ID, Order ID
+- Use Case: extend Beziehungen müssen alle anderst herum
+- wie ist place oder includes process order gemeint? ggf auch anderst herum?
