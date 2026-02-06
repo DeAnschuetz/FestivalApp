@@ -1,0 +1,19 @@
+DROP TYPE IF EXISTS NOTIFICATION_TYPE;
+CREATE TYPE NOTIFICATION_TYPE AS ENUM ('ordered', 'ready', 'canceled');
+DROP TYPE IF EXISTS NOTIFICATION_STATUS_TYPE;
+CREATE TYPE NOTIFICATION_STATUS_TYPE AS ENUM ('new', 'read', 'removed');
+
+CREATE TABLE Notification
+(
+	id UUID
+	, login_Nr UUID
+	, notification_Type NOTIFICATION_TYPE
+	, status NOTIFICATION_STATUS_TYPE
+	, notification_Message CHARACTER VARYING
+	, order_Time TIMESTAMP
+	, pickup_Time TIMESTAMP
+	, PRIMARY KEY (id)
+	, CONSTRAINT fk_Account
+		FOREIGN KEY (login_Nr)
+			REFERENCES Account(login_Nr)
+);
