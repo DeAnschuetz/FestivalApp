@@ -2,13 +2,20 @@ import React from 'react'
 import styles from './LogIn.module.css'
 import LogInContainer from './LogInContainer'
 import VLPFLogo from '../VLPFLogo.png';
+import RegisterContainer from './RegisterContainer';
 
-function LogIn() {
+type LoginProps = {
+    mode: 'login' | 'register'
+}
+
+function LogIn(props: LoginProps) {
+    const {mode } = props;
+
     return (
         <div className={styles.Background}>
             <div className={styles.TitelLineOne}>Virtual Line</div>
             <div className={styles.TitelLineTwo}>Party Fast</div>
-            <LogInContainer/>
+            {mode === "login" ? <LogInContainer /> : <RegisterContainer />}
             <img
                 src={VLPFLogo}
                 style={{

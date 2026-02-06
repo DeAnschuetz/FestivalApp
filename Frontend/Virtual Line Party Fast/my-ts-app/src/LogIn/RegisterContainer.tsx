@@ -5,21 +5,21 @@ import { Checkbox } from "@progress/kendo-react-inputs";
 import { Button } from "@progress/kendo-react-buttons";
 import { useNavigate } from "react-router-dom";
 
-function LogInContainer() {
+function RegisterContainer() {
   const [loginNr, setLoginNr] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   return (
     <div className={styles.Container}>
-      <div className={styles.Title}>Login</div>
+      <div className={styles.Title}>Create Account</div>
       <InputElement
         label="Login-Nr."
         editorId="login_nr"
         value={loginNr}
         onChange={setLoginNr}
         wrapperStyle={{ marginBottom: "10px" }}
-        labelStyle={{ width: "100% "}}
+        labelStyle={{ width: "100% " }}
         inputStyle={{ height: "36px" }}
       />
       <InputElement
@@ -27,14 +27,21 @@ function LogInContainer() {
         editorId="password"
         value={password}
         onChange={setPassword}
+        wrapperStyle={{ marginBottom: "10px" }}
+        labelStyle={{ width: "100% " }}
+        inputStyle={{ height: "36px" }}
+        type="password"
+      />
+      <InputElement
+        label="Confirm password"
+        editorId="confirm_password"
+        value={password}
+        onChange={setPassword}
         wrapperStyle={{ marginBottom: "16px" }}
         labelStyle={{ width: "100% " }}
         inputStyle={{ height: "36px" }}
         type="password"
       />
-      <div className={styles.Checkbox}>
-        <Checkbox label="Remeber me" />
-      </div>
       <Button
         style={{
           margin: "12px 0px",
@@ -44,7 +51,7 @@ function LogInContainer() {
           fontSize: "large",
         }}
       >
-        Login
+        Create Account
       </Button>
       <Button
         style={{
@@ -54,12 +61,12 @@ function LogInContainer() {
           height: "36px",
           fontSize: "large",
         }}
-        onClick={() => navigate("/register")}
+        onClick={() => navigate("/")}
       >
-        Create Account
+        Login
       </Button>
     </div>
   );
 }
 
-export default LogInContainer;
+export default RegisterContainer;
