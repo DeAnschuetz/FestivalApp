@@ -14,12 +14,12 @@ const LoginPage = () => {
     e.preventDefault();
     // look for ticketnumber that starts with 3
     const ticketNumber = (document.getElementById('ticketNumber') as HTMLInputElement | null)?.value || '';
-    if (ticketNumber.startsWith('3')) {
-      console.log('Ticket number starts with 3');
+    if (ticketNumber.startsWith('V')) {
+      console.log('Ticket number starts with V');
       setIsLoggedIn(true);
       navigate('/home');
     } else {
-      console.log('Ticket number does not start with 3');
+      console.log('Ticket number does not start with V');
       setIsLoggedIn(false);
     }
   }
