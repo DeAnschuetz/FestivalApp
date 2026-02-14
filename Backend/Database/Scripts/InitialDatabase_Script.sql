@@ -1,3 +1,4 @@
+
 ---Account_Script
 CREATE SCHEMA IF NOT EXISTS ffb;
 
@@ -7,34 +8,35 @@ CREATE TYPE ffb.ACCOUNT_TYPE AS ENUM ('festivalAdmin', 'foodCourtWorker', 'fasti
 
 CREATE TABLE IF NOT EXISTS ffb.Account
 (
-	login_Nr UUID
+	account_Id UUID
+	, login_Nr CHARACTER VARYING(13)
 	, password CHARACTER VARYING(60)
 	, type ffb.ACCOUNT_TYPE
-	, PRIMARY KEY (login_Nr)
+	, PRIMARY KEY (account_Id)
 );
 
 ---Credit_Script
 CREATE TABLE IF NOT EXISTS ffb.Credit
 (
-	login_Nr UUID
+	account_Id UUID
 	, ammount NUMERIC
-	, PRIMARY KEY (login_Nr)
+	, PRIMARY KEY (account_Id)
 	, CONSTRAINT fk_Account
-		FOREIGN KEY (login_Nr)
-			REFERENCES ffb.Account(login_Nr)
+		FOREIGN KEY (account_Id)
+			REFERENCES ffb.Account(account_Id)
 );
 
 CREATE TABLE IF NOT EXISTS ffb.Credit_History
 (
 	id UUID
-	, login_Nr UUID
+	, account_Id UUID
 	, old_Ammount NUMERIC
 	, new_Ammount NUMERIC
 	, change_Time TIMESTAMP
 	, PRIMARY KEY(id)
 	, CONSTRAINT fk_Account
-		FOREIGN KEY (login_Nr)
-			REFERENCES ffb.Account(login_Nr)
+		FOREIGN KEY (account_Id)
+			REFERENCES ffb.Account(account_Id)
 );
 
 ---Notification_Script
@@ -47,7 +49,7 @@ CREATE TYPE ffb.NOTIFICATION_STATUS_TYPE AS ENUM ('new', 'read', 'removed');
 CREATE TABLE ffb.Notification
 (
 	id UUID
-	, login_Nr UUID
+	, account_Id UUID
 	, notification_Type ffb.NOTIFICATION_TYPE
 	, status ffb.NOTIFICATION_STATUS_TYPE
 	, notification_Message CHARACTER VARYING
@@ -55,8 +57,8 @@ CREATE TABLE ffb.Notification
 	, pickup_Time TIMESTAMP
 	, PRIMARY KEY (id)
 	, CONSTRAINT fk_Account
-		FOREIGN KEY (login_Nr)
-			REFERENCES ffb.Account(login_Nr)
+		FOREIGN KEY (account_Id)
+			REFERENCES ffb.Account(account_Id)
 );
 
 
@@ -64,13 +66,13 @@ CREATE TABLE ffb.Notification
 CREATE TABLE IF NOT EXISTS ffb.Foodcourt
 (
 	id UUID
-	,login_Nr UUID
+	,account_Id UUID
 	, display_Name CHARACTER VARYING
 	, image BYTEA 
 	, PRIMARY KEY (id)
 	, CONSTRAINT fk_Account
-		FOREIGN KEY (login_Nr)
-			REFERENCES ffb.Account(login_Nr)
+		FOREIGN KEY (account_Id)
+			REFERENCES ffb.Account(account_Id)
 );
 
 CREATE TABLE IF NOT EXISTS ffb.Foodcourt_Waiting_Time
@@ -130,7 +132,7 @@ CREATE TYPE ffb.ORDER_STATUS AS ENUM ('ordered', 'in_Progress', 'ready_for_Picku
 CREATE TABLE IF NOT EXISTS ffb.Food_Order
 (
 	id UUID
-	, login_Nr UUID
+	, account_Id UUID
 	, foodcourt_Id UUID
 	, status ffb.ORDER_STATUS
 	, has_Prio BOOLEAN
@@ -139,8 +141,8 @@ CREATE TABLE IF NOT EXISTS ffb.Food_Order
 	, is_hidden BOOLEAN
 	, PRIMARY KEY (id)
 	,CONSTRAINT fk_Account
-		FOREIGN KEY (login_Nr)
-			REFERENCES ffb.Account(login_Nr)
+		FOREIGN KEY (account_Id)
+			REFERENCES ffb.Account(account_Id)
 	, CONSTRAINT fk_Foodcourt
 		FOREIGN KEY (foodcourt_Id)
 			REFERENCES ffb.Foodcourt(id)
@@ -180,13 +182,13 @@ CREATE TABLE IF NOT EXISTS ffb.Food_Order_History
 CREATE TABLE IF NOT EXISTS ffb.Cart
 (
 	id UUID
-	, login_Nr UUID
+	, account_Id UUID
 	, has_Prio BOOLEAN
 	, total NUMERIC
 	, PRIMARY KEY (id)
 	, CONSTRAINT fk_Account
-		FOREIGN KEY (login_Nr)
-			REFERENCES ffb.Account(login_Nr)
+		FOREIGN KEY (account_Id)
+			REFERENCES ffb.Account(account_Id)
 );
 
 CREATE TABLE IF NOT EXISTS ffb.Cart_Item
@@ -204,4 +206,13 @@ CREATE TABLE IF NOT EXISTS ffb.Cart_Item
 	,CONSTRAINT fk_Product
 		FOREIGN KEY (product_Id)
 			REFERENCES ffb.Product(id)
+);
+
+CREATE VIEW  ffb.v_sub_product
+AS 
+(
+	SELECT prod.id AS main_product_id, subProd.id AS id, prod.foodcourt_id, subProd.price, subProd.display_name, subProd.symbol, subProd.minimal_warning
+	FROM ffb.product AS prod
+	JOIN ffb.sub_product AS con ON prod.id = con.main_product_id
+	JOIN ffb.product AS subProd ON subProd.id = con.sub_product_id
 );
