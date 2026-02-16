@@ -2,19 +2,50 @@ package com.ffb.model.objects.cart;
 
 import java.util.UUID;
 
-public class CartItem {
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+
+@Entity
+@Table(name = "cart_item", schema = "ffb")
+public class CartItem extends PanacheEntityBase {
+
+
+    @Id
+    @Column(name = "id")
 	private UUID id;
-	private UUID cartID;
+    
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id", referencedColumnName = "id")
+    private Cart cart;
+	
+    @Column(name = "product_id")
 	private UUID productID;
+	
+    @Column(name = "price")
 	private double price;
+	
+    @Column(name = "item_count")
 	private int itemCount;
+	
+    @Column(name = "extra")
 	private String extra;
+	
+	protected CartItem() {}
 
-	public CartItem(UUID id, UUID cartID, UUID productID, double price, int itemCount, String extra) {
+	public CartItem(UUID id, Cart cart, UUID productID, double price, int itemCount, String extra) {
 		super();
 		this.id = id;
-		this.cartID = cartID;
+		this.cart = cart;
 		this.productID = productID;
 		this.price = price;
 		this.itemCount = itemCount;
@@ -28,13 +59,15 @@ public class CartItem {
 	public void setId(UUID id) {
 		this.id = id;
 	}
-
-	public UUID getCartID() {
-		return cartID;
+	
+	@JsonIgnore
+	public Cart getCart() {
+		return cart;
 	}
 
-	public void setCartID(UUID cartID) {
-		this.cartID = cartID;
+	@JsonIgnore
+	public void setCart(Cart cart) {
+		this.cart = cart;
 	}
 
 	public UUID getProductID() {
@@ -71,7 +104,7 @@ public class CartItem {
 
 	@Override
 	public String toString() {
-		return "CartItem [id=" + id + ", cartID=" + cartID + ", productID=" + productID + ", price=" + price
+		return "CartItem [id=" + id + ", productID=" + productID + ", price=" + price
 				+ ", itemCount=" + itemCount + ", extra=" + extra + "]";
 	}
 

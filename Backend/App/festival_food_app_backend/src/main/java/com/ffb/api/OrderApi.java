@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.jboss.resteasy.reactive.PartType;
 
+import com.ffb.model.objects.foodorder.FoodOrder;
 import com.ffb.model.objects.foodorder.FoodOrderStatus;
 import com.ffb.model.request.order.ShareOrderRequest;
 import com.ffb.model.response.OrderResponse;
@@ -27,6 +28,14 @@ import jakarta.ws.rs.core.MediaType;
 public class OrderApi {
 
 	
+	@GET
+	public Response getAll() {
+		List<FoodOrder> data = FoodOrder.listAllWithItems();
+		
+		Response response = new Response(200, null, data);
+		return response;
+	}
+	
 	@POST
 	@Path("{loginNr}")
 	public Response shareOrder(@PathParam(value = "loginNr") String loginNr, @PartType(MediaType.APPLICATION_JSON) ShareOrderRequest request) {
@@ -47,14 +56,14 @@ public class OrderApi {
 		orderItems_01.add(new OrderItemSimple(UUID.randomUUID(), "Pommes",  (byte)0, 2, null, null));
 		orderItems_01.add(new OrderItemSimple(UUID.randomUUID(), "Cola",  (byte)0, 3, null, null));
 		
-		data.add(new OrderSimple(UUID.randomUUID(), FoodOrderStatus.IN_PROGRESS, "Burger Place", 10, orderItems_01));
+		data.add(new OrderSimple(UUID.randomUUID(), FoodOrderStatus.in_progress, "Burger Place", 10, orderItems_01));
 		
 		List<OrderItemSimple> orderItems_02 = new ArrayList<>();
 		orderItems_02.add(new OrderItemSimple(UUID.randomUUID(), "Pizza Magerita",  (byte)0, 1, null, null));
 		orderItems_02.add(new OrderItemSimple(UUID.randomUUID(), "Spaggeti Bollognese",  (byte)0, 2, null, null));
 		orderItems_02.add(new OrderItemSimple(UUID.randomUUID(), "Cola",  (byte)0, 3, null, null));
 		
-		data.add(new OrderSimple(UUID.randomUUID(), FoodOrderStatus.ORDERED, "Pizza Place", 15, orderItems_02));
+		data.add(new OrderSimple(UUID.randomUUID(), FoodOrderStatus.ordered, "Pizza Place", 15, orderItems_02));
 		
 		OrderResponse response = new OrderResponse(200, null, data);
 

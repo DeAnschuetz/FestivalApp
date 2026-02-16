@@ -3,19 +3,53 @@ package com.ffb.model.objects.foodorder;
 import java.util.List;
 import java.util.UUID;
 
-public class FoodOrder {
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "food_order", schema = "ffb")
+public class FoodOrder extends PanacheEntityBase {
+
+    @Id
+    @Column(name = "id")
 	private UUID id;
+    
+    @Column(name = "account_id")
 	private UUID accountID;
+    
+    @Column(name = "foodcourt_id")
 	private UUID foodcourtID;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
 	private FoodOrderStatus status;
+    
+    @Column(name = "has_prio")
 	private boolean hasPrio;
+    
+    @Column(name = "total")
 	private double total;
+    
+    @Column(name = "waiting_time")
 	private int waitingTime;
+    
+    @Column(name = "is_hidden")
 	private boolean isHidden;
-	private List<FoodOrderItem> items;
+    
+    @OneToMany(mappedBy = "foodOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<FoodOrderItem> foodOrderItems;
+    
+    protected FoodOrder() {}
 
-	public FoodOrder(UUID id, UUID accountID, UUID foodcourtID, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime, boolean isHidden, List<FoodOrderItem> items) {
+	public FoodOrder(UUID id, UUID accountID, UUID foodcourtID, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime, boolean isHidden, List<FoodOrderItem> foodOrderItems) {
 		super();
 		this.id = id;
 		this.accountID = accountID;
@@ -25,7 +59,7 @@ public class FoodOrder {
 		this.total = total;
 		this.waitingTime = waitingTime;
 		this.isHidden = isHidden;
-		this.items = items;
+		this.foodOrderItems = foodOrderItems;
 	}
 
 	public UUID getId() {
@@ -93,18 +127,22 @@ public class FoodOrder {
 	}
 
 	public List<FoodOrderItem> getItems() {
-		return items;
+		return foodOrderItems;
 	}
 
 	public void setItems(List<FoodOrderItem> items) {
-		this.items = items;
+		this.foodOrderItems = items;
+	}
+	
+	public static List<FoodOrder> listAllWithItems() {
+	    return find("SELECT DISTINCT c FROM FoodOrder c LEFT JOIN FETCH c.foodOrderItems").list();
 	}
 
 	@Override
 	public String toString() {
 		return "FoodOrder [id=" + id + ", accountID=" + accountID + ", foodcourtID=" + foodcourtID + ", status="
 				+ status + ", hasPrio=" + hasPrio + ", total=" + total + ", waitingTime=" + waitingTime + ", isHidden="
-				+ isHidden + ", items=" + items + "]";
+				+ isHidden + ", items=" + foodOrderItems + "]";
 	}
 
 }

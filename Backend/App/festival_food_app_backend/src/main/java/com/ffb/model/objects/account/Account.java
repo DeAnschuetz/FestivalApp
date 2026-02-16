@@ -2,14 +2,35 @@ package com.ffb.model.objects.account;
 
 import java.util.UUID;
 
-public class Account {
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "account", schema = "ffb")
+public class Account extends PanacheEntityBase {
+
+    @Id
+    @Column(name = "id")
 	private UUID id;
-	private UUID loginNr;
+    
+    @Column(name = "login_nr")
+	private String loginNr;
+    
+    @Column(name = "password")
 	private String password;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
 	private AccountType type;
+    
+    protected Account() {}
 
-	public Account(UUID id, UUID loginNr, String password, AccountType type) {
+	public Account(UUID id, String loginNr, String password, AccountType type) {
 		super();
 		this.id = id;
 		this.loginNr = loginNr;
@@ -25,11 +46,11 @@ public class Account {
 		this.id = id;
 	}
 
-	public UUID getLoginNr() {
+	public String getLoginNr() {
 		return loginNr;
 	}
 
-	public void setLoginNr(UUID loginNr) {
+	public void setLoginNr(String loginNr) {
 		this.loginNr = loginNr;
 	}
 

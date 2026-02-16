@@ -2,19 +2,49 @@ package com.ffb.model.objects.foodorder;
 
 import java.util.UUID;
 
-public class FoodOrderItem {
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+
+@Entity
+@Table(name = "food_order_item", schema = "ffb")
+public class FoodOrderItem extends PanacheEntityBase {
+
+    @Id
+    @Column(name = "id")
 	private UUID id;
-	private UUID orderID;
+	
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "food_order_id", referencedColumnName = "id")
+	private FoodOrder foodOrder;
+    
+    @Column(name = "product_id")
 	private UUID productID;
-	private double price;
-	private int itemCount;
-	private String extra;
+	
+    @Column(name = "price")
+    private double price;
+	
+    @Column(name = "item_count")
+    private int itemCount;
+	
+    @Column(name = "extra")
+    private String extra;
+    
+    protected FoodOrderItem() {}
 
-	public FoodOrderItem(UUID id, UUID orderID, UUID productID, double price, int itemCount, String extra) {
+	public FoodOrderItem(UUID id, FoodOrder foodOrder, UUID productID, double price, int itemCount, String extra) {
 		super();
 		this.id = id;
-		this.orderID = orderID;
+		this.foodOrder = foodOrder;
 		this.productID = productID;
 		this.price = price;
 		this.itemCount = itemCount;
@@ -29,12 +59,14 @@ public class FoodOrderItem {
 		this.id = id;
 	}
 
-	public UUID getOrderID() {
-		return orderID;
+    @JsonIgnore
+	public FoodOrder getFoodOrder() {
+		return foodOrder;
 	}
 
-	public void setOrderID(UUID orderID) {
-		this.orderID = orderID;
+    @JsonIgnore
+	public void setFoodOrder(FoodOrder foodOrder) {
+		this.foodOrder = foodOrder;
 	}
 
 	public UUID getProductID() {
@@ -71,7 +103,7 @@ public class FoodOrderItem {
 
 	@Override
 	public String toString() {
-		return "FoodOrderItems [id=" + id + ", orderID=" + orderID + ", productID=" + productID + ", price=" + price
+		return "FoodOrderItems [id=" + id + ", productID=" + productID + ", price=" + price
 				+ ", itemCount=" + itemCount + ", extra=" + extra + "]";
 	}
 

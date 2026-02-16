@@ -1,6 +1,6 @@
 INSERT INTO ffb.account
 (
-	account_id, login_nr, password, type
+	id, login_nr, password, type
 )
 VALUES
 (

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.ffb.model.objects.cart.Cart;
 import com.ffb.model.request.cart.CartItemRequest;
 import com.ffb.model.response.Response;
 import com.ffb.model.response.cart.CartItemSimple;
@@ -28,6 +29,11 @@ public class CartApi {
 		Response response = new Response(200, null, null);
 		return response;
 	}
+	
+    @GET
+    public List<Cart> getAllCarts() {
+    	return Cart.listAllWithItems();
+    }
 	
 	@GET
 	@Path("{loginNr}")

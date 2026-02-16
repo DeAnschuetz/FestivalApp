@@ -2,23 +2,38 @@ package com.ffb.model.objects.credit;
 
 import java.util.UUID;
 
-public class Credit {
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-	private UUID id;
+@Entity
+@Table(name = "credit", schema = "ffb")
+public class Credit extends PanacheEntityBase {
+
+    @Id
+    @Column(name = "account_id")
+	private UUID accountId;
+    
+    @Id
+    @Column(name = "ammount")
 	private double ammount;
+    
+    protected Credit() {}
 
-	public Credit(UUID id, double ammount) {
+	public Credit(UUID accountId, double ammount) {
 		super();
-		this.id = id;
+		this.accountId = accountId;
 		this.ammount = ammount;
 	}
 
-	public UUID getId() {
-		return id;
+	public UUID getAccountId() {
+		return accountId;
 	}
 
-	public void setId(UUID id) {
-		this.id = id;
+	public void setAccountId(UUID accountId) {
+		this.accountId = accountId;
 	}
 
 	public double getAmmount() {
@@ -31,7 +46,7 @@ public class Credit {
 
 	@Override
 	public String toString() {
-		return "Credit [id=" + id + ", ammount=" + ammount + "]";
+		return "Credit [accountId=" + accountId + ", ammount=" + ammount + "]";
 	}
 
 }

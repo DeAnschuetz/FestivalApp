@@ -3,13 +3,36 @@ package com.ffb.model.objects.cart;
 import java.util.List;
 import java.util.UUID;
 
-public class Cart {
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "cart", schema = "ffb")
+public class Cart extends PanacheEntityBase {
+
+    @Id
+    @Column(name = "id")
 	private UUID id;
+    
+    @Column(name = "account_id")
 	private UUID accountID;
+	
+    @Column(name = "has_prio")
 	private boolean hasPrio;
+	
+    @Column(name = "total")
 	private double total;
+	
+    @OneToMany(mappedBy = "cart", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<CartItem> cartItems;
+    
+    protected Cart() {}
 
 	public Cart(UUID id, UUID accountID, boolean hasPrio, double total, List<CartItem> cartItems) {
 		super();
@@ -58,6 +81,10 @@ public class Cart {
 
 	public void setCartItems(List<CartItem> cartItems) {
 		this.cartItems = cartItems;
+	}
+	
+	public static List<Cart> listAllWithItems() {
+	    return find("SELECT DISTINCT c FROM Cart c LEFT JOIN FETCH c.cartItems").list();
 	}
 
 	@Override

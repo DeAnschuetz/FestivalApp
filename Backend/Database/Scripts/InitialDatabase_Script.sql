@@ -12,14 +12,14 @@ CREATE TABLE IF NOT EXISTS ffb.Account
 	, login_Nr CHARACTER VARYING(13)
 	, password CHARACTER VARYING(60)
 	, type ffb.ACCOUNT_TYPE
-	, PRIMARY KEY (account_Id)
+	, PRIMARY KEY (id)
 );
 
 ---Credit_Script
 CREATE TABLE IF NOT EXISTS ffb.Credit
 (
 	account_Id UUID
-	, ammount NUMERIC
+	, ammount DECIMAL
 	, PRIMARY KEY (account_Id)
 	, CONSTRAINT fk_Account
 		FOREIGN KEY (account_Id)
@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS ffb.Credit_History
 (
 	id UUID
 	, account_Id UUID
-	, old_Ammount NUMERIC
-	, new_Ammount NUMERIC
+	, old_Ammount DECIMAL
+	, new_Ammount DECIMAL
 	, change_Time TIMESTAMP
 	, PRIMARY KEY(id)
 	, CONSTRAINT fk_Account
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS ffb.Product
 (
 	id UUID
 	, foodcourt_Id UUID
-	, price NUMERIC
+	, price DECIMAL
 	, display_Name CHARACTER VARYING
 	, symbol BYTEA
 	, minimal_Warning INTEGER
@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS ffb.Food_Order
 	, foodcourt_Id UUID
 	, status ffb.FOOD_ORDER_STATUS
 	, has_Prio BOOLEAN
-	, total NUMERIC
+	, total DECIMAL
 	, waiting_Time INT
 	, is_hidden BOOLEAN
 	, PRIMARY KEY (id)
@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS ffb.Food_Order_Item
 	id UUID
 	, order_Id UUID
 	, product_Id UUID
-	, price NUMERIC
+	, price DECIMAL
 	, item_Count INTEGER
 	, extra CHARACTER VARYING
 	, PRIMARY KEY (id)
@@ -170,8 +170,8 @@ CREATE TABLE IF NOT EXISTS ffb.Food_Order_History
 	id UUID
 	, order_Id UUID
 	, status_Change_Time TimeStamp
-	, old_Status ffb.ORDER_STATUS
-	, new_Status ffb.ORDER_STATUS
+	, old_Status ffb.FOOD_ORDER_STATUS
+	, new_Status ffb.FOOD_ORDER_STATUS
 	, PRIMARY KEY (id)
 	,CONSTRAINT fk_Food_Order
 		FOREIGN KEY (order_Id)
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS ffb.Cart
 	id UUID
 	, account_Id UUID
 	, has_Prio BOOLEAN
-	, total NUMERIC
+	, total DECIMAL
 	, PRIMARY KEY (id)
 	, CONSTRAINT fk_Account
 		FOREIGN KEY (account_Id)
@@ -196,7 +196,7 @@ CREATE TABLE IF NOT EXISTS ffb.Cart_Item
 	id UUID
 	, cart_Id UUID
 	, product_Id UUID
-	, price NUMERIC
+	, price DECIMAL
 	, item_Count INTEGER
 	, extra CHARACTER VARYING
 	, PRIMARY KEY (id)
