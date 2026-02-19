@@ -1,4 +1,4 @@
-package com.ffb.model.response.foodcourt;
+package com.ffb.model.api.response.foodcourt;
 
 import java.util.UUID;
 

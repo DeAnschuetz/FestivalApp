@@ -1,4 +1,4 @@
-package com.ffb.model.response.credit;
+package com.ffb.model.api.response.credit;
 
 public record CreditResponse(double credit) {
 

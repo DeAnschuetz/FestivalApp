@@ -1,20 +1,52 @@
-package com.ffb.model.objects.credit;
+package com.ffb.model.db.objects.credit;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class CreditHistory {
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ffb.model.db.objects.account.Account;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "credit_history", schema = "ffb")
+public class CreditHistory extends PanacheEntityBase {
+
+    @Id
+    @Column(name = "id")
 	private UUID id;
-	private UUID accountID;
-	private double oldAmmount;
-	private double newAmmount;
-	private LocalDateTime changeTime;
 
-	public CreditHistory(UUID id, UUID accountID, double oldAmmount, double newAmmount, LocalDateTime changeTime) {
+    @Column(name = "old_ammount")
+	private double oldAmmount;
+    
+    @Column(name = "new_ammount")
+	private double newAmmount;
+    
+    @Column(name = "change_time")
+	private LocalDateTime changeTime;
+    
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "credit_id", referencedColumnName = "id")
+    private Credit credit;
+    
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
+	private Account account;
+    
+    protected CreditHistory() {}
+
+	public CreditHistory(UUID id, double oldAmmount, double newAmmount, LocalDateTime changeTime) {
 		super();
 		this.id = id;
-		this.accountID = accountID;
 		this.oldAmmount = oldAmmount;
 		this.newAmmount = newAmmount;
 		this.changeTime = changeTime;
@@ -26,14 +58,6 @@ public class CreditHistory {
 
 	public void setId(UUID id) {
 		this.id = id;
-	}
-
-	public UUID getAccountID() {
-		return accountID;
-	}
-
-	public void setAccountID(UUID accountID) {
-		this.accountID = accountID;
 	}
 
 	public double getOldAmmount() {
@@ -60,10 +84,21 @@ public class CreditHistory {
 		this.changeTime = changeTime;
 	}
 
-	@Override
-	public String toString() {
-		return "creditHistory [id=" + id + ", accountID=" + accountID + ", oldAmmount=" + oldAmmount + ", newAmmount="
-				+ newAmmount + ", changeTime=" + changeTime + "]";
+	public Credit getCredit() {
+		return credit;
 	}
+
+	public void setCredit(Credit credit) {
+		this.credit = credit;
+	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
+
 
 }

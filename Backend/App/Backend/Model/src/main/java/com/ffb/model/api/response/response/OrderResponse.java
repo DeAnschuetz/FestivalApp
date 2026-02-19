@@ -1,8 +1,9 @@
-package com.ffb.model.response;
+package com.ffb.model.api.response.response;
 
 import java.util.List;
 
-import com.ffb.model.response.order.OrderSimple;
+import com.ffb.model.api.response.order.OrderSimple;
+
 
 public class OrderResponse {
 

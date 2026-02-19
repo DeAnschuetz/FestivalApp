@@ -2,71 +2,70 @@
 ---Account_Script
 CREATE SCHEMA IF NOT EXISTS ffb;
 
-DROP TABLE IF EXISTS ffb.Account;
-DROP TYPE IF EXISTS ffb.ACCOUNT_TYPE;
-CREATE TYPE ffb.ACCOUNT_TYPE AS ENUM ('festivalAdmin', 'foodCourtWorker', 'fastivalGuest');
-
+DROP TABLE IF EXISTS ffb.account;
 CREATE TABLE IF NOT EXISTS ffb.Account
 (
 	id UUID
-	, login_Nr CHARACTER VARYING(13)
+	, login_nr CHARACTER VARYING(13) UNIQUE
 	, password CHARACTER VARYING(60)
-	, type ffb.ACCOUNT_TYPE
+	, type CHARACTER VARYING(15) check ((type in ('FESTIVAL_ADMIN','FOOCOURT_WORKER','FESTIVAL_GUEST')))
 	, PRIMARY KEY (id)
 );
 
 ---Credit_Script
-CREATE TABLE IF NOT EXISTS ffb.Credit
-(
-	account_Id UUID
-	, ammount DECIMAL
-	, PRIMARY KEY (account_Id)
-	, CONSTRAINT fk_Account
-		FOREIGN KEY (account_Id)
-			REFERENCES ffb.Account(id)
-);
-
-CREATE TABLE IF NOT EXISTS ffb.Credit_History
+DROP TABLE IF EXISTS ffb.credit;
+CREATE TABLE IF NOT EXISTS ffb.credit
 (
 	id UUID
-	, account_Id UUID
-	, old_Ammount DECIMAL
-	, new_Ammount DECIMAL
-	, change_Time TIMESTAMP
+	, account_id UUID UNIQUE
+	, ammount DECIMAL
+	, PRIMARY KEY (id)
+	, CONSTRAINT fk_account
+		FOREIGN KEY (account_id)
+			REFERENCES ffb.account(id)
+);
+
+DROP TABLE IF EXISTS ffb.credit_history;
+CREATE TABLE IF NOT EXISTS ffb.credit_history
+(
+	id UUID
+	, account_id UUID
+	, old_ammount DECIMAL
+	, new_ammount DECIMAL
+	, change_time TIMESTAMP
 	, PRIMARY KEY(id)
-	, CONSTRAINT fk_Account
+	, CONSTRAINT fk_account
 		FOREIGN KEY (account_Id)
-			REFERENCES ffb.Account(id)
+			REFERENCES ffb.account(id)
+	, CONSTRAINT fk_credit
+		FOREIGN KEY (credit_id)
+			REFERENCES ffb.credit(id)
 );
 
 ---Notification_Script
-DROP TABLE IF EXISTS ffb.Notification;
-DROP TYPE IF EXISTS ffb.NOTIFICATION_TYPE;
-CREATE TYPE ffb.NOTIFICATION_TYPE AS ENUM ('ordered', 'ready', 'canceled');
-DROP TYPE IF EXISTS ffb.NOTIFICATION_STATUS;
-CREATE TYPE ffb.NOTIFICATION_STATUS AS ENUM ('new', 'read', 'removed');
-
-CREATE TABLE ffb.Notification
+DROP TABLE IF EXISTS ffb.notification;
+CREATE TABLE ffb.notification
 (
 	id UUID
-	, account_Id UUID
-	, notification_Type ffb.NOTIFICATION_TYPE
-	, status ffb.NOTIFICATION_STATUS
-	, notification_Message CHARACTER VARYING
-	, order_Time TIMESTAMP
-	, pickup_Time TIMESTAMP
+	, account_id UUID
+	, notification_Type CHARACTER VARYING(15) check ((type in ('FESTIVAL_ADMIN','FOOCOURT_WORKER','FESTIVAL_GUEST')))
+	, status CHARACTER VARYING(15) check ((type in ('FESTIVAL_ADMIN','FOOCOURT_WORKER','FESTIVAL_GUEST')))
+	, notification_message CHARACTER VARYING
+	, order_zime TIMESTAMP
+	, pickup_zime TIMESTAMP
 	, PRIMARY KEY (id)
-	, CONSTRAINT fk_Account
-		FOREIGN KEY (account_Id)
-			REFERENCES ffb.Account(id)
+	, CONSTRAINT fk_account
+		FOREIGN KEY (account_id)
+			REFERENCES ffb.account(id)
 );
 
 
 ---Foodcourt_Script
-CREATE TABLE IF NOT EXISTS ffb.Foodcourt
+DROP TABLE IF EXISTS ffb.foodcourt;
+CREATE TABLE IF NOT EXISTS ffb.foodcourt
 (
 	id UUID
-	,account_Id UUID
+	,account_id UUID UNIQUE
 	, display_Name CHARACTER VARYING
 	, image BYTEA 
 	, PRIMARY KEY (id)
@@ -77,9 +76,10 @@ CREATE TABLE IF NOT EXISTS ffb.Foodcourt
 
 CREATE TABLE IF NOT EXISTS ffb.Foodcourt_Waiting_Time
 (
-	foodcourt_Id UUID
+	id UUID
+	, foodcourt_Id UUID UNIQUE
 	, waiting_Time INTEGER
-	, PRIMARY KEY (foodcourt_Id)
+	, PRIMARY KEY (id)
 	, CONSTRAINT fk_Foodcourt
 		FOREIGN KEY (foodcourt_Id)
 			REFERENCES ffb.Foodcourt(id)
@@ -151,14 +151,14 @@ CREATE TABLE IF NOT EXISTS ffb.Food_Order
 CREATE TABLE IF NOT EXISTS ffb.Food_Order_Item
 (
 	id UUID
-	, order_Id UUID
+	, food_order_Id UUID
 	, product_Id UUID
 	, price DECIMAL
 	, item_Count INTEGER
 	, extra CHARACTER VARYING
 	, PRIMARY KEY (id)
 	, CONSTRAINT fk_Food_Order
-		FOREIGN KEY (order_Id)
+		FOREIGN KEY (food_order_Id)
 			REFERENCES ffb.Food_Order(id)
 	,CONSTRAINT fk_Product
 		FOREIGN KEY (product_Id)
@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS ffb.Food_Order_Item
 CREATE TABLE IF NOT EXISTS ffb.Food_Order_History
 (
 	id UUID
-	, order_Id UUID
+	, food_order_id UUID
 	, status_Change_Time TimeStamp
 	, old_Status ffb.FOOD_ORDER_STATUS
 	, new_Status ffb.FOOD_ORDER_STATUS

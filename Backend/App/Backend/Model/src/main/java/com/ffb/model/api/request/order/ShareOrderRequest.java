@@ -1,4 +1,4 @@
-package com.ffb.model.request.order;
+package com.ffb.model.api.request.order;
 
 import java.util.UUID;
 

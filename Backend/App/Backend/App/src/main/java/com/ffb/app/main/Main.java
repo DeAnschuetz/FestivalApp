@@ -1,4 +1,4 @@
-package com.ffb.main;
+package com.ffb.app.main;
 
 import io.quarkus.runtime.Quarkus;
 

@@ -1,4 +1,4 @@
-package com.ffb.model.response;
+package com.ffb.model.api.response.response;
 
 public class Response {
 

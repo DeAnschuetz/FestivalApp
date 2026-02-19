@@ -1,6 +1,6 @@
-package com.ffb.model.objects.foodorder;
+package com.ffb.model.db.objects.foodorder;
 
 public enum FoodOrderStatus {
-	ordered, in_progress, ready_for_pickup, done, canceled,;
+	ORDERED, IN_PROGRESS, READY_FOR_PICKUP, DONE, CANCELED,;
 
 }

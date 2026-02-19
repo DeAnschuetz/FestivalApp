@@ -1,14 +1,14 @@
-package com.ffb.api;
+package com.ffb.app.api;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.ffb.model.response.Response;
-import com.ffb.model.response.foodcourt.Foodcourt;
-import com.ffb.model.response.foodcourt.ProductFull;
-import com.ffb.model.response.foodcourt.ProductSimple;
-import com.ffb.model.response.foodcourt.SubProductFull;
+import com.ffb.model.api.response.foodcourt.Foodcourt;
+import com.ffb.model.api.response.foodcourt.ProductFull;
+import com.ffb.model.api.response.foodcourt.ProductSimple;
+import com.ffb.model.api.response.foodcourt.SubProductFull;
+import com.ffb.model.api.response.response.Response;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;

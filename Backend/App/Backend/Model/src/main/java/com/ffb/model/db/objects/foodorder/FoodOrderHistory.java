@@ -1,70 +1,55 @@
-package com.ffb.model.objects.foodorder;
+package com.ffb.model.db.objects.foodorder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class FoodOrderHistory {
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "food_order_history", schema = "ffb")
+public class FoodOrderHistory extends PanacheEntityBase {
+
+    @Id
+    @Column(name = "id")
 	private UUID id;
-	private UUID foodOrderID;
+    
+    @Column(name = "status_change_time")
 	private LocalDateTime statusChangeTime;
-	private FoodOrderStatus oldStatus;
-	private FoodOrderStatus newStatus;
 
-	public FoodOrderHistory(UUID id, UUID foodOrderID, LocalDateTime statusChangeTime, FoodOrderStatus oldStatus,
+    @Enumerated(EnumType.STRING)
+    @Column(name = "old_status")
+	private FoodOrderStatus oldStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "new_status")
+	private FoodOrderStatus newStatus;
+    
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "food_order_id", referencedColumnName = "id")
+    private FoodOrder foodOrder;
+
+    protected FoodOrderHistory() {} 
+    
+	public FoodOrderHistory(UUID id, FoodOrder foodOrder, LocalDateTime statusChangeTime, FoodOrderStatus oldStatus,
 			FoodOrderStatus newStatus) {
 		super();
 		this.id = id;
-		this.foodOrderID = foodOrderID;
+		this.foodOrder = foodOrder;
 		this.statusChangeTime = statusChangeTime;
 		this.oldStatus = oldStatus;
 		this.newStatus = newStatus;
-	}
-
-	public UUID getId() {
-		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
-	}
-
-	public UUID getFoodOrderID() {
-		return foodOrderID;
-	}
-
-	public void setFoodOrderID(UUID foodOrderID) {
-		this.foodOrderID = foodOrderID;
-	}
-
-	public LocalDateTime getStatusChangeTime() {
-		return statusChangeTime;
-	}
-
-	public void setStatusChangeTime(LocalDateTime statusChangeTime) {
-		this.statusChangeTime = statusChangeTime;
-	}
-
-	public FoodOrderStatus getOldStatus() {
-		return oldStatus;
-	}
-
-	public void setOldStatus(FoodOrderStatus oldStatus) {
-		this.oldStatus = oldStatus;
-	}
-
-	public FoodOrderStatus getNewStatus() {
-		return newStatus;
-	}
-
-	public void setNewStatus(FoodOrderStatus newStatus) {
-		this.newStatus = newStatus;
-	}
-
-	@Override
-	public String toString() {
-		return "FoodOrderHistory [id=" + id + ", foodOrderID=" + foodOrderID + ", statusChangeTime=" + statusChangeTime
-				+ ", oldStatus=" + oldStatus + ", newStatus=" + newStatus + "]";
 	}
 
 }

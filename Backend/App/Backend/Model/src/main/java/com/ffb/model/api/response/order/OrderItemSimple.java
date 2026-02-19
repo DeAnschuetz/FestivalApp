@@ -1,4 +1,4 @@
-package com.ffb.model.response.order;
+package com.ffb.model.api.response.order;
 
 import java.util.List;
 import java.util.UUID;

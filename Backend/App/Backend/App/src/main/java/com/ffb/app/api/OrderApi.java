@@ -1,4 +1,4 @@
-package com.ffb.api;
+package com.ffb.app.api;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,15 +6,14 @@ import java.util.UUID;
 
 import org.jboss.resteasy.reactive.PartType;
 
-import com.ffb.model.objects.foodorder.FoodOrder;
-import com.ffb.model.objects.foodorder.FoodOrderStatus;
-import com.ffb.model.request.order.ShareOrderRequest;
-import com.ffb.model.response.OrderResponse;
-import com.ffb.model.response.Response;
-import com.ffb.model.response.order.OrderItemSimple;
-import com.ffb.model.response.order.OrderSimple;
+import com.ffb.model.api.request.order.ShareOrderRequest;
+import com.ffb.model.api.response.order.OrderItemSimple;
+import com.ffb.model.api.response.order.OrderSimple;
+import com.ffb.model.api.response.response.OrderResponse;
+import com.ffb.model.api.response.response.Response;
+import com.ffb.model.db.objects.foodorder.FoodOrder;
+import com.ffb.model.db.objects.foodorder.FoodOrderStatus;
 
-import io.quarkus.runtime.Application;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -56,14 +55,14 @@ public class OrderApi {
 		orderItems_01.add(new OrderItemSimple(UUID.randomUUID(), "Pommes",  (byte)0, 2, null, null));
 		orderItems_01.add(new OrderItemSimple(UUID.randomUUID(), "Cola",  (byte)0, 3, null, null));
 		
-		data.add(new OrderSimple(UUID.randomUUID(), FoodOrderStatus.in_progress, "Burger Place", 10, orderItems_01));
+		data.add(new OrderSimple(UUID.randomUUID(), FoodOrderStatus.IN_PROGRESS, "Burger Place", 10, orderItems_01));
 		
 		List<OrderItemSimple> orderItems_02 = new ArrayList<>();
 		orderItems_02.add(new OrderItemSimple(UUID.randomUUID(), "Pizza Magerita",  (byte)0, 1, null, null));
 		orderItems_02.add(new OrderItemSimple(UUID.randomUUID(), "Spaggeti Bollognese",  (byte)0, 2, null, null));
 		orderItems_02.add(new OrderItemSimple(UUID.randomUUID(), "Cola",  (byte)0, 3, null, null));
 		
-		data.add(new OrderSimple(UUID.randomUUID(), FoodOrderStatus.ordered, "Pizza Place", 15, orderItems_02));
+		data.add(new OrderSimple(UUID.randomUUID(), FoodOrderStatus.ORDERED, "Pizza Place", 15, orderItems_02));
 		
 		OrderResponse response = new OrderResponse(200, null, data);
 

@@ -1,4 +1,4 @@
-package com.ffb.model.response.cart;
+package com.ffb.model.api.response.cart;
 
 import java.util.List;
 import java.util.UUID;

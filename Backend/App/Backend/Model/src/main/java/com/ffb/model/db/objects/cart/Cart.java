@@ -1,7 +1,10 @@
-package com.ffb.model.objects.cart;
+package com.ffb.model.db.objects.cart;
 
 import java.util.List;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ffb.model.db.objects.account.Account;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.CascadeType;
@@ -9,7 +12,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -20,8 +25,10 @@ public class Cart extends PanacheEntityBase {
     @Column(name = "id")
 	private UUID id;
     
-    @Column(name = "account_id")
-	private UUID accountID;
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
+	private Account account;
 	
     @Column(name = "has_prio")
 	private boolean hasPrio;
@@ -34,10 +41,9 @@ public class Cart extends PanacheEntityBase {
     
     protected Cart() {}
 
-	public Cart(UUID id, UUID accountID, boolean hasPrio, double total, List<CartItem> cartItems) {
+	public Cart(UUID id, boolean hasPrio, double total, List<CartItem> cartItems) {
 		super();
 		this.id = id;
-		this.accountID = accountID;
 		this.hasPrio = hasPrio;
 		this.total = total;
 		this.cartItems = cartItems;
@@ -51,12 +57,12 @@ public class Cart extends PanacheEntityBase {
 		this.id = id;
 	}
 
-	public UUID getAccountID() {
-		return accountID;
+	public Account getAccountID() {
+		return account;
 	}
 
-	public void setAccountID(UUID accountID) {
-		this.accountID = accountID;
+	public void setAccountID(Account account) {
+		this.account = account;
 	}
 
 	public boolean isHasPrio() {
@@ -89,7 +95,7 @@ public class Cart extends PanacheEntityBase {
 
 	@Override
 	public String toString() {
-		return "Cart [id=" + id + ", accountID=" + accountID + ", hasPrio=" + hasPrio + ", total=" + total
+		return "Cart [id=" + id + ", hasPrio=" + hasPrio + ", total=" + total
 				+ ", cartItems=" + cartItems + "]";
 	}
 

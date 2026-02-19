@@ -1,78 +1,55 @@
-package com.ffb.model.objects.product;
+package com.ffb.model.db.objects.product;
 
+import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ffb.model.db.objects.foodcourt.Foodcourt;
+import com.ffb.model.db.objects.foodorder.FoodOrderItem;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "product", schema = "ffb")
 public class Product {
 
+    @Id
+    @Column(name = "id")
 	private UUID id;
-	private UUID foodcourtID;
-	private double price;
-	private String displayName;
-	private byte symbol;
-	private int minimalWarning;
 
-	public Product(UUID id, UUID foodcourtID, double price, String displayName, byte symbol, int minimalWarning) {
+    @Column(name = "price")
+	private double price;
+
+    @Column(name = "display_namme")
+	private String displayName;
+
+    @Column(name = "symbol_identifier")
+	private String symbolIdentifier;
+
+    @Column(name = "minimal_warning")
+	private int minimalWarning;
+    
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "foodcourt_id", referencedColumnName = "id")
+    private Foodcourt foodcourt;
+    
+    protected Product() {}
+    
+	public Product(UUID id, double price, String displayName, String symbolIdentifier, int minimalWarning) {
 		super();
 		this.id = id;
-		this.foodcourtID = foodcourtID;
 		this.price = price;
 		this.displayName = displayName;
-		this.symbol = symbol;
+		this.symbolIdentifier = symbolIdentifier;
 		this.minimalWarning = minimalWarning;
 	}
-
-	public UUID getId() {
-		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
-	}
-
-	public UUID getFoodcourtID() {
-		return foodcourtID;
-	}
-
-	public void setFoodcourtID(UUID foodcourtID) {
-		this.foodcourtID = foodcourtID;
-	}
-
-	public double getPrice() {
-		return price;
-	}
-
-	public void setPrice(double price) {
-		this.price = price;
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
-
-	public byte getSymbol() {
-		return symbol;
-	}
-
-	public void setSymbol(byte symbol) {
-		this.symbol = symbol;
-	}
-
-	public int getMinimalWarning() {
-		return minimalWarning;
-	}
-
-	public void setMinimalWarning(int minimalWarning) {
-		this.minimalWarning = minimalWarning;
-	}
-
-	@Override
-	public String toString() {
-		return "Product [id=" + id + ", foodcourtID=" + foodcourtID + ", price=" + price + ", displayName="
-				+ displayName + ", symbol=" + symbol + ", minimalWarning=" + minimalWarning + "]";
-	}
-
 }

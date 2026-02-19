@@ -1,14 +1,14 @@
-package com.ffb.api;
+package com.ffb.app.api;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.ffb.model.objects.cart.Cart;
-import com.ffb.model.request.cart.CartItemRequest;
-import com.ffb.model.response.Response;
-import com.ffb.model.response.cart.CartItemSimple;
-import com.ffb.model.response.cart.CartSimple;
+import com.ffb.model.api.request.cart.CartItemRequest;
+import com.ffb.model.api.response.cart.CartItemSimple;
+import com.ffb.model.api.response.cart.CartSimple;
+import com.ffb.model.api.response.response.Response;
+import com.ffb.model.db.objects.cart.Cart;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.Consumes;
