@@ -1,58 +1,78 @@
 package com.ffb.app.api;
 
 import java.util.List;
-
 import com.ffb.app.service.api.credit.CreditService;
+import com.ffb.model.api.request.account.RegisterRequest;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.reactive.PartType;
-
 import com.ffb.app.service.api.account.AccountService;
 import com.ffb.model.api.request.account.LoginRequest;
-import com.ffb.model.api.response.response.Response;
 import com.ffb.model.db.objects.account.Account;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 
 @ApplicationScoped
 @Path("/account")
 public class AccountApi {
 	
-	private final  AccountService accountService;
+	private final AccountService accountService;
 	private final CreditService creditService;
-	
+
 	@Inject
 	public AccountApi(AccountService accountService, CreditService creditService) {
 		this.accountService = accountService;
 		this.creditService = creditService;
 	}
-	
+
     @PUT
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response login(@PartType(MediaType.APPLICATION_JSON) LoginRequest loginRequest) {
+		String loginNr = loginRequest.loginNr();
+		if (loginNr == null| loginNr.isBlank()) {
+			throw new WebApplicationException("");
+		}
+		String password = loginRequest.password();
+		if (password == null | password.isBlank()) {
+			throw new WebApplicationException("");
+		}
+
 		Boolean result = accountService.verifyAccount(loginRequest.loginNr(), loginRequest.password());
-		Response response = new Response(400, "Wrong Login-Nr or Password", null);
+		Response response =  Response.status(Response.Status.BAD_REQUEST).entity("Wrong Login-Nr or Password").build();
 		if (result) {
-			response = new Response(200, "Successfully logged in", null);
+			response = Response.status(Response.Status.OK).entity("Successfully logged in").build();
 		}
 		return response;
 	}
-	
+
     @POST
-	public Response register(@PartType(MediaType.APPLICATION_JSON) LoginRequest registerRequest) {
+	public Response register(@PartType(MediaType.APPLICATION_JSON) RegisterRequest registerRequest) {
+
+		String loginNr = registerRequest.loginNr();
+		if (loginNr == null| loginNr.isBlank()) {
+			throw new WebApplicationException("");
+		}
+		String password = registerRequest.password();
+		if (password == null | password.isBlank()) {
+			throw new WebApplicationException("");
+		}
+
     	Account createdAccount = accountService.createAccount(registerRequest.loginNr(), registerRequest.password());
-		creditService.createInitialCredit(createdAccount);
-    	Response response = new Response(200, null, createdAccount);
-		return response;
+		try {
+			creditService.createInitialCredit(createdAccount);
+			Response response =  Response.status(Response.Status.OK).entity(createdAccount).build();
+			return response;
+		} catch (IllegalStateException e) {
+			throw new WebApplicationException(e);
+		}
+
 	}
-    
+
     @GET
 	public Response getAll() {
     	List<Account> data = accountService.getAllAccounts();
-		Response response = new Response(200, null, data);
+		Response response = Response.status(Response.Status.OK).entity(data).build();
 		return response;
 	}
 }

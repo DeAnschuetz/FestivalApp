@@ -9,9 +9,9 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 
 public interface AccountRepository extends PanacheRepository<Account> {
 
-	public Optional<Account> findByLoginNr(String loginNr);
+	Optional<Account> findByLoginNr(String loginNr);
 	
-	public boolean existsByLoginNr(String loginNr);
+	boolean existsByLoginNr(String loginNr);
 	
-	public List<Account> getAllAccounts();
+	List<Account> getAllAccounts();
 }

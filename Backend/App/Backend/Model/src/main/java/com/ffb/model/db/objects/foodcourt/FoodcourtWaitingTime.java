@@ -37,4 +37,28 @@ public class FoodcourtWaitingTime extends PanacheEntityBase {
 		super();
 		this.waitingTime = waitingTime;
 	}
+
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public Foodcourt getFoodcourt() {
+		return foodcourt;
+	}
+
+	public void setFoodcourt(Foodcourt foodcourt) {
+		this.foodcourt = foodcourt;
+	}
+
+	public int getWaitingTime() {
+		return waitingTime;
+	}
+
+	public void setWaitingTime(int waitingTime) {
+		this.waitingTime = waitingTime;
+	}
 }

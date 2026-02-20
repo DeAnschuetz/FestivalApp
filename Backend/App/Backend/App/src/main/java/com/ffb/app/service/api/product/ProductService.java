@@ -1,0 +1,38 @@
+package com.ffb.app.service.api.product;
+
+import com.ffb.model.api.request.product.MainSubLinkCreateRequest;
+import com.ffb.model.api.request.product.ProductRequest;
+import com.ffb.model.db.objects.product.MainSubProductLink;
+import com.ffb.model.db.objects.product.Product;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.TransactionRequiredException;
+import jakarta.ws.rs.NotFoundException;
+
+import javax.management.openmbean.KeyAlreadyExistsException;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+
+public interface ProductService {
+
+    Product createProduct(ProductRequest req) throws NotFoundException;
+
+    Product createProductWithId(UUID id, ProductRequest req) throws KeyAlreadyExistsException, EntityNotFoundException;
+
+    Product getProductById(UUID id) throws NotFoundException;
+
+    List<Product> listProducts();
+
+    List<Product> listProductsByFoodcourtId(UUID foodcourtId);
+
+    void deleteProductById(UUID id) throws NotFoundException;
+
+    UUID createAssignment(UUID mainProductId, UUID subProductId) throws IllegalArgumentException, NoSuchElementException, IllegalStateException, PersistenceException ;
+
+    List<MainSubProductLink> listAssignmentsForMainProduct(UUID mainProductId) throws IllegalArgumentException, IllegalStateException, PersistenceException;
+
+    void deleteAssignmentById(UUID linkId) throws NotFoundException, IllegalArgumentException, TransactionRequiredException;
+
+    void deleteAssignmentByPair(UUID mainProductId, UUID subProductId) throws NotFoundException, IllegalArgumentException, IllegalStateException, PersistenceException;
+}

@@ -14,17 +14,23 @@ import jakarta.persistence.Table;
 @Table(name = "main_sub_product", schema = "ffb")
 public class MainSubProductLink {
 
-	  @GeneratedValue
-	  @Id
-	  public UUID id;
+	@GeneratedValue
+	@Id
+	public UUID id;
 
-	  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-	  @JoinColumn(name = "main_product_id", referencedColumnName = "id")
-	  public Product main;
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "main_product_id", referencedColumnName = "id")
+	public Product mainProduct;
 
-	  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-	  @JoinColumn(name = "sub_product_id", referencedColumnName = "id")
-	  public Product sub;
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "sub_product_id", referencedColumnName = "id")
+	public Product subProduct;
 
-	  protected MainSubProductLink() {}
+	protected MainSubProductLink() {}
+
+
+	public MainSubProductLink(Product mainProduct, Product subProduct) {
+		this.mainProduct = mainProduct;
+		this.subProduct = subProduct;
+	}
 }

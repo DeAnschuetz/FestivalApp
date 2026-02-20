@@ -36,7 +36,7 @@ public class Cart extends PanacheEntityBase {
     @Column(name = "total")
 	private double total;
 	
-    @OneToMany(mappedBy = "cart", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cart", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
 	private List<CartItem> cartItems;
     
     protected Cart() {}
@@ -91,12 +91,6 @@ public class Cart extends PanacheEntityBase {
 	
 	public static List<Cart> listAllWithItems() {
 	    return find("SELECT DISTINCT c FROM Cart c LEFT JOIN FETCH c.cartItems").list();
-	}
-
-	@Override
-	public String toString() {
-		return "Cart [id=" + id + ", hasPrio=" + hasPrio + ", total=" + total
-				+ ", cartItems=" + cartItems + "]";
 	}
 
 }

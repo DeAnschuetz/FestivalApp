@@ -6,10 +6,10 @@ import com.ffb.model.db.objects.account.Account;
 
 public interface AccountService {
 	
-	public Account createAccount(String loginNr, String rawPassword);
+	Account createAccount(String loginNr, String rawPassword);
 	
-	public boolean verifyAccount(String loginNr, String rawPassword);
+	boolean verifyAccount(String loginNr, String rawPassword);
 	
-	public List<Account> getAllAccounts();
+	List<Account> getAllAccounts();
 
 }

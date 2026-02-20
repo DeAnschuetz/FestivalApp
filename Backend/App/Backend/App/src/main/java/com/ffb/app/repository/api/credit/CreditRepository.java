@@ -7,20 +7,19 @@ import java.util.UUID;
 import com.ffb.model.db.objects.credit.Credit;
 
 import com.ffb.model.db.objects.credit.CreditHistory;
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import jakarta.persistence.PersistenceException;
 
-public interface CreditRepository extends PanacheRepository<Credit> {
-	
-	public Optional<Credit> findByAccountId(UUID accountId);
+public interface CreditRepository extends PanacheRepositoryBase<Credit, UUID> {
 
-	public Optional<Credit> findByLoginNr(String loginNr);
+	Optional<Credit> findByLoginNr(String loginNr);
 
-	public boolean existsByAccountId(UUID accountId);
+	boolean existsByLoginNr(String loginNr);
 
-	public void persistHistory(CreditHistory history);
+	void persistHistory(CreditHistory history);
 
-	public List<CreditHistory> findHistoryByAccountId(UUID accountId, int pageIndex, int pageSize);
+	List<CreditHistory> findHistoryByAccountId(String loginNr, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException;
 
-	public List<CreditHistory> findHistoryByCreditId(UUID creditId, int pageIndex, int pageSize);
+	List<CreditHistory> findHistoryByCreditId(UUID creditId, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException;
 
 }

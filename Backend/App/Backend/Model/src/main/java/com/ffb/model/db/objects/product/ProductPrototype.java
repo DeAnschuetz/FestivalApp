@@ -52,4 +52,52 @@ public class ProductPrototype extends PanacheEntityBase {
 		this.symbolIdentifier = symbolIdentifier;
 		this.minimalWarning = minimalWarning;
 	}
+
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getSymbolIdentifier() {
+		return symbolIdentifier;
+	}
+
+	public void setSymbolIdentifier(String symbolIdentifier) {
+		this.symbolIdentifier = symbolIdentifier;
+	}
+
+	public int getMinimalWarning() {
+		return minimalWarning;
+	}
+
+	public void setMinimalWarning(int minimalWarning) {
+		this.minimalWarning = minimalWarning;
+	}
+
+	public Foodcourt getFoodcourt() {
+		return foodcourt;
+	}
+
+	public void setFoodcourt(Foodcourt foodcourt) {
+		this.foodcourt = foodcourt;
+	}
 }

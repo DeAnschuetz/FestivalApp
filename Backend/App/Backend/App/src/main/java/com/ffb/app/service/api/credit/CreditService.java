@@ -3,24 +3,24 @@ package com.ffb.app.service.api.credit;
 import com.ffb.model.db.objects.account.Account;
 import com.ffb.model.db.objects.credit.Credit;
 import com.ffb.model.db.objects.credit.CreditHistory;
+import jakarta.persistence.PersistenceException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface CreditService {
 
-    Credit createInitialCredit(Account account);
+    Credit createInitialCredit(Account account) throws IllegalStateException;
 
-    Credit getByAccountId(UUID accountId);
+    Credit getByLoginNr(String loginNr) throws IllegalArgumentException;
 
-    Credit addAmount(UUID accountId, double delta);
 
-    Credit subtractAmount(UUID accountId, double delta);
+    Credit addAmount(String loginNr, double delta) throws IllegalArgumentException;
 
-    List<CreditHistory> getHistoryForAccount(UUID accountId, int pageIndex, int pageSize);
+    Credit subtractAmount(String loginNr, double delta) throws IllegalStateException;
 
-    List<CreditHistory> getHistoryForCredit(UUID creditId, int pageIndex, int pageSize);
+    List<CreditHistory> getHistoryForAccount(String loginNr, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException;
 
-    Credit findByLoginNr(String loginNr);
+    List<CreditHistory> getHistoryForCredit(UUID creditId, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException;
+
 }

@@ -12,6 +12,7 @@ import com.ffb.model.db.objects.credit.Credit;
 import com.ffb.model.db.objects.credit.CreditHistory;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
@@ -21,23 +22,23 @@ public class CreditServiceImpl implements CreditService {
 
     private final CreditRepository creditRepo;
 
+    @Inject
     public CreditServiceImpl(CreditRepository creditRepo) {
         this.creditRepo = creditRepo;
     }
 
     @Transactional
-    public Credit createInitialCredit(Account account) {
+    public Credit createInitialCredit(Account account) throws IllegalStateException {
         if (account == null) throw new IllegalArgumentException("account must not be null");
 
-        UUID accountId = account.getId();
-        if (creditRepo.existsByAccountId(accountId)) {
-            throw new IllegalStateException("Credit already exists for accountId=" + accountId);
+        String loginNr = account.getLoginNr();
+        if (creditRepo.existsByLoginNr(loginNr)) {
+            throw new IllegalStateException("Credit already exists for loginNr=" + loginNr);
         }
 
         Credit credit = new Credit(UUID.randomUUID(), INITIAL_AMMOUNT, account);
         creditRepo.persist(credit);
 
-        // initial history row (0 -> initialAmount)
         CreditHistory h = new CreditHistory(
                 UUID.randomUUID(),
                 0.0,
@@ -51,21 +52,18 @@ public class CreditServiceImpl implements CreditService {
         return credit;
     }
 
-    public Credit getByAccountId(UUID accountId) {
-        return creditRepo.findByAccountId(accountId)//
-                .orElseThrow(() -> new IllegalArgumentException("Credit not found for accountId=" + accountId));
-    }
-
-    public Credit findByLoginNr(String loginNr) {
+    public Credit getByLoginNr(String loginNr) throws IllegalArgumentException {
         return creditRepo.findByLoginNr(loginNr)//
                 .orElseThrow(() -> new IllegalArgumentException("Credit not found for loginNr=" + loginNr));
     }
 
     @Transactional
-    public Credit addAmount(UUID accountId, double delta) {
-        if (delta <= 0) throw new IllegalArgumentException("delta must be > 0");
+    public Credit addAmount(String loginNr, double delta) throws IllegalArgumentException {
+        if (delta <= 0) {
+            throw new IllegalArgumentException("delta must be > 0");
+        }
 
-        Credit credit = getByAccountId(accountId);
+        Credit credit = getByLoginNr(loginNr);
         double oldAmount = credit.getAmmount();
         double newAmount = oldAmount + delta;
 
@@ -85,10 +83,10 @@ public class CreditServiceImpl implements CreditService {
     }
 
     @Transactional
-    public Credit subtractAmount(UUID accountId, double delta) {
+    public Credit subtractAmount(String loginNr, double delta) throws IllegalStateException {
         if (delta <= 0) throw new IllegalArgumentException("delta must be > 0");
 
-        Credit credit = getByAccountId(accountId);
+        Credit credit = getByLoginNr(loginNr);
         double oldAmount = credit.getAmmount();
         double newAmount = oldAmount - delta;
 
@@ -111,11 +109,11 @@ public class CreditServiceImpl implements CreditService {
         return credit;
     }
 
-    public List<CreditHistory> getHistoryForAccount(UUID accountId, int pageIndex, int pageSize) {
-        return creditRepo.findHistoryByAccountId(accountId, pageIndex, pageSize);
+    public List<CreditHistory> getHistoryForAccount(String loginNr, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException {
+        return creditRepo.findHistoryByAccountId(loginNr, pageIndex, pageSize);
     }
 
-    public List<CreditHistory> getHistoryForCredit(UUID creditId, int pageIndex, int pageSize) {
+    public List<CreditHistory> getHistoryForCredit(UUID creditId, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException {
         return creditRepo.findHistoryByCreditId(creditId, pageIndex, pageSize);
     }
 }

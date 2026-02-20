@@ -1,19 +1,12 @@
 package com.ffb.app.api;
 
-
-
-
 import com.ffb.app.service.api.credit.CreditService;
-import com.ffb.app.service.impl.credit.CreditServiceImpl;
 import com.ffb.model.api.response.credit.CreditResponse;
-import com.ffb.model.api.response.response.Response;
-
 import com.ffb.model.db.objects.credit.Credit;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
+
 
 @ApplicationScoped
 @Path("/credit")
@@ -24,23 +17,30 @@ public class CreditApi {
 	public CreditApi(CreditService creditService) {
 		this.creditService = creditService;
 	}
-	
+
 	@GET
 	@Path("{loginNr}")
 	public Response getCreditForLoginNr(@PathParam(value = "loginNr") String loginNr) {
-		Credit credit =  creditService.findByLoginNr(loginNr);
-		CreditResponse data = new CreditResponse(credit.getAmmount());
-		Response response = new Response(200, null, data);
-		return response;
+		try {
+			Credit credit =  creditService.getByLoginNr(loginNr);
+			CreditResponse data = new CreditResponse(credit.getAmmount());
+			Response response =  Response.status(Response.Status.OK).entity(data).build();
+			return response;
+		} catch (IllegalArgumentException e) {
+			throw new WebApplicationException(e);
+		}
 	}
-	
+
 	@PUT
 	@Path("{loginNr}")
 	public Response addCredit(@PathParam(value = "loginNr") String loginNr, int amount) {
-		Credit credit =  creditService.findByLoginNr(loginNr);
-		CreditResponse data = new CreditResponse(credit.getAmmount());
-		Response response = new Response(200, null, data);
-		return response;
+		try {
+			Credit credit =  creditService.addAmount(loginNr, amount);
+			CreditResponse data = new CreditResponse(credit.getAmmount());
+			Response response =  Response.status(Response.Status.OK).entity(data).build();
+			return response;
+		} catch (IllegalArgumentException e) {
+			throw new WebApplicationException(e);
+		}
 	}
-
 }

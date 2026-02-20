@@ -10,43 +10,44 @@ import com.ffb.model.db.objects.credit.Credit;
 import com.ffb.model.db.objects.credit.CreditHistory;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
+import jakarta.persistence.*;
 
 @ApplicationScoped
 public class CreditRepositoryImpl implements CreditRepository {
 
-    @Inject
-    EntityManager em;
+    private final EntityManager em;
 
-    public Optional<Credit> findByAccountId(UUID accountId) {
-        return find("account.id", accountId).firstResultOptional();
+    @Inject
+    public CreditRepositoryImpl(EntityManager em) {
+        this.em = em;
+
     }
 
     public Optional<Credit> findByLoginNr(String loginNr) {
         return find("account.loginNr", loginNr).firstResultOptional();
     }
 
-    public boolean existsByAccountId(UUID accountId) {
-        return count("account.id", accountId) > 0;
+    public boolean existsByLoginNr(String loginNr) {
+        return count("account.loginNr", loginNr) > 0;
     }
 
-    public void persistHistory(CreditHistory history) {
+    public void persistHistory(CreditHistory history) throws EntityExistsException, IllegalArgumentException, TransactionRequiredException {
         em.persist(history);
     }
 
-    public List<CreditHistory> findHistoryByAccountId(UUID accountId, int pageIndex, int pageSize) {
+    public List<CreditHistory> findHistoryByAccountId(String loginNr, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException {
         return em.createQuery(
-                        "select h from CreditHistory h where h.account.id = :aid order by h.changeTime desc",
+                        "select h from CreditHistory h where h.account.loginNr = :lnr order by h.changeTime desc",
                         CreditHistory.class
                 )
-                .setParameter("aid", accountId)//
+                .setParameter("lnr", loginNr)//
                 .setFirstResult(pageIndex * pageSize)//
                 .setMaxResults(pageSize)//
                 .getResultList()//
         ;
     }
 
-    public List<CreditHistory> findHistoryByCreditId(UUID creditId, int pageIndex, int pageSize) {
+    public List<CreditHistory> findHistoryByCreditId(UUID creditId, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException {
         return em.createQuery(
                         "select h from CreditHistory h where h.credit.id = :cid order by h.changeTime desc",
                         CreditHistory.class

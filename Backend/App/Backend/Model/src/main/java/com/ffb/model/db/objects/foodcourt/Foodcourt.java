@@ -54,4 +54,59 @@ public class Foodcourt extends PanacheEntityBase {
 		this.imageURI = imageURI;
 	}
 
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public UUID getAccountID() {
+		return accountID;
+	}
+
+	public void setAccountID(UUID accountID) {
+		this.accountID = accountID;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public URI getImageURI() {
+		return imageURI;
+	}
+
+	public void setImageURI(URI imageURI) {
+		this.imageURI = imageURI;
+	}
+
+	public File getImage() {
+		return image;
+	}
+
+	public void setImage(File image) {
+		this.image = image;
+	}
+
+	public FoodcourtWaitingTime getWaitingTime() {
+		return waitingTime;
+	}
+
+	public void setWaitingTime(FoodcourtWaitingTime waitingTime) {
+		this.waitingTime = waitingTime;
+	}
+
+	public List<FoodOrder> getFoodOrder() {
+		return foodOrder;
+	}
+
+	public void setFoodOrder(List<FoodOrder> foodOrder) {
+		this.foodOrder = foodOrder;
+	}
 }

@@ -6,11 +6,12 @@ import java.util.UUID;
 import com.ffb.model.db.objects.credit.CreditHistory;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 
-public interface CreditHistoryRepository extends PanacheRepository<CreditHistory> {
+public interface CreditHistoryRepository extends PanacheRepositoryBase<CreditHistory, UUID> {
 	
-	public List<CreditHistory> findByAccountId(UUID accountId, int pageIndex, int pageSize);
+	List<CreditHistory> findByAccountId(UUID accountId, int pageIndex, int pageSize);
 	
-	 public List<CreditHistory> findByCreditId(UUID creditId, int pageIndex, int pageSize);
+	List<CreditHistory> findByCreditId(UUID creditId, int pageIndex, int pageSize);
 
 }

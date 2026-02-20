@@ -20,13 +20,13 @@ import java.util.UUID;
 @ApplicationScoped
 public class AccountServiceImpl implements AccountService {
 
-	private final AccountRepository accountRepository;
-	private final CreditRepository creditRepository;
+	private final AccountRepository accountRepo;
+	private final CreditRepository creditRepo;
 
 	@Inject
-	public AccountServiceImpl(AccountRepository accountRepository, CreditRepository creditRepository) {
-		this.accountRepository = accountRepository;
-		this.creditRepository = creditRepository;
+	public AccountServiceImpl(AccountRepository accountRepo, CreditRepository creditRepo) {
+		this.accountRepo = accountRepo;
+		this.creditRepo = creditRepo;
 	}
 
 	@Transactional
@@ -38,7 +38,7 @@ public class AccountServiceImpl implements AccountService {
 			throw new IllegalArgumentException("password must not be blank");
 		}
 
-		if (accountRepository.existsByLoginNr(loginNr)) {
+		if (accountRepo.existsByLoginNr(loginNr)) {
 			throw new IllegalStateException("loginNr already exists");
 		}
 
@@ -54,8 +54,8 @@ public class AccountServiceImpl implements AccountService {
 		Account account = new Account(id, loginNr, hashedPassword, type);
 		Credit credit = new Credit(UUID.randomUUID(), 1000, account);
 
-		accountRepository.persist(account);
-		creditRepository.persist(credit);
+		accountRepo.persist(account);
+		creditRepo.persist(credit);
 		return account;
 	}
 	
@@ -68,14 +68,14 @@ public class AccountServiceImpl implements AccountService {
 			return false;
 		}
 
-		return accountRepository.findByLoginNr(loginNr)//
+		return accountRepo.findByLoginNr(loginNr)//
 				.map(acc -> BcryptUtil.matches(rawPassword, acc.getPassword()))
 				.orElse(false)//
 		;
 	}
 	
 	public List<Account> getAllAccounts() {
-		List<Account> result = accountRepository.getAllAccounts();
+		List<Account> result = accountRepo.getAllAccounts();
 		return result;
 	}
 	

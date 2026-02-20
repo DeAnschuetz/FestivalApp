@@ -28,5 +28,5 @@ public class MainProduct extends ProductPrototype {
 
 	public MainProduct(UUID id, double price, String displayName, String symbolIdentifier, int minimalWarning) {
 		super(id, price, displayName, symbolIdentifier, minimalWarning);
-	}    
+	}
 }
