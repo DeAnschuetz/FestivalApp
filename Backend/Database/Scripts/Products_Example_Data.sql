@@ -1,10 +1,10 @@
 INSERT INTO ffb.account
 (
-	account_id, login_nr, password, type
+	id, login_nr, password, type
 )
 VALUES
 (
-	'6767b5c9-f58c-40cd-be15-6427648ca543', 'V-123-456-789', '123456789', 'foodCourtWorker'
+	'6767b5c9-f58c-40cd-be15-6427648ca543', 'V-123-456-789', '123456789', 'FOOCOURT_WORKER'
 );
 
 INSERT INTO ffb.foodcourt
