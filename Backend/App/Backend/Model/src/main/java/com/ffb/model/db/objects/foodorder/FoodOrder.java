@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ffb.model.db.objects.account.Account;
-import com.ffb.model.db.objects.foodcourt.Foodcourt;
+import com.ffb.model.db.objects.food_court.FoodCourt;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.CascadeType;
@@ -58,8 +58,8 @@ public class FoodOrder extends PanacheEntityBase {
     
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "foodcourt_id", referencedColumnName = "id")
-    private Foodcourt foodcourt;
+    @JoinColumn(name = "food_court_id", referencedColumnName = "id")
+    private FoodCourt foodCourt;
 
     protected FoodOrder() {}
 

@@ -20,12 +20,15 @@ public class CreditApi {
 
 	@GET
 	@Path("{loginNr}")
-	public Response getCreditForLoginNr(@PathParam(value = "loginNr") String loginNr) {
+	public Response getCreditByLoginNr(@PathParam(value = "loginNr") String loginNr) {
+		if (loginNr == null) {
+			throw new WebApplicationException("The login number must not be null.");
+		}
+
 		try {
 			Credit credit =  creditService.getByLoginNr(loginNr);
 			CreditResponse data = new CreditResponse(credit.getAmmount());
-			Response response =  Response.status(Response.Status.OK).entity(data).build();
-			return response;
+			return Response.status(Response.Status.OK).entity(data).build();
 		} catch (IllegalArgumentException e) {
 			throw new WebApplicationException(e);
 		}
@@ -34,11 +37,17 @@ public class CreditApi {
 	@PUT
 	@Path("{loginNr}")
 	public Response addCredit(@PathParam(value = "loginNr") String loginNr, int amount) {
+		if (loginNr == null) {
+			throw new WebApplicationException("The login number must not be null.");
+		}
+		if (amount == 0) {
+			throw new WebApplicationException("The amount must not be 0.");
+		}
+
 		try {
 			Credit credit =  creditService.addAmount(loginNr, amount);
 			CreditResponse data = new CreditResponse(credit.getAmmount());
-			Response response =  Response.status(Response.Status.OK).entity(data).build();
-			return response;
+			return Response.status(Response.Status.OK).entity(data).build();
 		} catch (IllegalArgumentException e) {
 			throw new WebApplicationException(e);
 		}

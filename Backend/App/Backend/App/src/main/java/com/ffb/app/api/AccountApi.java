@@ -31,14 +31,14 @@ public class AccountApi {
 	public Response login(@PartType(MediaType.APPLICATION_JSON) LoginRequest loginRequest) {
 		String loginNr = loginRequest.loginNr();
 		if (loginNr == null| loginNr.isBlank()) {
-			throw new WebApplicationException("");
+			throw new WebApplicationException("The login number must not be null or blank.");
 		}
 		String password = loginRequest.password();
 		if (password == null | password.isBlank()) {
-			throw new WebApplicationException("");
+			throw new WebApplicationException("The password must not be null or blank.");
 		}
 
-		Boolean result = accountService.verifyAccount(loginRequest.loginNr(), loginRequest.password());
+		Boolean result = accountService.verifyAccount(loginNr, password);
 		Response response =  Response.status(Response.Status.BAD_REQUEST).entity("Wrong Login-Nr or Password").build();
 		if (result) {
 			response = Response.status(Response.Status.OK).entity("Successfully logged in").build();
@@ -48,17 +48,16 @@ public class AccountApi {
 
     @POST
 	public Response register(@PartType(MediaType.APPLICATION_JSON) RegisterRequest registerRequest) {
-
 		String loginNr = registerRequest.loginNr();
 		if (loginNr == null| loginNr.isBlank()) {
-			throw new WebApplicationException("");
+			throw new WebApplicationException("The login number must not be null or blank.");
 		}
 		String password = registerRequest.password();
 		if (password == null | password.isBlank()) {
-			throw new WebApplicationException("");
+			throw new WebApplicationException("The password must not be null or blank.");
 		}
 
-    	Account createdAccount = accountService.createAccount(registerRequest.loginNr(), registerRequest.password());
+    	Account createdAccount = accountService.createAccount(loginNr, loginNr);
 		try {
 			creditService.createInitialCredit(createdAccount);
 			Response response =  Response.status(Response.Status.OK).entity(createdAccount).build();
@@ -70,7 +69,7 @@ public class AccountApi {
 	}
 
     @GET
-	public Response getAll() {
+	public Response listAll() {
     	List<Account> data = accountService.getAllAccounts();
 		Response response = Response.status(Response.Status.OK).entity(data).build();
 		return response;

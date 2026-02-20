@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public interface ProductRepository extends PanacheRepositoryBase<Product, UUID> {
 
-    List<Product> listByFoodcourtId(UUID foodcourtId);
+    List<Product> listByFoodCourtId(UUID foodCourtId);
 
     void persistLink(MainSubProductLink link) throws EntityExistsException, IllegalArgumentException, TransactionRequiredException;
 

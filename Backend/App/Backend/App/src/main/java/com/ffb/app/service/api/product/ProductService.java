@@ -1,7 +1,5 @@
 package com.ffb.app.service.api.product;
 
-import com.ffb.model.api.request.product.MainSubLinkCreateRequest;
-import com.ffb.model.api.request.product.ProductRequest;
 import com.ffb.model.db.objects.product.MainSubProductLink;
 import com.ffb.model.db.objects.product.Product;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,15 +14,15 @@ import java.util.UUID;
 
 public interface ProductService {
 
-    Product createProduct(ProductRequest req) throws NotFoundException;
+    Product createProduct(UUID foodCourtId, double price, String displayName, String symbolIdentifier, int minimalWarning) throws NotFoundException;
 
-    Product createProductWithId(UUID id, ProductRequest req) throws KeyAlreadyExistsException, EntityNotFoundException;
+    Product createProductWithId(UUID id, UUID foodCourtId, double price, String displayName, String symbolIdentifier, int minimalWarning) throws KeyAlreadyExistsException, EntityNotFoundException;
 
     Product getProductById(UUID id) throws NotFoundException;
 
     List<Product> listProducts();
 
-    List<Product> listProductsByFoodcourtId(UUID foodcourtId);
+    List<Product> listProductsByFoodCourtId(UUID foodCourtId);
 
     void deleteProductById(UUID id) throws NotFoundException;
 

@@ -1,4 +1,4 @@
-package com.ffb.model.db.objects.foodcourt;
+package com.ffb.model.db.objects.food_court;
 
 import java.io.File;
 import java.net.URI;
@@ -19,8 +19,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "foodcourt", schema = "ffb")
-public class Foodcourt extends PanacheEntityBase {
+@Table(name = "food_court", schema = "ffb")
+public class FoodCourt extends PanacheEntityBase {
 
     @Id
     @Column(name = "id")
@@ -37,16 +37,16 @@ public class Foodcourt extends PanacheEntityBase {
     
 	private File image;
     
-    @OneToOne(mappedBy = "foodcourt", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private FoodcourtWaitingTime waitingTime;
+    @OneToOne(mappedBy = "foodCourt", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private FoodCourtWaitingTime waitingTime;
     
     @JsonIgnore
-    @OneToMany(mappedBy = "foodcourt", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "foodCourt", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<FoodOrder> foodOrder;
     
-    protected Foodcourt() {}
+    protected FoodCourt() {}
     
-	public Foodcourt(UUID id, UUID accountID, String displayName, URI imageURI) {
+	public FoodCourt(UUID id, UUID accountID, String displayName, URI imageURI) {
 		super();
 		this.id = id;
 		this.accountID = accountID;
@@ -94,11 +94,11 @@ public class Foodcourt extends PanacheEntityBase {
 		this.image = image;
 	}
 
-	public FoodcourtWaitingTime getWaitingTime() {
+	public FoodCourtWaitingTime getWaitingTime() {
 		return waitingTime;
 	}
 
-	public void setWaitingTime(FoodcourtWaitingTime waitingTime) {
+	public void setWaitingTime(FoodCourtWaitingTime waitingTime) {
 		this.waitingTime = waitingTime;
 	}
 

@@ -33,29 +33,29 @@ public class ProductApi {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public Response createProduct(ProductRequest req) {
-        UUID foodcourtId = req.foodcourtId();
-        if (foodcourtId == null) {
-            throw new WebApplicationException("");
+        UUID foodCourtId = req.foodCourtId();
+        if (foodCourtId == null) {
+            throw new WebApplicationException("The food court id must not be null.");
         }
         double price = req.price();
         if (price == 0) {
-            throw new WebApplicationException("");
+            throw new WebApplicationException("The price must not be 0.");
         }
         String displayName = req.displayName();
         if (displayName == null | displayName.isBlank()) {
-            throw new WebApplicationException("");
+            throw new WebApplicationException("The display name must not be null or blank.");
         }
         String symbolIdentifier = req.symbolIdentifier();
         if (symbolIdentifier == null | symbolIdentifier.isBlank()) {
-            throw new WebApplicationException("");
+            throw new WebApplicationException("The symbol identifier must not be null or blank.");
         }
         int minimalWarning = req.minimalWarning();
         if (minimalWarning == 0) {
-            throw new WebApplicationException("");
+            throw new WebApplicationException("The minimal warning must not be 0.");
         }
 
         try {
-            Product created = productService.createProduct(req);
+            Product created = productService.createProduct(foodCourtId, price, displayName, symbolIdentifier, minimalWarning);
             return Response.status(Response.Status.CREATED).entity(created).build();
         } catch (NotFoundException e) {
             throw new WebApplicationException(e);
@@ -65,30 +65,30 @@ public class ProductApi {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{productId}")
-    public Response createProduct(@PathParam("productId") UUID productId, @PartType(MediaType.APPLICATION_JSON) ProductRequest req) {
-        UUID foodcourtId = req.foodcourtId();
-        if (foodcourtId == null) {
-            throw new WebApplicationException("");
+    public Response createProductWithProductId(@PathParam("productId") UUID productId, @PartType(MediaType.APPLICATION_JSON) ProductRequest req) {
+        UUID foodCourtId = req.foodCourtId();
+        if (foodCourtId == null) {
+            throw new WebApplicationException("The food court id must not be null.");
         }
         double price = req.price();
         if (price == 0) {
-            throw new WebApplicationException("");
+            throw new WebApplicationException("The price must not be 0.");
         }
         String displayName = req.displayName();
         if (displayName == null | displayName.isBlank()) {
-            throw new WebApplicationException("");
+            throw new WebApplicationException("The display name must not be null or blank.");
         }
         String symbolIdentifier = req.symbolIdentifier();
         if (symbolIdentifier == null | symbolIdentifier.isBlank()) {
-            throw new WebApplicationException("");
+            throw new WebApplicationException("The symbol identifier must not be null or blank.");
         }
         int minimalWarning = req.minimalWarning();
         if (minimalWarning == 0) {
-            throw new WebApplicationException("");
+            throw new WebApplicationException("The minimal warning must not be 0.");
         }
 
         try {
-            Product created = productService.createProductWithId(productId, req);
+            Product created = productService.createProductWithId(productId, foodCourtId, price, displayName, symbolIdentifier, minimalWarning);
             return Response.status(Response.Status.CREATED).entity(created).build();
         } catch (KeyAlreadyExistsException | EntityNotFoundException e) {
             throw new WebApplicationException(e);
@@ -98,9 +98,9 @@ public class ProductApi {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getProduct(@PathParam("id") UUID id) {
+    public Response getProductById(@PathParam("id") UUID id) {
         if (id == null) {
-            throw new WebApplicationException("");
+            throw new WebApplicationException("The product id must not be null.");
         }
 
         try {
@@ -113,102 +113,34 @@ public class ProductApi {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listProducts() {
+    public Response listAll() {
         List<Product> data = productService.listProducts();
         return Response.status(Response.Status.OK).entity(data).build();
     }
 
     @GET
-    @Path("/{foodcourtId}")
+    @Path("/{foodCourtId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listProductsByFoodcourtId(@PathParam("foodcourtId") UUID foodcourtId) {
-        if (foodcourtId == null) {
-            throw new WebApplicationException("");
+    public Response listProductsByFoodCourtId(@PathParam("foodCourtId") UUID foodCourtId) {
+        if (foodCourtId == null) {
+            throw new WebApplicationException("The food court id must not be null.");
         }
 
-        List<Product> data = productService.listProductsByFoodcourtId(foodcourtId);
+        List<Product> data = productService.listProductsByFoodCourtId(foodCourtId);
         return Response.status(Response.Status.OK).entity(data).build();
     }
 
     @DELETE
     @Path("/{id}")
-    public Response deleteProduct(@PathParam("id") UUID id) {
+    public Response deleteProductById(@PathParam("id") UUID id) {
         if (id == null) {
-            throw new WebApplicationException("");
+            throw new WebApplicationException("The product id must not be null.");
         }
 
         try {
             productService.deleteProductById(id);
-            return Response.noContent().build();
+            return Response.status(Response.Status.OK).entity(null).build();
         } catch (NotFoundException e) {
-            throw new WebApplicationException(e);
-        }
-    }
-
-    @POST
-    @Path("/assignments/{mainProductId}/{subProductId}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response createAssignment(@PathParam("mainProductId") UUID mainProductId, @PathParam("subProductId") UUID subProductId) {
-        if (mainProductId == null) {
-            throw new WebApplicationException("");
-        }
-        if (subProductId == null) {
-            throw new WebApplicationException("");
-        }
-
-        try {
-            UUID linkId = productService.createAssignment(mainProductId, subProductId);
-            return Response.status(Response.Status.CREATED).entity(linkId).build();
-        } catch (IllegalArgumentException | NoSuchElementException | IllegalStateException | PersistenceException e) {
-            throw new WebApplicationException(e);
-        }
-    }
-
-    @GET
-    @Path("/assignments/{mainProductId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response listAssignmentsForMainProduct(@PathParam("mainProductId") UUID mainProductId) {
-        if (mainProductId == null) {
-            throw new WebApplicationException("");
-        }
-
-        try {
-            List<MainSubProductLink> data = productService.listAssignmentsForMainProduct(mainProductId);
-            return Response.status(Response.Status.CREATED).entity(data).build();
-        } catch ( IllegalArgumentException | IllegalStateException | PersistenceException e) {
-            throw new WebApplicationException(e);
-        }
-    }
-
-    @DELETE
-    @Path("/assignments/{id}")
-    public Response deleteAssignmentById(@PathParam("id") UUID id) {
-        if (id == null) {
-            throw new WebApplicationException("");
-        }
-
-        try {
-            productService.deleteAssignmentById(id);
-            return Response.noContent().build();
-        } catch (NotFoundException | IllegalArgumentException | TransactionRequiredException e) {
-            throw new WebApplicationException(e);
-        }
-    }
-
-    @DELETE
-    @Path("/assignments/{mainProductId}/{subProductId}")
-    public Response deleteAssignmentByPair(@PathParam("mainProductId") UUID mainProductId, @PathParam("subProductId") UUID subProductId) {
-        if (mainProductId == null) {
-            throw new WebApplicationException("");
-        }
-        if (subProductId == null) {
-            throw new WebApplicationException("");
-        }
-
-        try {
-            productService.deleteAssignmentByPair(mainProductId, subProductId);
-            return Response.noContent().build();
-        } catch (NotFoundException | PersistenceException | IllegalArgumentException | IllegalStateException e) {
             throw new WebApplicationException(e);
         }
     }

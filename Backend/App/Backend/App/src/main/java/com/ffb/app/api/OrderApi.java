@@ -3,12 +3,12 @@ package com.ffb.app.api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.reactive.PartType;
 import com.ffb.model.api.request.order.ShareOrderRequest;
 import com.ffb.model.api.response.order.OrderItemSimple;
 import com.ffb.model.api.response.order.OrderSimple;
-import com.ffb.model.api.response.response.OrderResponse;
-import com.ffb.model.api.response.response.Response;
 import com.ffb.model.db.objects.foodorder.FoodOrder;
 import com.ffb.model.db.objects.foodorder.FoodOrderStatus;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -28,27 +28,23 @@ public class OrderApi {
 	public Response getAll() {
 		List<FoodOrder> data = FoodOrder.listAllWithItems();
 
-		Response response = new Response(200, null, data);
-		return response;
+		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
 	@POST
 	@Path("{loginNr}")
 	public Response shareOrder(@PathParam(value = "loginNr") String loginNr, @PartType(MediaType.APPLICATION_JSON) ShareOrderRequest request) {
 
-		Response response = new Response(200, null, null);
-		return response;
+		return Response.status(Response.Status.OK).entity(null).build();
 	}
 
 	@GET
 	@Path("{loginNr}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public OrderResponse getAll(@PathParam(value = "loginNr") String loginNr) {
+	public Response getAll(@PathParam(value = "loginNr") String loginNr) {
 
 		List<OrderSimple> data = new ArrayList<>();
-		OrderResponse response = new OrderResponse(200, null, data);
-
-		return response;
+		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
 	@GET
@@ -57,9 +53,7 @@ public class OrderApi {
 
 		List<OrderItemSimple> orderItems = new ArrayList<>();
 		OrderSimple data = new OrderSimple(UUID.randomUUID(), status, "Burger Place", 10, orderItems);
-
-		Response response = new Response(200, null, data);
-		return response;
+		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
 }

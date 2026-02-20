@@ -1,4 +1,4 @@
-package com.ffb.model.db.objects.foodcourt;
+package com.ffb.model.db.objects.food_court;
 
 import java.util.UUID;
 
@@ -16,8 +16,8 @@ import jakarta.persistence.Table;
 
 
 @Entity
-@Table(name = "foodcourt_waiting_time", schema = "ffb")
-public class FoodcourtWaitingTime extends PanacheEntityBase {
+@Table(name = "food_court_waiting_time", schema = "ffb")
+public class FoodCourtWaitingTime extends PanacheEntityBase {
 
     @Id
     @Column(name = "id")
@@ -25,15 +25,15 @@ public class FoodcourtWaitingTime extends PanacheEntityBase {
     
 	@JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "foodcourt_id", referencedColumnName = "id")
-	private Foodcourt foodcourt;
+    @JoinColumn(name = "food_court_id", referencedColumnName = "id")
+	private FoodCourt foodCourt;
 
     @Column(name = "waiting_time")
 	private int waitingTime;
 
-    protected FoodcourtWaitingTime() {}
+    protected FoodCourtWaitingTime() {}
     
-	public FoodcourtWaitingTime(int waitingTime) {
+	public FoodCourtWaitingTime(int waitingTime) {
 		super();
 		this.waitingTime = waitingTime;
 	}
@@ -46,12 +46,13 @@ public class FoodcourtWaitingTime extends PanacheEntityBase {
 		this.id = id;
 	}
 
-	public Foodcourt getFoodcourt() {
-		return foodcourt;
+	public FoodCourt getFoodCourt() {
+		return foodCourt;
 	}
 
-	public void setFoodcourt(Foodcourt foodcourt) {
-		this.foodcourt = foodcourt;
+	public void setFoodCourt(FoodCourt foodCourt) {
+
+		this.foodCourt = foodCourt;
 	}
 
 	public int getWaitingTime() {

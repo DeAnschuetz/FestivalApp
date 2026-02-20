@@ -1,11 +1,10 @@
 package com.ffb.app.service.impl.product;
 
-import com.ffb.app.repository.api.foodcourt.FoodcourtRepository;
+import com.ffb.app.repository.api.food_court.FoodCourtRepository;
 import com.ffb.app.repository.api.product.ProductRepository;
 import com.ffb.app.repository.impl.product.ProductRepositoryImpl;
 import com.ffb.app.service.api.product.ProductService;
-import com.ffb.model.api.request.product.ProductRequest;
-import com.ffb.model.db.objects.foodcourt.Foodcourt;
+import com.ffb.model.db.objects.food_court.FoodCourt;
 import com.ffb.model.db.objects.product.MainSubProductLink;
 import com.ffb.model.db.objects.product.Product;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -25,37 +24,37 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepo;
-    private final FoodcourtRepository foodcourtRepo;
+    private final FoodCourtRepository foodCourtRepo;
 
     @Inject
-    public ProductServiceImpl(ProductRepositoryImpl productRepo, FoodcourtRepository foodcourtRepo) {
+    public ProductServiceImpl(ProductRepositoryImpl productRepo, FoodCourtRepository foodCourtRepo) {
         this.productRepo = productRepo;
-        this.foodcourtRepo = foodcourtRepo;
+        this.foodCourtRepo = foodCourtRepo;
     }
 
     @Transactional
-    public Product createProduct(ProductRequest req) throws NotFoundException {
+    public Product createProduct(UUID foodCourtId, double price, String displayName, String symbolIdentifier, int minimalWarning) throws NotFoundException {
         UUID id = UUID.randomUUID();
-        Foodcourt foodcourt = foodcourtRepo.findByIdOptional(req.foodcourtId())//
-                .orElseThrow(() -> new EntityNotFoundException("Foodcourt not found: " + id))//
+        FoodCourt foodcourt = foodCourtRepo.findByIdOptional(foodCourtId)//
+                .orElseThrow(() -> new EntityNotFoundException("Foodcourt not found: " + foodCourtId))//
         ;
-        Product p = new Product(id, req.price(), req.displayName(), req.symbolIdentifier(), req.minimalWarning());
-        p.setFoodcourt(foodcourt);
+        Product p = new Product(id, price, displayName, symbolIdentifier, minimalWarning);
+        p.setFoodCourt(foodcourt);
         productRepo.persist(p);
         return p;
     }
 
     @Transactional
-    public Product createProductWithId(UUID id, ProductRequest req) throws KeyAlreadyExistsException, EntityNotFoundException {
+    public Product createProductWithId(UUID id, UUID foodCourtId, double price, String displayName, String symbolIdentifier, int minimalWarning) throws KeyAlreadyExistsException, EntityNotFoundException {
         if (productRepo.findById(id) != null) {
             throw new KeyAlreadyExistsException("Product already exists: " + id);
         }
 
-        Foodcourt foodcourt = foodcourtRepo.findByIdOptional(req.foodcourtId())//
-                .orElseThrow(() -> new EntityNotFoundException("Foodcourt not found: " + id))//
+        FoodCourt foodcourt = foodCourtRepo.findByIdOptional(foodCourtId)//
+                .orElseThrow(() -> new EntityNotFoundException("Foodcourt not found: " + foodCourtId))//
         ;
-        Product p = new Product(id, req.price(), req.displayName(), req.symbolIdentifier(), req.minimalWarning());
-        p.setFoodcourt(foodcourt);
+        Product p = new Product(id, price, displayName, symbolIdentifier, minimalWarning);
+        p.setFoodCourt(foodcourt);
         productRepo.persist(p);
         return p;
     }
@@ -70,8 +69,8 @@ public class ProductServiceImpl implements ProductService {
         return productRepo.listAll();
     }
 
-    public List<Product> listProductsByFoodcourtId(UUID foodcourtId) {
-        return productRepo.listByFoodcourtId(foodcourtId);
+    public List<Product> listProductsByFoodCourtId(UUID foodCourtId) {
+        return productRepo.listByFoodCourtId(foodCourtId);
     }
 
     @Transactional
@@ -80,8 +79,6 @@ public class ProductServiceImpl implements ProductService {
         if (p == null) throw new NotFoundException("Product not found: " + id);
         productRepo.delete(p);
     }
-
-    // -------- Assignments (Links) --------
 
     @Transactional
     public UUID createAssignment(UUID mainProductId, UUID subProductId) throws IllegalArgumentException, NoSuchElementException, IllegalStateException, PersistenceException {

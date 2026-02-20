@@ -13,8 +13,8 @@ import java.util.UUID;
 @ApplicationScoped
 public class ProductRepositoryImpl implements ProductRepository {
 
-    public List<Product> listByFoodcourtId(UUID foodcourtId) {
-        return list("foodcourt.id", foodcourtId);
+    public List<Product> listByFoodCourtId(UUID foodCourtId) {
+        return list("foodCourt.id", foodCourtId);
     }
 
     public void persistLink(MainSubProductLink link) throws EntityExistsException, IllegalArgumentException, TransactionRequiredException {

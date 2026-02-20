@@ -1,20 +1,16 @@
 package com.ffb.model.db.objects.product;
 
-import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ffb.model.db.objects.foodcourt.Foodcourt;
-import com.ffb.model.db.objects.foodorder.FoodOrderItem;
+import com.ffb.model.db.objects.food_court.FoodCourt;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -39,8 +35,8 @@ public class Product {
     
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "foodcourt_id", referencedColumnName = "id")
-    private Foodcourt foodcourt;
+    @JoinColumn(name = "food_court_id", referencedColumnName = "id")
+    private FoodCourt foodCourt;
     
     protected Product() {}
     
@@ -93,11 +89,11 @@ public class Product {
 		this.minimalWarning = minimalWarning;
 	}
 
-	public Foodcourt getFoodcourt() {
-		return foodcourt;
+	public FoodCourt getFoodCourt() {
+		return foodCourt;
 	}
 
-	public void setFoodcourt(Foodcourt foodcourt) {
-		this.foodcourt = foodcourt;
+	public void setFoodCourt(FoodCourt foodcourt) {
+		this.foodCourt = foodcourt;
 	}
 }
