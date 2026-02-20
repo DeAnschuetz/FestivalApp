@@ -1,6 +1,6 @@
-package com.ffb.app.repository.impl.food_court;
+package com.ffb.app.repository.impl.food.court;
 
-import com.ffb.app.repository.api.food_court.FoodCourtRepository;
+import com.ffb.app.repository.api.food.court.FoodCourtRepository;
 import com.ffb.model.db.objects.food_court.FoodCourt;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -16,6 +16,11 @@ public class FoodCourtRepositoryImpl implements FoodCourtRepository {
     }
 
     public Optional<FoodCourt> findByIdOptional(UUID id) {
-        return find("id", id).firstResultOptional();
+        return find(
+                    "id",
+                        id
+                )//
+                .firstResultOptional()//
+        ;
     }
 }

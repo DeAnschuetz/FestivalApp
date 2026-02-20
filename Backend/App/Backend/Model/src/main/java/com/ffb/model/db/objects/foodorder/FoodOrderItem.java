@@ -51,4 +51,52 @@ public class FoodOrderItem extends PanacheEntityBase {
 		this.itemCount = itemCount;
 		this.extra = extra;
 	}
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public int getItemCount() {
+        return itemCount;
+    }
+
+    public void setItemCount(int itemCount) {
+        this.itemCount = itemCount;
+    }
+
+    public String getExtra() {
+        return extra;
+    }
+
+    public void setExtra(String extra) {
+        this.extra = extra;
+    }
+
+    public FoodOrder getFoodOrder() {
+        return foodOrder;
+    }
+
+    public void setFoodOrder(FoodOrder foodOrder) {
+        this.foodOrder = foodOrder;
+    }
+
+    public MainProduct getMainProduct() {
+        return mainProduct;
+    }
+
+    public void setMainProduct(MainProduct mainProduct) {
+        this.mainProduct = mainProduct;
+    }
 }

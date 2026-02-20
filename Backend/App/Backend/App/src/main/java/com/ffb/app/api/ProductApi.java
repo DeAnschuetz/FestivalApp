@@ -2,13 +2,10 @@ package com.ffb.app.api;
 
 import com.ffb.app.service.api.product.ProductService;
 import com.ffb.model.api.request.product.ProductRequest;
-import com.ffb.model.db.objects.product.MainSubProductLink;
 import com.ffb.model.db.objects.product.Product;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.TransactionRequiredException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -16,7 +13,6 @@ import org.jboss.resteasy.reactive.PartType;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @ApplicationScoped

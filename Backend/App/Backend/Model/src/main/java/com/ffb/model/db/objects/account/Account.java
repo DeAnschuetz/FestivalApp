@@ -49,7 +49,11 @@ public class Account extends PanacheEntityBase {
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private List<FoodOrder> foodOrder;
+	private List<FoodOrder> foodOrders;
+
+	@JsonIgnore
+	@OneToMany(mappedBy = "sharedAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<FoodOrder> sharedOrders;
 
 	protected Account() {
 	}
@@ -110,12 +114,19 @@ public class Account extends PanacheEntityBase {
 		this.credit = credit;
 	}
 
-	public List<FoodOrder> getFoodOrder() {
-		return foodOrder;
+	public List<FoodOrder> getFoodOrders() {
+		return foodOrders;
 	}
 
-	public void setFoodOrder(List<FoodOrder> foodOrder) {
-		this.foodOrder = foodOrder;
+	public void setFoodOrders(List<FoodOrder> foodOrders) {
+		this.foodOrders = foodOrders;
 	}
 
+	public List<FoodOrder> getSharedOrders() {
+		return sharedOrders;
+	}
+
+	public void setSharedOrders(List<FoodOrder> sharedOrders) {
+		this.sharedOrders = sharedOrders;
+	}
 }

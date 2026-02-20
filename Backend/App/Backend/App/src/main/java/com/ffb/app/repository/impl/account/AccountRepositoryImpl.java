@@ -12,7 +12,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class AccountRepositoryImpl implements AccountRepository {
 
     public Optional<Account> findByLoginNr(String loginNr) {
-        return find("loginNr", loginNr).firstResultOptional();
+        return find(
+                    "loginNr",
+                    loginNr
+                )//
+                .firstResultOptional()//
+        ;
     }
 
     public boolean existsByLoginNr(String loginNr) {
@@ -20,7 +25,6 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
     
     public List<Account> getAllAccounts() {
-    	List<Account> result = Account.listAll();
-    	return result;
+    	return Account.listAll();
     }
 }

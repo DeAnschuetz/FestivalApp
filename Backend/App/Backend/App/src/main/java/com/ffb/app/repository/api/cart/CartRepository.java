@@ -11,6 +11,8 @@ public interface CartRepository extends PanacheRepositoryBase<Cart, UUID> {
 
     Optional<Cart> findByAccountId(UUID accountId);
 
+    Optional<Cart> findByLoginNr(String loginNr);
+
     Optional<Cart> findByAccountIdWithItems(UUID accountId);
 
     Optional<Cart> findByLoginNrWithItems(String loginNr);

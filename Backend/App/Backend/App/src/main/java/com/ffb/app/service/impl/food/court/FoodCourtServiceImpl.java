@@ -1,7 +1,7 @@
-package com.ffb.app.service.impl.food_court;
+package com.ffb.app.service.impl.food.court;
 
-import com.ffb.app.repository.api.food_court.FoodCourtRepository;
-import com.ffb.app.service.api.food_court.FoodCourtService;
+import com.ffb.app.repository.api.food.court.FoodCourtRepository;
+import com.ffb.app.service.api.food.court.FoodCourtService;
 import com.ffb.model.db.objects.food_court.FoodCourt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -20,7 +20,6 @@ public class FoodCourtServiceImpl implements FoodCourtService {
     @Inject
     public FoodCourtServiceImpl(FoodCourtRepository foodcourtRepo) {
         this.foodCourtRepo = foodcourtRepo;
-
     }
 
     public FoodCourt getFoodCourtById(UUID id) throws EntityNotFoundException {
@@ -38,30 +37,30 @@ public class FoodCourtServiceImpl implements FoodCourtService {
 
     @Transactional
     public FoodCourt create(UUID accountId, String name, URI imageUri) {
-        FoodCourt fc = new FoodCourt(
+        FoodCourt foodCourt = new FoodCourt(
                 UUID.randomUUID(),
                 accountId,
                 name,
                 imageUri
         );
-        foodCourtRepo.persist(fc);
-        return fc;
+        foodCourtRepo.persist(foodCourt);
+        return foodCourt;
     }
 
     @Transactional
     public FoodCourt update(UUID id, UUID accountId, String name, URI imageUri) throws EntityNotFoundException {
-        FoodCourt fc = getFoodCourtById(id);
-
-        fc.setAccountID(accountId);
-        fc.setDisplayName(name);
-        fc.setImageURI(imageUri);
-        return fc;
+        FoodCourt foodCourt = getFoodCourtById(id);
+        foodCourt.setAccountID(accountId);
+        foodCourt.setDisplayName(name);
+        foodCourt.setImageURI(imageUri);
+        foodCourtRepo.persist(foodCourt);
+        return foodCourt;
     }
 
     @Transactional
     public void delete(UUID id) throws EntityNotFoundException {
-        FoodCourt fc = getFoodCourtById(id);
-        foodCourtRepo.delete(fc);
+        FoodCourt foodCourt = getFoodCourtById(id);
+        foodCourtRepo.delete(foodCourt);
     }
 
     /**
@@ -70,7 +69,6 @@ public class FoodCourtServiceImpl implements FoodCourtService {
      */
     @Transactional
     public FoodCourt getWithRelations(UUID id, boolean waitingTime, boolean foodOrders) throws EntityNotFoundException  {
-        FoodCourt fc = getFoodCourtById(id);
-        return fc;
+        return getFoodCourtById(id);
     }
 }

@@ -1,4 +1,4 @@
-package com.ffb.app.repository.api.food_court;
+package com.ffb.app.repository.api.food.court;
 
 import com.ffb.model.db.objects.food_court.FoodCourt;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;

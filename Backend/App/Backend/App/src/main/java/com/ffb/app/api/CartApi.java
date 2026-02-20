@@ -22,6 +22,8 @@ import jakarta.ws.rs.core.Response;
 @Path("/cart")
 public class CartApi {
 
+
+
 	@PUT
 	@Path("{loginNr}")
 	public Response orderCart(@PathParam(value = "loginNr") String loginNr) {
@@ -30,10 +32,10 @@ public class CartApi {
 		return response;
 	}
 
-    @GET
-    public List<Cart> getAllCarts() {
-    	return Cart.listAllWithItems();
-    }
+//    @GET
+//    public List<Cart> getAllCarts() {
+//    	return Cart.listAllWithItems();
+//    }
 
 	@GET
 	@Path("{loginNr}")

@@ -94,12 +94,12 @@ public class FoodCourt extends PanacheEntityBase {
 		this.image = image;
 	}
 
-	public FoodCourtWaitingTime getWaitingTime() {
-		return waitingTime;
+	public int getWaitingTime() {
+		return waitingTime.getWaitingTime();
 	}
 
-	public void setWaitingTime(FoodCourtWaitingTime waitingTime) {
-		this.waitingTime = waitingTime;
+	public void setWaitingTime(int waitingTime) {
+		this.waitingTime.setWaitingTime(waitingTime);
 	}
 
 	public List<FoodOrder> getFoodOrder() {

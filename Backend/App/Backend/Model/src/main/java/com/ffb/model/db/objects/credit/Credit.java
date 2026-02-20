@@ -30,8 +30,8 @@ public class Credit extends PanacheEntityBase {
 	@JoinColumn(name = "account_id", referencedColumnName = "id")
 	private Account account;
 
-	@Column(name = "ammount")
-	private double ammount;
+	@Column(name = "amount")
+	private double amount;
     
     @JsonIgnore
     @OneToMany(mappedBy = "credit", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -39,10 +39,10 @@ public class Credit extends PanacheEntityBase {
     
     protected Credit() {}
 
-	public Credit(UUID id, double ammount, Account account) {
+	public Credit(UUID id, double amount, Account account) {
 		super();
 		this.id = id;
-		this.ammount = ammount;
+		this.amount = amount;
 		this.account = account;
 	}
 
@@ -62,12 +62,12 @@ public class Credit extends PanacheEntityBase {
 		this.account = account;
 	}
 
-	public double getAmmount() {
-		return ammount;
+	public double getAmount() {
+		return amount;
 	}
 
-	public void setAmmount(double ammount) {
-		this.ammount = ammount;
+	public void setAmount(double amount) {
+		this.amount = amount;
 	}
 
 	public List<CreditHistory> getCreditHistory() {

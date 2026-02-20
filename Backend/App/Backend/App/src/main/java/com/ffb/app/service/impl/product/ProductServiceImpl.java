@@ -1,7 +1,9 @@
 package com.ffb.app.service.impl.product;
 
-import com.ffb.app.repository.api.food_court.FoodCourtRepository;
+import com.ffb.app.repository.api.food.court.FoodCourtRepository;
+import com.ffb.app.repository.api.product.MainSubProductLinkRepository;
 import com.ffb.app.repository.api.product.ProductRepository;
+import com.ffb.app.repository.impl.product.MainSubProductLinkRepositoryImpl;
 import com.ffb.app.repository.impl.product.ProductRepositoryImpl;
 import com.ffb.app.service.api.product.ProductService;
 import com.ffb.model.db.objects.food_court.FoodCourt;
@@ -24,11 +26,13 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepo;
+    private final MainSubProductLinkRepository mainSubProductLinkRepo;
     private final FoodCourtRepository foodCourtRepo;
 
     @Inject
-    public ProductServiceImpl(ProductRepositoryImpl productRepo, FoodCourtRepository foodCourtRepo) {
+    public ProductServiceImpl(ProductRepositoryImpl productRepo, MainSubProductLinkRepository mainSubProductLinkRepo, FoodCourtRepository foodCourtRepo) {
         this.productRepo = productRepo;
+        this.mainSubProductLinkRepo = mainSubProductLinkRepo;
         this.foodCourtRepo = foodCourtRepo;
     }
 
@@ -36,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
     public Product createProduct(UUID foodCourtId, double price, String displayName, String symbolIdentifier, int minimalWarning) throws NotFoundException {
         UUID id = UUID.randomUUID();
         FoodCourt foodcourt = foodCourtRepo.findByIdOptional(foodCourtId)//
-                .orElseThrow(() -> new EntityNotFoundException("Foodcourt not found: " + foodCourtId))//
+                .orElseThrow(() -> new EntityNotFoundException("Food Court not found: " + foodCourtId))//
         ;
         Product p = new Product(id, price, displayName, symbolIdentifier, minimalWarning);
         p.setFoodCourt(foodcourt);
@@ -51,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         FoodCourt foodcourt = foodCourtRepo.findByIdOptional(foodCourtId)//
-                .orElseThrow(() -> new EntityNotFoundException("Foodcourt not found: " + foodCourtId))//
+                .orElseThrow(() -> new EntityNotFoundException("Food Court not found: " + foodCourtId))//
         ;
         Product p = new Product(id, price, displayName, symbolIdentifier, minimalWarning);
         p.setFoodCourt(foodcourt);
@@ -89,7 +93,7 @@ public class ProductServiceImpl implements ProductService {
         Product sub = productRepo.findById(subProductId);
         if (sub == null) throw new NotFoundException("Sub product not found: " + subProductId);
 
-        if (productRepo.linkExists(mainProductId, subProductId)) {
+        if (mainSubProductLinkRepo.linkExists(mainProductId, subProductId)) {
             throw new KeyAlreadyExistsException("Assignment already exists");
         }
 
@@ -100,18 +104,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public List<MainSubProductLink> listAssignmentsForMainProduct(UUID mainProductId) throws IllegalArgumentException, IllegalStateException, PersistenceException {
-        return productRepo.listLinksByMain(mainProductId);
+        return mainSubProductLinkRepo.listLinksByMain(mainProductId);
     }
 
     @Transactional
     public void deleteAssignmentById(UUID linkId) throws NotFoundException, IllegalArgumentException, TransactionRequiredException {
-        boolean ok = productRepo.deleteLinkById(linkId);
+        boolean ok = mainSubProductLinkRepo.deleteLinkById(linkId);
         if (!ok) throw new NotFoundException("Assignment not found: " + linkId);
     }
 
     @Transactional
     public void deleteAssignmentByPair(UUID mainProductId, UUID subProductId) throws NotFoundException, IllegalArgumentException, IllegalStateException, PersistenceException {
-        long deleted = productRepo.deleteLinkByPair(mainProductId, subProductId);
+        long deleted = mainSubProductLinkRepo.deleteLinkByPair(mainProductId, subProductId);
         if (deleted == 0) throw new NotFoundException("Assignment not found for given pair");
     }
 }

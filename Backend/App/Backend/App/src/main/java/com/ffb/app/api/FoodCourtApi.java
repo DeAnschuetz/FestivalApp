@@ -3,7 +3,7 @@ package com.ffb.app.api;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
-import com.ffb.app.service.api.food_court.FoodCourtService;
+import com.ffb.app.service.api.food.court.FoodCourtService;
 import com.ffb.model.api.response.food_court.FoodCourtRequestSimple;
 import com.ffb.model.db.objects.food_court.FoodCourt;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -89,7 +89,8 @@ public class FoodCourtApi {
 			throw new WebApplicationException("The image URI must not be null.");
 		}
 
-		return null;
+		FoodCourt data = foodCourtService.update(id, accountId, name, imageUri);
+		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
 	@DELETE

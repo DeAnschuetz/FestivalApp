@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import com.ffb.app.repository.api.credit.CreditHistoryRepository;
 import com.ffb.app.repository.api.credit.CreditRepository;
 import com.ffb.app.service.api.credit.CreditService;
 import com.ffb.model.db.objects.account.Account;
@@ -21,14 +22,16 @@ public class CreditServiceImpl implements CreditService {
     private final int INITIAL_AMMOUNT = 1000;
 
     private final CreditRepository creditRepo;
+    private final CreditHistoryRepository creditHistoryRepo;
 
     @Inject
-    public CreditServiceImpl(CreditRepository creditRepo) {
+    public CreditServiceImpl(CreditRepository creditRepo, CreditHistoryRepository creditHistoryRepo) {
         this.creditRepo = creditRepo;
+        this.creditHistoryRepo = creditHistoryRepo;
     }
 
     @Transactional
-    public Credit createInitialCredit(Account account) throws IllegalStateException {
+    public void createInitialCredit(Account account) throws IllegalStateException {
         if (account == null) throw new IllegalArgumentException("account must not be null");
 
         String loginNr = account.getLoginNr();
@@ -47,9 +50,8 @@ public class CreditServiceImpl implements CreditService {
         );
         h.setAccount(account);
         h.setCredit(credit);
-        creditRepo.persistHistory(h);
+        creditHistoryRepo.persistHistory(h);
 
-        return credit;
     }
 
     public Credit getByLoginNr(String loginNr) throws IllegalArgumentException {
@@ -58,62 +60,39 @@ public class CreditServiceImpl implements CreditService {
     }
 
     @Transactional
-    public Credit addAmount(String loginNr, double delta) throws IllegalArgumentException {
-        if (delta <= 0) {
-            throw new IllegalArgumentException("delta must be > 0");
+    public Credit changeAmount(String loginNr, double amount) throws IllegalStateException {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("amount must be > 0");
         }
 
         Credit credit = getByLoginNr(loginNr);
-        double oldAmount = credit.getAmmount();
-        double newAmount = oldAmount + delta;
-
-        credit.setAmmount(newAmount);
-
-        CreditHistory h = new CreditHistory(
-                UUID.randomUUID(),
-                oldAmount,
-                newAmount,
-                LocalDateTime.now()
-        );
-        h.setAccount(credit.getAccount());
-        h.setCredit(credit);
-        creditRepo.persistHistory(h);
-
-        return credit;
-    }
-
-    @Transactional
-    public Credit subtractAmount(String loginNr, double delta) throws IllegalStateException {
-        if (delta <= 0) throw new IllegalArgumentException("delta must be > 0");
-
-        Credit credit = getByLoginNr(loginNr);
-        double oldAmount = credit.getAmmount();
-        double newAmount = oldAmount - delta;
+        double oldAmount = credit.getAmount();
+        double newAmount = oldAmount - amount;
 
         if (newAmount < 0) {
             throw new IllegalStateException("Insufficient credit");
         }
+        credit.setAmount(newAmount);
 
-        credit.setAmmount(newAmount);
-
-        CreditHistory h = new CreditHistory(
+        CreditHistory creditHistory = new CreditHistory(
                 UUID.randomUUID(),
                 oldAmount,
                 newAmount,
                 LocalDateTime.now()
         );
-        h.setAccount(credit.getAccount());
-        h.setCredit(credit);
-        creditRepo.persistHistory(h);
+        creditHistory.setAccount(credit.getAccount());
+        creditHistory.setCredit(credit);
 
+        creditRepo.persist(credit);
+        creditHistoryRepo.persistHistory(creditHistory);
         return credit;
     }
 
     public List<CreditHistory> getHistoryForAccount(String loginNr, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException {
-        return creditRepo.findHistoryByAccountId(loginNr, pageIndex, pageSize);
+        return creditHistoryRepo.findHistoryByAccountId(loginNr, pageIndex, pageSize);
     }
 
     public List<CreditHistory> getHistoryForCredit(UUID creditId, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException {
-        return creditRepo.findHistoryByCreditId(creditId, pageIndex, pageSize);
+        return creditHistoryRepo.findHistoryByCreditId(creditId, pageIndex, pageSize);
     }
 }

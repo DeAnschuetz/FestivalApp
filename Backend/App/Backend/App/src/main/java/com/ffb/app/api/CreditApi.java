@@ -27,7 +27,7 @@ public class CreditApi {
 
 		try {
 			Credit credit =  creditService.getByLoginNr(loginNr);
-			CreditResponse data = new CreditResponse(credit.getAmmount());
+			CreditResponse data = new CreditResponse(credit.getAmount());
 			return Response.status(Response.Status.OK).entity(data).build();
 		} catch (IllegalArgumentException e) {
 			throw new WebApplicationException(e);
@@ -45,8 +45,8 @@ public class CreditApi {
 		}
 
 		try {
-			Credit credit =  creditService.addAmount(loginNr, amount);
-			CreditResponse data = new CreditResponse(credit.getAmmount());
+			Credit credit =  creditService.changeAmount(loginNr, amount);
+			CreditResponse data = new CreditResponse(credit.getAmount());
 			return Response.status(Response.Status.OK).entity(data).build();
 		} catch (IllegalArgumentException e) {
 			throw new WebApplicationException(e);

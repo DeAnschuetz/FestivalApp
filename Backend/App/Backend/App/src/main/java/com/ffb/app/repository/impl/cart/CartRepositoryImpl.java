@@ -12,26 +12,53 @@ import java.util.UUID;
 public class CartRepositoryImpl implements CartRepository {
 
     public Optional<Cart> findByAccountId(UUID accountId) {
-        return find("account.id", accountId).firstResultOptional();
+        return find(
+                    "account.id",
+                    accountId
+                )//
+                .firstResultOptional()
+        ;
+    }
+
+    public Optional<Cart> findByLoginNr(String loginNr) {
+        return find(
+                    "account.loginNr",
+                    loginNr
+                )//
+                .firstResultOptional()//
+        ;
     }
 
     public Optional<Cart> findByAccountIdWithItems(UUID accountId) {
-        return find("SELECT DISTINCT c FROM Cart c LEFT JOIN FETCH c.cartItems WHERE c.account.id = ?1",accountId)//
+        return find(
+                "SELECT DISTINCT c" +
+                        "FROM Cart c" +
+                        "LEFT JOIN FETCH c.cartItems" +
+                        "WHERE c.account.id = ?1",
+                    accountId
+                )//
                 .firstResultOptional()//
         ;
     }
 
     public Optional<Cart> findByLoginNrWithItems(String loginNr) {
         return find(
-                "SELECT DISTINCT c FROM Cart c " +
+                "SELECT DISTINCT c" +
+                        "FROM Cart c " +
                         "LEFT JOIN FETCH c.cartItems " +
                         "WHERE c.account.loginNr = ?1",
-                loginNr
-        ).firstResultOptional();
+                    loginNr
+                 )//
+                .firstResultOptional()//
+        ;
     }
 
     public List<Cart> listAllWithItems() {
-        return find("SELECT DISTINCT c FROM Cart c LEFT JOIN FETCH c.cartItems")//
+        return find(
+                "SELECT DISTINCT c" +
+                        "FROM Cart c" +
+                        "LEFT JOIN FETCH c.cartItems"
+                )//
                 .list()//
         ;
     }

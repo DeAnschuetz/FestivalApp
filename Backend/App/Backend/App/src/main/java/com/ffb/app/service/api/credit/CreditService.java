@@ -10,14 +10,11 @@ import java.util.UUID;
 
 public interface CreditService {
 
-    Credit createInitialCredit(Account account) throws IllegalStateException;
+    void createInitialCredit(Account account) throws IllegalStateException;
 
     Credit getByLoginNr(String loginNr) throws IllegalArgumentException;
 
-
-    Credit addAmount(String loginNr, double delta) throws IllegalArgumentException;
-
-    Credit subtractAmount(String loginNr, double delta) throws IllegalStateException;
+    Credit changeAmount(String loginNr, double amount) throws IllegalStateException;
 
     List<CreditHistory> getHistoryForAccount(String loginNr, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException;
 

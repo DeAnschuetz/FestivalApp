@@ -55,6 +55,11 @@ public class FoodOrder extends PanacheEntityBase {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
+
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "shared_account_id", referencedColumnName = "id")
+	private Account sharedAccount;
     
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -73,9 +78,103 @@ public class FoodOrder extends PanacheEntityBase {
 		this.isHidden = isHidden;
 		this.foodOrderItems = foodOrderItems;
 	}
-	
-	public static List<FoodOrder> listAllWithItems() {
-	    return find("SELECT DISTINCT c FROM FoodOrder c LEFT JOIN FETCH c.foodOrderItems").list();
+
+	public FoodOrder(UUID id, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime, List<FoodOrderItem> foodOrderItems) {
+		super();
+		this.id = id;
+		this.status = status;
+		this.hasPrio = hasPrio;
+		this.total = total;
+		this.waitingTime = waitingTime;
+		this.isHidden = false;
+		this.foodOrderItems = foodOrderItems;
 	}
 
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public FoodOrderStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(FoodOrderStatus status) {
+		this.status = status;
+	}
+
+	public boolean isHasPrio() {
+		return hasPrio;
+	}
+
+	public void setHasPrio(boolean hasPrio) {
+		this.hasPrio = hasPrio;
+	}
+
+	public double getTotal() {
+		return total;
+	}
+
+	public void setTotal(double total) {
+		this.total = total;
+	}
+
+	public int getWaitingTime() {
+		return waitingTime;
+	}
+
+	public void setWaitingTime(int waitingTime) {
+		this.waitingTime = waitingTime;
+	}
+
+	public boolean isHidden() {
+		return isHidden;
+	}
+
+	public void setHidden(boolean hidden) {
+		isHidden = hidden;
+	}
+
+	public List<FoodOrderItem> getFoodOrderItems() {
+		return foodOrderItems;
+	}
+
+	public void setFoodOrderItems(List<FoodOrderItem> foodOrderItems) {
+		this.foodOrderItems = foodOrderItems;
+	}
+
+	public List<FoodOrderHistory> getFoodOrderHistory() {
+		return foodOrderHistory;
+	}
+
+	public void setFoodOrderHistory(List<FoodOrderHistory> foodOrderHistory) {
+		this.foodOrderHistory = foodOrderHistory;
+	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
+
+	public Account getSharedAccount() {
+		return sharedAccount;
+	}
+
+	public void setSharedAccount(Account sharedAccount) {
+		this.sharedAccount = sharedAccount;
+	}
+
+	public FoodCourt getFoodCourt() {
+		return foodCourt;
+	}
+
+	public void setFoodCourt(FoodCourt foodCourt) {
+		this.foodCourt = foodCourt;
+	}
 }

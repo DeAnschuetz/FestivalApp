@@ -16,16 +16,4 @@ public interface ProductRepository extends PanacheRepositoryBase<Product, UUID> 
     List<Product> listByFoodCourtId(UUID foodCourtId);
 
     void persistLink(MainSubProductLink link) throws EntityExistsException, IllegalArgumentException, TransactionRequiredException;
-
-    MainSubProductLink findLinkById(UUID linkId) throws IllegalArgumentException;
-
-    boolean linkExists(UUID mainId, UUID subId) throws IllegalArgumentException, NoSuchElementException, IllegalStateException, PersistenceException;
-
-    List<MainSubProductLink> listLinks() throws IllegalArgumentException, IllegalStateException, PersistenceException;
-
-    List<MainSubProductLink> listLinksByMain(UUID mainId) throws IllegalArgumentException, IllegalStateException, PersistenceException;
-
-    long deleteLinkByPair(UUID mainId, UUID subId) throws IllegalArgumentException, IllegalStateException, PersistenceException;
-
-    boolean deleteLinkById(UUID linkId) throws IllegalArgumentException, TransactionRequiredException;
 }

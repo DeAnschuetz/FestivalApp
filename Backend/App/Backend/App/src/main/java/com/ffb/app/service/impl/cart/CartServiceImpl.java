@@ -30,7 +30,6 @@ public class CartServiceImpl implements CartService {
     public CartSimple getCartByLoginNr(String loginNr) {
         Cart cart = cartRepository.findByLoginNrWithItems(loginNr)
                 .orElseThrow(() -> new IllegalArgumentException("Cart not found for loginNr=" + loginNr));
-
         return toSimple(cart);
     }
 

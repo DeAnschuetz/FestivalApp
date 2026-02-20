@@ -15,11 +15,4 @@ public interface CreditRepository extends PanacheRepositoryBase<Credit, UUID> {
 	Optional<Credit> findByLoginNr(String loginNr);
 
 	boolean existsByLoginNr(String loginNr);
-
-	void persistHistory(CreditHistory history);
-
-	List<CreditHistory> findHistoryByAccountId(String loginNr, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException;
-
-	List<CreditHistory> findHistoryByCreditId(UUID creditId, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException;
-
 }

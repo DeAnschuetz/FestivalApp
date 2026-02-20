@@ -57,11 +57,11 @@ public class Cart extends PanacheEntityBase {
 		this.id = id;
 	}
 
-	public Account getAccountID() {
+	public Account getAccount() {
 		return account;
 	}
 
-	public void setAccountID(Account account) {
+	public void setAccount(Account account) {
 		this.account = account;
 	}
 
@@ -88,9 +88,4 @@ public class Cart extends PanacheEntityBase {
 	public void setCartItems(List<CartItem> cartItems) {
 		this.cartItems = cartItems;
 	}
-	
-	public static List<Cart> listAllWithItems() {
-	    return find("SELECT DISTINCT c FROM Cart c LEFT JOIN FETCH c.cartItems").list();
-	}
-
 }
