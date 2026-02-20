@@ -12,6 +12,7 @@ import java.util.UUID;
 @ApplicationScoped
 public class FoodOrderRepositoryImpl implements FoodOrderRepository {
 
+    @Override
     public List<FoodOrder> listAllWithItems() {
         return find(
                 "SELECT DISTINCT fo" +
@@ -22,6 +23,7 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
         ;
     }
 
+    @Override
     public Optional<FoodOrder> findByIdWithItems(UUID id) {
         return find(
                 "SELECT DISTINCT fo" +
@@ -34,6 +36,7 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
         ;
     }
 
+    @Override
     public Optional<FoodOrder> findByIdWithItemsAndHistory(UUID id) {
         return find("SELECT DISTINCT fo" +
                         "FROM FoodOrder fo" +
@@ -46,10 +49,12 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
                 ;
     }
 
+    @Override
     public List<FoodOrder> listByLoginNr(String loginNr) {
         return List.of();
     }
 
+    @Override
     public List<FoodOrder> listByLoginNrAndStatus(String loginNr, FoodOrderStatus status) {
         return List.of();
     }

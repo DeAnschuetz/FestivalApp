@@ -10,11 +10,7 @@ import com.ffb.model.api.response.cart.CartSimple;
 import com.ffb.model.db.objects.cart.Cart;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -22,23 +18,8 @@ import jakarta.ws.rs.core.Response;
 @Path("/cart")
 public class CartApi {
 
-
-
-	@PUT
-	@Path("{loginNr}")
-	public Response orderCart(@PathParam(value = "loginNr") String loginNr) {
-		Cart data = null;
-		Response response = Response.ok().entity(data).build();
-		return response;
-	}
-
-//    @GET
-//    public List<Cart> getAllCarts() {
-//    	return Cart.listAllWithItems();
-//    }
-
 	@GET
-	@Path("{loginNr}")
+	@Path("/by_login_nr/{loginNr}")
 	public Response getCart(@PathParam(value = "loginNr") String loginNr) {
 
 		List<CartItemSimple> cartItems = new ArrayList<>();
@@ -60,9 +41,9 @@ public class CartApi {
 		return response;
 	}
 
-	@PUT
-	@Path("{loginNr}/{id}")
-	public Response removeItemFromCart(@PathParam(value = "loginNr") String loginNr,@PathParam(value = "id")  UUID id) {
+	@DELETE
+	@Path("/by_login_nr/{loginNr}/{id}")
+	public Response removeItemFromCart(@PathParam(value = "loginNr") String loginNr, @PathParam(value = "id")  UUID id) {
 
 		List<CartItemSimple> cartItems_01 = new ArrayList<>();
 		Response response = Response.ok().entity(cartItems_01).build();
@@ -70,7 +51,7 @@ public class CartApi {
 	}
 
 	@PUT
-	@Path("{loginNr}/{newPrio}")
+	@Path("/by_login_nr/{loginNr}/{newPrio}")
 	public Response changePrio(@PathParam(value = "loginNr") String loginNr, @PathParam(value = "newPrio") boolean newPrio) {
 
 		List<CartItemSimple> cartItems = new ArrayList<>();

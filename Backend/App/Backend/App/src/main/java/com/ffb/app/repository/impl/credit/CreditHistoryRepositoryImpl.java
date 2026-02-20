@@ -25,10 +25,12 @@ public class CreditHistoryRepositoryImpl implements CreditHistoryRepository {
 
     }
 
+    @Override
     public void persistHistory(CreditHistory history) throws EntityExistsException, IllegalArgumentException, TransactionRequiredException {
         em.persist(history);
     }
 
+    @Override
     public List<CreditHistory> findHistoryByAccountId(String loginNr, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException {
         return find("SELECT h" +
                         "FROM CreditHistory h" +
@@ -40,6 +42,7 @@ public class CreditHistoryRepositoryImpl implements CreditHistoryRepository {
         ;
     }
 
+    @Override
     public List<CreditHistory> findHistoryByCreditId(UUID creditId, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException {
         return find("SELECT h" +
                         "FROM CreditHistory h" +

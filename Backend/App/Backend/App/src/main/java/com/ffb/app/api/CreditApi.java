@@ -19,9 +19,9 @@ public class CreditApi {
 	}
 
 	@GET
-	@Path("{loginNr}")
+	@Path("/by_login_nr/{loginNr}")
 	public Response getCreditByLoginNr(@PathParam(value = "loginNr") String loginNr) {
-		if (loginNr == null) {
+		if (loginNr == null || loginNr.isBlank()) {
 			throw new WebApplicationException("The login number must not be null.");
 		}
 
@@ -35,9 +35,9 @@ public class CreditApi {
 	}
 
 	@PUT
-	@Path("{loginNr}")
-	public Response addCredit(@PathParam(value = "loginNr") String loginNr, int amount) {
-		if (loginNr == null) {
+	@Path("add/by_login_nr/{loginNr}/{amount}")
+	public Response addCredit(@PathParam(value = "loginNr") String loginNr, @PathParam(value = "amount") int amount) {// TODO Request?
+		if (loginNr == null || loginNr.isBlank()) {
 			throw new WebApplicationException("The login number must not be null.");
 		}
 		if (amount == 0) {

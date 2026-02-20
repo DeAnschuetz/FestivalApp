@@ -13,10 +13,17 @@ import java.util.UUID;
 @ApplicationScoped
 public class ProductRepositoryImpl implements ProductRepository {
 
+    @Override
+    public List<Product> listByLoginNr(String loginNr) {
+        return list("foodCourt.account.login_nr", loginNr);
+    }
+
+    @Override
     public List<Product> listByFoodCourtId(UUID foodCourtId) {
         return list("foodCourt.id", foodCourtId);
     }
 
+    @Override
     public void persistLink(MainSubProductLink link) throws EntityExistsException, IllegalArgumentException, TransactionRequiredException {
         getEntityManager().persist(link);
     }

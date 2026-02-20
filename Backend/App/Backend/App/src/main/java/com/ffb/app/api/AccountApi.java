@@ -28,13 +28,14 @@ public class AccountApi {
 
     @PUT
 	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/login")
 	public Response login(@PartType(MediaType.APPLICATION_JSON) LoginRequest loginRequest) {
 		String loginNr = loginRequest.loginNr();
-		if (loginNr == null| loginNr.isBlank()) {
+		if (loginNr == null || loginNr.isBlank()) {
 			throw new WebApplicationException("The login number must not be null or blank.");
 		}
 		String password = loginRequest.password();
-		if (password == null | password.isBlank()) {
+		if (password == null || password.isBlank()) {
 			throw new WebApplicationException("The password must not be null or blank.");
 		}
 
@@ -46,14 +47,15 @@ public class AccountApi {
 		return response;
 	}
 
+	@Path("/register")
     @POST
 	public Response register(@PartType(MediaType.APPLICATION_JSON) RegisterRequest registerRequest) {
 		String loginNr = registerRequest.loginNr();
-		if (loginNr == null| loginNr.isBlank()) {
+		if (loginNr == null || loginNr.isBlank()) {
 			throw new WebApplicationException("The login number must not be null or blank.");
 		}
 		String password = registerRequest.password();
-		if (password == null | password.isBlank()) {
+		if (password == null || password.isBlank()) {
 			throw new WebApplicationException("The password must not be null or blank.");
 		}
 
@@ -69,6 +71,7 @@ public class AccountApi {
 	}
 
     @GET
+	@Path("/list_all")
 	public Response listAll() {
     	List<Account> data = accountService.getAllAccounts();
 		Response response = Response.status(Response.Status.OK).entity(data).build();

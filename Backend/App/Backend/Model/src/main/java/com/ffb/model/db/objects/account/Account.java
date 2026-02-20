@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ffb.model.db.objects.cart.Cart;
 import com.ffb.model.db.objects.credit.Credit;
+import com.ffb.model.db.objects.food_court.FoodCourt;
 import com.ffb.model.db.objects.foodorder.FoodOrder;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
@@ -46,6 +47,10 @@ public class Account extends PanacheEntityBase {
 	@JsonIgnore
 	@OneToOne(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Credit credit;
+
+	@JsonIgnore
+	@OneToOne(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private FoodCourt foodCourt;
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -112,6 +117,14 @@ public class Account extends PanacheEntityBase {
 
 	public void setCredit(Credit credit) {
 		this.credit = credit;
+	}
+
+	public FoodCourt getFoodCourt() {
+		return foodCourt;
+	}
+
+	public void setFoodCourt(FoodCourt foodCourt) {
+		this.foodCourt = foodCourt;
 	}
 
 	public List<FoodOrder> getFoodOrders() {

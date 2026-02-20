@@ -4,8 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import com.ffb.app.repository.api.credit.CreditHistoryRepository;
-import com.ffb.app.repository.api.credit.CreditRepository;
+import com.ffb.app.dao.api.credit.CreditDao;
 import com.ffb.app.service.api.credit.CreditService;
 import com.ffb.model.db.objects.account.Account;
 import com.ffb.model.db.objects.credit.Credit;
@@ -21,44 +20,45 @@ public class CreditServiceImpl implements CreditService {
 
     private final int INITIAL_AMMOUNT = 1000;
 
-    private final CreditRepository creditRepo;
-    private final CreditHistoryRepository creditHistoryRepo;
+    private final CreditDao creditDao;
 
     @Inject
-    public CreditServiceImpl(CreditRepository creditRepo, CreditHistoryRepository creditHistoryRepo) {
-        this.creditRepo = creditRepo;
-        this.creditHistoryRepo = creditHistoryRepo;
+    public CreditServiceImpl(CreditDao creditDao) {
+        this.creditDao = creditDao;
     }
 
+    @Override
     @Transactional
     public void createInitialCredit(Account account) throws IllegalStateException {
         if (account == null) throw new IllegalArgumentException("account must not be null");
 
         String loginNr = account.getLoginNr();
-        if (creditRepo.existsByLoginNr(loginNr)) {
+        if (creditDao.existsByLoginNr(loginNr)) {
             throw new IllegalStateException("Credit already exists for loginNr=" + loginNr);
         }
 
         Credit credit = new Credit(UUID.randomUUID(), INITIAL_AMMOUNT, account);
-        creditRepo.persist(credit);
+        creditDao.persist(credit);
 
-        CreditHistory h = new CreditHistory(
+        CreditHistory creditHistory = new CreditHistory(
                 UUID.randomUUID(),
                 0.0,
                 INITIAL_AMMOUNT,
                 LocalDateTime.now()
         );
-        h.setAccount(account);
-        h.setCredit(credit);
-        creditHistoryRepo.persistHistory(h);
+        creditHistory.setAccount(account);
+        creditHistory.setCredit(credit);
+        creditDao.persistHistory(creditHistory);
 
     }
 
+    @Override
     public Credit getByLoginNr(String loginNr) throws IllegalArgumentException {
-        return creditRepo.findByLoginNr(loginNr)//
+        return creditDao.findByLoginNr(loginNr)//
                 .orElseThrow(() -> new IllegalArgumentException("Credit not found for loginNr=" + loginNr));
     }
 
+    @Override
     @Transactional
     public Credit changeAmount(String loginNr, double amount) throws IllegalStateException {
         if (amount <= 0) {
@@ -83,16 +83,18 @@ public class CreditServiceImpl implements CreditService {
         creditHistory.setAccount(credit.getAccount());
         creditHistory.setCredit(credit);
 
-        creditRepo.persist(credit);
-        creditHistoryRepo.persistHistory(creditHistory);
+        creditDao.persist(credit);
+        creditDao.persistHistory(creditHistory);
         return credit;
     }
 
+    @Override
     public List<CreditHistory> getHistoryForAccount(String loginNr, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException {
-        return creditHistoryRepo.findHistoryByAccountId(loginNr, pageIndex, pageSize);
+        return creditDao.findHistoryByAccountId(loginNr, pageIndex, pageSize);
     }
 
+    @Override
     public List<CreditHistory> getHistoryForCredit(UUID creditId, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException {
-        return creditHistoryRepo.findHistoryByCreditId(creditId, pageIndex, pageSize);
+        return creditDao.findHistoryByCreditId(creditId, pageIndex, pageSize);
     }
 }

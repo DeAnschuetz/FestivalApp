@@ -1,12 +1,10 @@
 package com.ffb.app.service.impl.food.order;
 
-import com.ffb.app.repository.api.account.AccountRepository;
-import com.ffb.app.repository.api.cart.CartRepository;
-import com.ffb.app.repository.api.credit.CreditRepository;
-import com.ffb.app.repository.api.food.court.FoodCourtRepository;
-import com.ffb.app.repository.api.food.order.FoodOrderHistoryRepository;
-import com.ffb.app.repository.api.food.order.FoodOrderItemRepository;
-import com.ffb.app.repository.api.food.order.FoodOrderRepository;
+import com.ffb.app.dao.api.account.AccountDao;
+import com.ffb.app.dao.api.cart.CartDao;
+import com.ffb.app.dao.api.credit.CreditDao;
+import com.ffb.app.dao.api.food.court.FoodCourtDao;
+import com.ffb.app.dao.api.food.order.FoodOrderDao;
 import com.ffb.app.service.api.food.order.FoodOrderService;
 import com.ffb.model.db.objects.account.Account;
 import com.ffb.model.db.objects.cart.Cart;
@@ -33,69 +31,67 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 
     private final double EXTRA_PRICE = 2;
 
-    private final FoodOrderRepository foodOrderRepo;
-    private final FoodOrderItemRepository foodOrderItemRepo;
-    private final FoodOrderHistoryRepository foodOrderHistoryRepo;
-    private final AccountRepository accountRepo;
-    private final CartRepository cartRepo;
-    private final FoodCourtRepository foodCourtRepo;
-    private final CreditRepository creditRepo;
+    private final FoodOrderDao foodOrderDao;
+    private final AccountDao accountDao;
+    private final CartDao cartDao;
+    private final FoodCourtDao foodCourtDao;
+    private final CreditDao creditDao;
 
     @Inject
     public FoodOrderServiceImpl(
-            FoodOrderRepository foodOrderRepo,
-            FoodOrderItemRepository foodOrderItemRepo,
-            FoodOrderHistoryRepository foodOrderHistoryRepo,
-            AccountRepository accountRepo,
-            CartRepository cartRepo,
-            FoodCourtRepository foodCourtRepo,
-            CreditRepository creditRepo
+            FoodOrderDao foodOrderDao,
+            AccountDao accountDao,
+            CartDao cartDao,
+            FoodCourtDao foodCourtDao,
+            CreditDao creditDao
     ) {
-        this.foodOrderRepo = foodOrderRepo;
-        this.foodOrderItemRepo = foodOrderItemRepo;
-        this.foodOrderHistoryRepo = foodOrderHistoryRepo;
-        this.accountRepo = accountRepo;
-        this.cartRepo = cartRepo;
-        this.foodCourtRepo = foodCourtRepo;
-        this.creditRepo = creditRepo;
+        this.foodOrderDao = foodOrderDao;
+        this.accountDao = accountDao;
+        this.cartDao = cartDao;
+        this.foodCourtDao = foodCourtDao;
+        this.creditDao = creditDao;
     }
+
+    @Override
     public List<FoodOrder> listAll(boolean withItems) {
-        return withItems ? foodOrderRepo.listAllWithItems() : foodOrderRepo.listAll();
+        return withItems ? foodOrderDao.listAllWithItems() : foodOrderDao.listAll();
     }
 
     @Override
     public List<FoodOrder> listByLoginNr(String loginNr) {
-        return foodOrderRepo.listByLoginNr(loginNr);
+        return foodOrderDao.listByLoginNr(loginNr);
     }
 
 
     @Override
     public List<FoodOrder> listByLoginNrAndStatus(String loginNr, FoodOrderStatus status) {
-        return foodOrderRepo.listByLoginNrAndStatus(loginNr, status);
+        return foodOrderDao.listByLoginNrAndStatus(loginNr, status);
     }
 
 
+    @Override
     public FoodOrder getById(UUID id, boolean withItems, boolean withHistory) {
         FoodOrder foodOrder = null;
         if (withItems && withHistory) {
-            foodOrder = foodOrderRepo.findByIdWithItemsAndHistory(id)//
+            foodOrder = foodOrderDao.findByIdWithItemsAndHistory(id)//
                     .orElseThrow(() -> new NotFoundException("No food order with id " + id))//
             ;
         } else if (withItems) {
-            foodOrder = foodOrderRepo.findByIdWithItems(id)//
+            foodOrder = foodOrderDao.findByIdWithItems(id)//
                     .orElseThrow(() -> new NotFoundException("No food order with id " + id))//
             ;
         } else {
-            foodOrder = foodOrderRepo.findById(id);
+            foodOrder = foodOrderDao.findById(id);
         }
 
         if (foodOrder == null) throw new NotFoundException("FoodOrder not found: " + id);
         return foodOrder;
     }
 
+    @Override
     @Transactional
     public List<FoodOrder> create(String loginNr) {
-        Cart cart = cartRepo.findByLoginNr(loginNr)//
+        Cart cart = cartDao.findByLoginNr(loginNr)//
                 .orElseThrow(() -> new NotFoundException("Cart not found for loginNr: " + loginNr))//
         ;
         List<CartItem> cartItems = cart.getCartItems();
@@ -118,7 +114,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                                         item.getItemCount(),
                                         extra
                                 );
-                                foodOrderItemRepo.persist(foodOrderItem);
+                                    foodOrderDao.persistItem(foodOrderItem);
                                 return foodOrderItem;
                             },
                             Collectors.toList()
@@ -132,7 +128,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                                 .mapToDouble(item -> item.getPrice() * item.getItemCount())//
                                 .sum()//
                         ;
-                        FoodCourt foodCourt = foodCourtRepo.findByIdOptional(entry.getKey())
+                        FoodCourt foodCourt = foodCourtDao.getById(entry.getKey())
                                 .orElseThrow(() -> new NotFoundException("FoodCourt not found: " + entry.getKey()))//
                         ;
                         FoodOrder foodOrder = new FoodOrder(
@@ -140,7 +136,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                                 FoodOrderStatus.ORDERED,
                                 cart.isHasPrio(),
                                 total,
-                                foodCourt.getWaitingTime(),
+                                foodCourt.getWaitingTime().getWaitingTime(),
                                 foodOrderItems
                         );
                         FoodOrderHistory history = new FoodOrderHistory(
@@ -150,7 +146,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                                 null,
                                 FoodOrderStatus.ORDERED
                         );
-                        Credit currentCredit = creditRepo.findByLoginNr(loginNr)
+                        Credit currentCredit = creditDao.findByLoginNr(loginNr)
                                 .orElseThrow(() -> new NotFoundException("Credit not found for loginNr: " + loginNr))//
                         ;
                         double currentCreditAmount = currentCredit.getAmount();
@@ -159,9 +155,9 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                         }
                         currentCredit.setAmount(currentCreditAmount - total);
 
-                        creditRepo.persist(currentCredit);
-                        foodOrderHistoryRepo.persist(history);
-                        foodOrderRepo.persist(foodOrder);
+                        creditDao.persist(currentCredit);
+                        foodOrderDao.persistHistory(history);
+                        foodOrderDao.persist(foodOrder);
                         return foodOrder;
                     }//
                 )//
@@ -169,9 +165,10 @@ public class FoodOrderServiceImpl implements FoodOrderService {
         ;
     }
 
+    @Override
     @Transactional
     public FoodOrder updateStatus(UUID orderId, FoodOrderStatus newStatus) {
-        FoodOrder foodOrder = foodOrderRepo.findById(orderId);
+        FoodOrder foodOrder = foodOrderDao.findById(orderId);
         if (foodOrder == null) {
             throw new NotFoundException("FoodOrder not found: " + orderId);
         }
@@ -190,27 +187,28 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                 newStatus
         );
 
-        foodOrderRepo.persist(foodOrder);
+        foodOrderDao.persist(foodOrder);
         return foodOrder;
     }
 
+    @Override
     @Transactional
     public void delete(UUID id) {
-        FoodOrder foodOrder = foodOrderRepo.findById(id);
+        FoodOrder foodOrder = foodOrderDao.findById(id);
         if (foodOrder == null) {
             throw new NotFoundException("FoodOrder not found: " + id);
         }
 
-        foodOrderRepo.delete(foodOrder);
+        foodOrderDao.delete(foodOrder);
     }
 
     @Override
     public void shareOrder(String loginNr, UUID orderId, String sharedLoginNr) {
-        FoodOrder foodOrder = foodOrderRepo.findById(orderId);
-        Account sharedAccount = accountRepo.findByLoginNr(sharedLoginNr)//
+        FoodOrder foodOrder = foodOrderDao.findById(orderId);
+        Account sharedAccount = accountDao.findByLoginNr(sharedLoginNr)//
                 .orElseThrow(() -> new NotFoundException("Account not found: " + sharedLoginNr))//
         ;
         foodOrder.setSharedAccount(sharedAccount);
-        foodOrderRepo.persist(foodOrder);
+        foodOrderDao.persist(foodOrder);
     }
 }

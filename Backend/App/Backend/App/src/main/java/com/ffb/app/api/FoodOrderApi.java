@@ -27,16 +27,17 @@ public class FoodOrderApi {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAll() {
+	@Path("/list/all")
+	public Response listAll() {
 		List<FoodOrder> data = foodOrderService.listAll(true);
 		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
 	@GET
-	@Path("{loginNr}")
+	@Path("/list/by_login_nr/{loginNr}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAllByLoginNr(@PathParam(value = "loginNr") String loginNr) {
-		if(loginNr == null) {
+	public Response listByLoginNr(@PathParam(value = "loginNr") String loginNr) {
+		if(loginNr == null || loginNr.isEmpty()) {
 			// TODO
 			throw new WebApplicationException("", Response.Status.BAD_REQUEST);
 		}
@@ -45,10 +46,10 @@ public class FoodOrderApi {
 	}
 
 	@GET
-	@Path("{loginNr}/{status}")
+	@Path("/list/by_login_nr_and_status/{loginNr}/{status}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getByStatus(@PathParam(value = "loginNr") String loginNr, @PathParam(value = "status") FoodOrderStatus status) {
-		if(loginNr == null) {
+	public Response listByStatus(@PathParam(value = "loginNr") String loginNr, @PathParam(value = "status") FoodOrderStatus status) {
+		if(loginNr == null || loginNr.isEmpty()) {
 			// TODO
 			throw new WebApplicationException("", Response.Status.BAD_REQUEST);
 		}
@@ -62,10 +63,10 @@ public class FoodOrderApi {
 	}
 
 	@POST
-	@Path("{loginNr}")
+	@Path("/order/{loginNr}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response order(@PathParam(value = "loginNr") String loginNr) {
-		if(loginNr == null) {
+		if(loginNr == null || loginNr.isEmpty()) {
 			// TODO
 			throw new WebApplicationException("", Response.Status.BAD_REQUEST);
 		}
@@ -83,7 +84,7 @@ public class FoodOrderApi {
 			throw new WebApplicationException("Order ID is required", Response.Status.BAD_REQUEST);
 		}
 		String sharedLoginNr = request.loginNr();
-		if(sharedLoginNr == null | sharedLoginNr.isEmpty()) {
+		if(sharedLoginNr == null || sharedLoginNr.isEmpty()) {
 			// TODO
 			throw  new WebApplicationException("Login ID is required", Response.Status.BAD_REQUEST);
 		}
@@ -108,5 +109,4 @@ public class FoodOrderApi {
 		FoodOrder data = foodOrderService.updateStatus(orderId, status);
 		return Response.status(Response.Status.OK).entity(data).build();
 	}
-
 }

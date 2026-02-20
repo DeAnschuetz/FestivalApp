@@ -14,15 +14,17 @@ import java.util.UUID;
 
 public interface ProductService {
 
-    Product createProduct(UUID foodCourtId, double price, String displayName, String symbolIdentifier, int minimalWarning) throws NotFoundException;
+    List<Product> listProducts();
 
-    Product createProductWithId(UUID id, UUID foodCourtId, double price, String displayName, String symbolIdentifier, int minimalWarning) throws KeyAlreadyExistsException, EntityNotFoundException;
+    List<Product> listProductsByLoginNr(String loginNr);
+
+    Product createProductByLoginNr(String loginNr, double price, String displayName, String symbolIdentifier, int minimalWarning) throws NotFoundException;
+
+    List<Product> listProductsByFoodCourtId(UUID foodCourtId);
 
     Product getProductById(UUID id) throws NotFoundException;
 
-    List<Product> listProducts();
-
-    List<Product> listProductsByFoodCourtId(UUID foodCourtId);
+    Product createProductWithId(UUID id, UUID foodCourtId, double price, String displayName, String symbolIdentifier, int minimalWarning) throws KeyAlreadyExistsException, EntityNotFoundException;
 
     void deleteProductById(UUID id) throws NotFoundException;
 

@@ -1,10 +1,7 @@
 package com.ffb.app.service.impl.product;
 
-import com.ffb.app.repository.api.food.court.FoodCourtRepository;
-import com.ffb.app.repository.api.product.MainSubProductLinkRepository;
-import com.ffb.app.repository.api.product.ProductRepository;
-import com.ffb.app.repository.impl.product.MainSubProductLinkRepositoryImpl;
-import com.ffb.app.repository.impl.product.ProductRepositoryImpl;
+import com.ffb.app.dao.api.food.court.FoodCourtDao;
+import com.ffb.app.dao.api.product.ProductDao;
 import com.ffb.app.service.api.product.ProductService;
 import com.ffb.model.db.objects.food_court.FoodCourt;
 import com.ffb.model.db.objects.product.MainSubProductLink;
@@ -24,98 +21,109 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class ProductServiceImpl implements ProductService {
+    private final ProductDao productDao;
 
-    private final ProductRepository productRepo;
-    private final MainSubProductLinkRepository mainSubProductLinkRepo;
-    private final FoodCourtRepository foodCourtRepo;
+    private final FoodCourtDao foodCourtDao;
 
     @Inject
-    public ProductServiceImpl(ProductRepositoryImpl productRepo, MainSubProductLinkRepository mainSubProductLinkRepo, FoodCourtRepository foodCourtRepo) {
-        this.productRepo = productRepo;
-        this.mainSubProductLinkRepo = mainSubProductLinkRepo;
-        this.foodCourtRepo = foodCourtRepo;
+    public ProductServiceImpl(ProductDao productDao, FoodCourtDao foodCourtDao) {
+        this.productDao = productDao;
+        this.foodCourtDao = foodCourtDao;
     }
 
+    @Override
+    public List<Product> listProducts() {
+        return productDao.listAll();
+    }
+
+    @Override
+    public List<Product> listProductsByLoginNr(String loginNr) {
+        return productDao.listByLoginNr(loginNr);
+    }
+
+    @Override
     @Transactional
-    public Product createProduct(UUID foodCourtId, double price, String displayName, String symbolIdentifier, int minimalWarning) throws NotFoundException {
+    public Product createProductByLoginNr(String loginNr, double price, String displayName, String symbolIdentifier, int minimalWarning) throws NotFoundException {
         UUID id = UUID.randomUUID();
-        FoodCourt foodcourt = foodCourtRepo.findByIdOptional(foodCourtId)//
-                .orElseThrow(() -> new EntityNotFoundException("Food Court not found: " + foodCourtId))//
+        FoodCourt foodcourt = foodCourtDao.getByLoginNr(loginNr)//
+                .orElseThrow(() -> new EntityNotFoundException("Food Court not found for loginNr: " + loginNr))//
         ;
         Product p = new Product(id, price, displayName, symbolIdentifier, minimalWarning);
         p.setFoodCourt(foodcourt);
-        productRepo.persist(p);
+        productDao.persist(p);
         return p;
     }
 
+    @Override
+    public List<Product> listProductsByFoodCourtId(UUID foodCourtId) {
+        return productDao.listByFoodCourtId(foodCourtId);
+    }
+
+    @Override
+    public Product getProductById(UUID id) throws NotFoundException {
+        return productDao.getById(id);
+    }
+
+    @Override
     @Transactional
     public Product createProductWithId(UUID id, UUID foodCourtId, double price, String displayName, String symbolIdentifier, int minimalWarning) throws KeyAlreadyExistsException, EntityNotFoundException {
-        if (productRepo.findById(id) != null) {
+        if (productDao.getById(id) != null) {
             throw new KeyAlreadyExistsException("Product already exists: " + id);
         }
 
-        FoodCourt foodcourt = foodCourtRepo.findByIdOptional(foodCourtId)//
+        FoodCourt foodcourt = foodCourtDao.getById(foodCourtId)//
                 .orElseThrow(() -> new EntityNotFoundException("Food Court not found: " + foodCourtId))//
         ;
         Product p = new Product(id, price, displayName, symbolIdentifier, minimalWarning);
         p.setFoodCourt(foodcourt);
-        productRepo.persist(p);
+        productDao.persist(p);
         return p;
     }
 
-    public Product getProductById(UUID id) throws NotFoundException {
-        Product p = productRepo.findById(id);
-        if (p == null) throw new NotFoundException("Product not found: " + id);
-        return p;
-    }
-
-    public List<Product> listProducts() {
-        return productRepo.listAll();
-    }
-
-    public List<Product> listProductsByFoodCourtId(UUID foodCourtId) {
-        return productRepo.listByFoodCourtId(foodCourtId);
-    }
-
+    @Override
     @Transactional
     public void deleteProductById(UUID id) throws NotFoundException {
-        Product p = productRepo.findById(id);
+        Product p = productDao.getById(id);
         if (p == null) throw new NotFoundException("Product not found: " + id);
-        productRepo.delete(p);
+        productDao.delete(p);
     }
 
+    @Override
     @Transactional
     public UUID createAssignment(UUID mainProductId, UUID subProductId) throws IllegalArgumentException, NoSuchElementException, IllegalStateException, PersistenceException {
 
-        Product main = productRepo.findById(mainProductId);
+        Product main = productDao.getById(mainProductId);
         if (main == null) throw new NotFoundException("Main product not found: " + mainProductId);
 
-        Product sub = productRepo.findById(subProductId);
+        Product sub = productDao.getById(subProductId);
         if (sub == null) throw new NotFoundException("Sub product not found: " + subProductId);
 
-        if (mainSubProductLinkRepo.linkExists(mainProductId, subProductId)) {
+        if (productDao.linkExists(mainProductId, subProductId)) {
             throw new KeyAlreadyExistsException("Assignment already exists");
         }
 
         MainSubProductLink link = new MainSubProductLink(main, sub);
 
-        productRepo.persistLink(link);
+        productDao.persistLink(link);
         return link.id;
     }
 
+    @Override
     public List<MainSubProductLink> listAssignmentsForMainProduct(UUID mainProductId) throws IllegalArgumentException, IllegalStateException, PersistenceException {
-        return mainSubProductLinkRepo.listLinksByMain(mainProductId);
+        return productDao.listLinksByMain(mainProductId);
     }
 
+    @Override
     @Transactional
     public void deleteAssignmentById(UUID linkId) throws NotFoundException, IllegalArgumentException, TransactionRequiredException {
-        boolean ok = mainSubProductLinkRepo.deleteLinkById(linkId);
+        boolean ok = productDao.deleteLinkById(linkId);
         if (!ok) throw new NotFoundException("Assignment not found: " + linkId);
     }
 
+    @Override
     @Transactional
     public void deleteAssignmentByPair(UUID mainProductId, UUID subProductId) throws NotFoundException, IllegalArgumentException, IllegalStateException, PersistenceException {
-        long deleted = mainSubProductLinkRepo.deleteLinkByPair(mainProductId, subProductId);
+        long deleted = productDao.deleteLinkByPair(mainProductId, subProductId);
         if (deleted == 0) throw new NotFoundException("Assignment not found for given pair");
     }
 }

@@ -10,6 +10,7 @@ import java.util.UUID;
 @ApplicationScoped
 public class FoodOrderHistoryRepositoryImpl implements FoodOrderHistoryRepository {
 
+    @Override
     public List<FoodOrderHistory> listByFoodOrderId(UUID foodOrderId) {
         return find(
                     "foodOrder.id ORDER BY statusChangeTime DESC",

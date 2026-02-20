@@ -26,7 +26,7 @@ public class ProductAssignmentApi {
     }
 
     @POST
-    @Path("/assignments/{mainProductId}/{subProductId}")
+    @Path("/by_main_sub_id/{mainProductId}/{subProductId}")
     @Produces(MediaType.TEXT_PLAIN)
     public Response createAssignmentForIds(@PathParam("mainProductId") UUID mainProductId, @PathParam("subProductId") UUID subProductId) {
         if (mainProductId == null) {
@@ -45,7 +45,7 @@ public class ProductAssignmentApi {
     }
 
     @GET
-    @Path("/assignments/{mainProductId}")
+    @Path("/list/by_main_id/{mainProductId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response listAssignmentsByMainProductId(@PathParam("mainProductId") UUID mainProductId) {
         if (mainProductId == null) {
@@ -61,7 +61,7 @@ public class ProductAssignmentApi {
     }
 
     @DELETE
-    @Path("/assignments/{id}")
+    @Path("/by_id/{id}")
     public Response deleteAssignmentById(@PathParam("id") UUID id) {
         if (id == null) {
             throw new WebApplicationException("The assignment id must not be null.");
@@ -76,7 +76,7 @@ public class ProductAssignmentApi {
     }
 
     @DELETE
-    @Path("/assignments/{mainProductId}/{subProductId}")
+    @Path("/by_main_sub_id/{mainProductId}/{subProductId}")
     public Response deleteAssignmentByMainSubProductIds(@PathParam("mainProductId") UUID mainProductId, @PathParam("subProductId") UUID subProductId) {
         if (mainProductId == null) {
             throw new WebApplicationException("The main product id must not be null.");

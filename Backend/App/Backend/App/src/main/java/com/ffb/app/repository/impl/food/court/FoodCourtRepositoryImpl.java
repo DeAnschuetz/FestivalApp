@@ -11,11 +11,13 @@ import java.util.UUID;
 @ApplicationScoped
 public class FoodCourtRepositoryImpl implements FoodCourtRepository {
 
-    public List<FoodCourt> findByAccountId(UUID accountId) {
-        return list("accountID", accountId);
+    @Override
+    public List<FoodCourt> getByAccountId(UUID accountId) {
+        return list("accountId", accountId);
     }
 
-    public Optional<FoodCourt> findByIdOptional(UUID id) {
+    @Override
+    public Optional<FoodCourt> getById(UUID id) {
         return find(
                     "id",
                         id
@@ -23,4 +25,15 @@ public class FoodCourtRepositoryImpl implements FoodCourtRepository {
                 .firstResultOptional()//
         ;
     }
+
+    @Override
+    public Optional<FoodCourt> getByLoginNr(String loginNr) {
+        return find(
+                    "account.loginNr",
+                    loginNr
+                )//
+                .firstResultOptional()//
+        ;
+    }
+
 }

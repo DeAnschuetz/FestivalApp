@@ -1,6 +1,6 @@
 package com.ffb.app.service.impl.cart;
 
-import com.ffb.app.repository.api.cart.CartRepository;
+import com.ffb.app.dao.api.cart.CartDao;
 import com.ffb.app.service.api.cart.CartService;
 import com.ffb.model.api.request.cart.CartItemRequest;
 import com.ffb.model.api.response.cart.CartItemSimple;
@@ -20,22 +20,24 @@ import java.util.UUID;
 @ApplicationScoped
 public class CartServiceImpl implements CartService {
 
-    private final CartRepository cartRepository;
+    private final CartDao cartDao;
 
     @Inject
-    public CartServiceImpl(CartRepository cartRepository) {
-        this.cartRepository = cartRepository;
+    public CartServiceImpl(CartDao cartDao) {
+        this.cartDao = cartDao;
     }
 
+    @Override
     public CartSimple getCartByLoginNr(String loginNr) {
-        Cart cart = cartRepository.findByLoginNrWithItems(loginNr)
+        Cart cart = cartDao.findByLoginNrWithItems(loginNr)
                 .orElseThrow(() -> new IllegalArgumentException("Cart not found for loginNr=" + loginNr));
         return toSimple(cart);
     }
 
+    @Override
     @Transactional
     public CartSimple changePrio(String loginNr, boolean newPrio) {
-        Cart cart = cartRepository.findByLoginNrWithItems(loginNr)
+        Cart cart = cartDao.findByLoginNrWithItems(loginNr)
                 .orElseThrow(() -> new IllegalArgumentException("Cart not found for loginNr=" + loginNr));
 
         cart.setHasPrio(newPrio);
@@ -44,6 +46,7 @@ public class CartServiceImpl implements CartService {
         return toSimple(cart);
     }
 
+    @Override
     @Transactional
     public CartSimple addItemToCart(CartItemRequest request) {
         // adapt these getters to your CartItemRequest fields
@@ -54,7 +57,7 @@ public class CartServiceImpl implements CartService {
 
         if (count <= 0) throw new IllegalArgumentException("count must be > 0");
 
-        Cart cart = cartRepository.findByLoginNrWithItems(loginNr)
+        Cart cart = cartDao.findByLoginNrWithItems(loginNr)
                 .orElseThrow(() -> new IllegalArgumentException("Cart not found for loginNr=" + loginNr));
 
         MainProduct product = Panache.getEntityManager().find(MainProduct.class, productId);
@@ -86,9 +89,10 @@ public class CartServiceImpl implements CartService {
         return toSimple(cart);
     }
 
+    @Override
     @Transactional
     public CartSimple removeItemFromCart(String loginNr, UUID cartItemId) {
-        Cart cart = cartRepository.findByLoginNrWithItems(loginNr)
+        Cart cart = cartDao.findByLoginNrWithItems(loginNr)
                 .orElseThrow(() -> new IllegalArgumentException("Cart not found for loginNr=" + loginNr));
 
         boolean removed = cart.getCartItems().removeIf(i -> i.getId().equals(cartItemId));
@@ -102,27 +106,6 @@ public class CartServiceImpl implements CartService {
         recalcTotal(cart);
 
         return toSimple(cart);
-    }
-
-    /**
-     * Placeholder: "order cart" usually creates FoodOrder entries,
-     * charges credit, and then empties the cart.
-     */
-    @Transactional
-    public void orderCart(String loginNr) {
-        Cart cart = cartRepository.findByLoginNrWithItems(loginNr)
-                .orElseThrow(() -> new IllegalArgumentException("Cart not found for loginNr=" + loginNr));
-
-        if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
-            throw new IllegalStateException("Cart is empty");
-        }
-
-        // TODO:
-        // 1) create FoodOrder
-        // 2) subtract credit (CreditService)
-        // 3) clear cart
-        cart.getCartItems().clear();
-        cart.setTotal(0.0);
     }
 
     // ----------------- helpers -----------------

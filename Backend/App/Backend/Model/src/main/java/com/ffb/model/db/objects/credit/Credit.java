@@ -24,16 +24,16 @@ public class Credit extends PanacheEntityBase {
     @Id
     @Column(name = "id")
 	private UUID id;
-	
+
+	@Column(name = "amount")
+	private double amount;
+
 	@JsonIgnore
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "account_id", referencedColumnName = "id")
 	private Account account;
 
-	@Column(name = "amount")
-	private double amount;
-    
-    @JsonIgnore
+	@JsonIgnore
     @OneToMany(mappedBy = "credit", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CreditHistory> creditHistory;
     

@@ -5,36 +5,33 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-
+import io.vertx.core.cli.annotations.DefaultValue;
+import jakarta.enterprise.inject.Default;
+import jakarta.persistence.*;
 
 
 @Entity
 @Table(name = "food_court_waiting_time", schema = "ffb")
 public class FoodCourtWaitingTime extends PanacheEntityBase {
 
-    @Id
-    @Column(name = "id")
+	@Id
+	@GeneratedValue
+	@Column(name = "id")
 	private UUID id;
-    
+
+
 	@JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "food_court_id", referencedColumnName = "id")
 	private FoodCourt foodCourt;
 
-    @Column(name = "waiting_time")
+    @Column(name = "waiting_time", nullable = false, columnDefinition = "integer default 0 check (waiting_time >= 0)")
 	private int waitingTime;
 
     protected FoodCourtWaitingTime() {}
-    
-	public FoodCourtWaitingTime(int waitingTime) {
-		super();
+
+	public FoodCourtWaitingTime(FoodCourt foodCourt, int waitingTime) {
+		this.foodCourt = foodCourt;
 		this.waitingTime = waitingTime;
 	}
 
