@@ -1,13 +1,14 @@
 package com.ffb.app.dao.api.account;
 
 import com.ffb.model.db.objects.account.Account;
+import com.ffb.model.exception.DaoException;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface AccountDao {
 
-    Optional<Account> findByLoginNr(String loginNr);
+    Account findByLoginNr(String loginNr) throws DaoException;
 
     boolean existsByLoginNr(String loginNr);
 
@@ -15,5 +16,7 @@ public interface AccountDao {
 
     void persist(Account account);
 
-    Optional<Account> getByLoginNr(String loginNr);
+    Account getByLoginNr(String loginNr) throws DaoException;
+
+    void flush();
 }

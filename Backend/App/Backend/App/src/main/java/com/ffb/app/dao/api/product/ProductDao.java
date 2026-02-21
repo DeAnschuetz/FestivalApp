@@ -1,7 +1,10 @@
 package com.ffb.app.dao.api.product;
 
+import com.ffb.model.db.objects.product.MainProduct;
 import com.ffb.model.db.objects.product.MainSubProductLink;
 import com.ffb.model.db.objects.product.Product;
+import com.ffb.model.exception.DaoException;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TransactionRequiredException;
@@ -18,17 +21,19 @@ public interface ProductDao {
 
     List<Product> listByFoodCourtId(UUID foodCourtId);
 
-    void persistLink(MainSubProductLink link) throws EntityExistsException, IllegalArgumentException, TransactionRequiredException;
+    MainProduct getMainProductByProductId(UUID id) throws DaoException;
 
-    boolean linkExists(UUID mainId, UUID subId) throws IllegalArgumentException, NoSuchElementException, IllegalStateException, PersistenceException;
+    void persistLink(MainSubProductLink link);
 
-    List<MainSubProductLink> listLinks() throws IllegalArgumentException, IllegalStateException, PersistenceException;
+    boolean linkExists(UUID mainId, UUID subId);
 
-    List<MainSubProductLink> listLinksByMain(UUID mainId) throws IllegalArgumentException, IllegalStateException, PersistenceException;
+    List<MainSubProductLink> listLinks();
 
-    long deleteLinkByPair(UUID mainId, UUID subId) throws IllegalArgumentException, IllegalStateException, PersistenceException;
+    List<MainSubProductLink> listLinksByMain(UUID mainId) ;
 
-    boolean deleteLinkById(UUID linkId) throws IllegalArgumentException, TransactionRequiredException;
+    long deleteLinkByPair(UUID mainId, UUID subId);
+
+    boolean deleteLinkById(UUID linkId);
 
     void persist(Product product);
 

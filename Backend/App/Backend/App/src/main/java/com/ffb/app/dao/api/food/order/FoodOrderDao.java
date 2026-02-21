@@ -4,18 +4,18 @@ import com.ffb.model.db.objects.foodorder.FoodOrder;
 import com.ffb.model.db.objects.foodorder.FoodOrderHistory;
 import com.ffb.model.db.objects.foodorder.FoodOrderItem;
 import com.ffb.model.db.objects.foodorder.FoodOrderStatus;
+import com.ffb.model.exception.DaoException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface FoodOrderDao {
 
     List<FoodOrder> listAllWithItems();
 
-    Optional<FoodOrder> findByIdWithItems(UUID id);
+    FoodOrder findByIdWithItems(UUID id) throws DaoException;
 
-    Optional<FoodOrder> findByIdWithItemsAndHistory(UUID id);
+    FoodOrder findByIdWithItemsAndHistory(UUID id) throws DaoException;
 
     List<FoodOrder> listByLoginNr(String loginNr);
 

@@ -33,9 +33,9 @@ public class FoodCourt extends PanacheEntityBase {
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "image_id", referencedColumnName = "id")
-	Image image;
+	Image image; // TODO zu byte[] machen
     
-    @OneToOne(mappedBy = "foodCourt", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "foodCourt", cascade = CascadeType.ALL)
     private FoodCourtWaitingTime waitingTime;
     
     @JsonIgnore

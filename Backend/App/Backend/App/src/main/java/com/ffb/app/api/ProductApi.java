@@ -1,9 +1,12 @@
 package com.ffb.app.api;
 
-import com.ffb.app.service.api.product.ProductService;
+import com.ffb.app.service.api.api.product.ProductService;
 import com.ffb.model.api.request.product.ProductRequest;
 import com.ffb.model.api.request.product.ProductRequestSimple;
 import com.ffb.model.db.objects.product.Product;
+import com.ffb.model.exception.ApiException;
+import com.ffb.model.exception.ServiceException;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityNotFoundException;
@@ -30,6 +33,7 @@ public class ProductApi {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/list/all")
+    @RolesAllowed("GUEST")
     public Response listAll() {
         List<Product> data = productService.listProducts();
         return Response.status(Response.Status.OK).entity(data).build();
@@ -38,57 +42,56 @@ public class ProductApi {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/by_login_nr/{loginNr}")
-    public Response createProductByLoginNr(@PathParam("loginNr") String loginNr, ProductRequestSimple req) {
+    @RolesAllowed("FOOD_COURT_WORKER")
+    public Response createProductByLoginNr(@PathParam("loginNr") String loginNr, ProductRequestSimple req) throws ApiException {
         if (loginNr == null || loginNr.isBlank()) {
-            throw new WebApplicationException("The login number must not be null or blank.");
+            throw new ApiException("The login number must not be null or blank.");
         }
         double price = req.price();
         if (price == 0) {
-            throw new WebApplicationException("The price must not be 0.");
+            throw new ApiException("The price must not be 0.");
         }
         String displayName = req.displayName();
         if (displayName == null || displayName.isBlank()) {
-            throw new WebApplicationException("The display name must not be null or blank.");
+            throw new ApiException("The display name must not be null or blank.");
         }
         String symbolIdentifier = req.symbolIdentifier();
         if (symbolIdentifier == null || symbolIdentifier.isBlank()) {
-            throw new WebApplicationException("The symbol identifier must not be null or blank.");
+            throw new ApiException("The symbol identifier must not be null or blank.");
         }
         int minimalWarning = req.minimalWarning();
         if (minimalWarning == 0) {
-            throw new WebApplicationException("The minimal warning must not be 0.");
+            throw new ApiException("The minimal warning must not be 0.");
         }
 
         try {
             Product created = productService.createProductByLoginNr(loginNr, price, displayName, symbolIdentifier, minimalWarning);
             return Response.status(Response.Status.CREATED).entity(created).build();
-        } catch (NotFoundException e) {
-            throw new WebApplicationException(e);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
         }
     }
 
     @GET
     @Path("/list/by_login_nr/{loginNr}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listProductsByLoginNr(@PathParam("loginNr") String loginNr) {
+    @RolesAllowed("FOOD_COURT_WORKER")
+    public Response listProductsByLoginNr(@PathParam("loginNr") String loginNr) throws ApiException {
         if (loginNr == null || loginNr.isBlank()) {
-            throw new WebApplicationException("The login number must not be null or blank.");
+            throw new ApiException("The login number must not be null or blank.");
         }
 
-        try {
-            List<Product> data = productService.listProductsByLoginNr(loginNr);
-            return Response.status(Response.Status.OK).entity(data).build();
-        } catch (NotFoundException e) {
-            throw new WebApplicationException(e);
-        }
+        List<Product> data = productService.listProductsByLoginNr(loginNr);
+        return Response.status(Response.Status.OK).entity(data).build();
     }
 
     @GET
     @Path("/list/by_food_court_id/{foodCourtId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listProductsByFoodCourtId(@PathParam("foodCourtId") UUID foodCourtId) {
+    @RolesAllowed("GUEST")
+    public Response listProductsByFoodCourtId(@PathParam("foodCourtId") UUID foodCourtId) throws ApiException {
         if (foodCourtId == null) {
-            throw new WebApplicationException("The food court id must not be null.");
+            throw new ApiException("The food court id must not be null.");
         }
 
         List<Product> data = productService.listProductsByFoodCourtId(foodCourtId);
@@ -98,67 +101,109 @@ public class ProductApi {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("by_food_court_id/{foodCourtId}")
-    public Response createProductByFoodCourtId(@PathParam("foodCourtId") UUID foodCourtId, @PartType(MediaType.APPLICATION_JSON) ProductRequest req) {
+    @RolesAllowed("ADMIN")
+    public Response createProductByFoodCourtId(@PathParam("foodCourtId") UUID foodCourtId, @PartType(MediaType.APPLICATION_JSON) ProductRequest req) throws ApiException {
         if (foodCourtId == null) {
-            throw new WebApplicationException("The food court id must not be null.");
+            throw new ApiException("The food court id must not be null.");
         }
         UUID productId = req.productId();
         if (productId == null) {
-            throw  new WebApplicationException("The product id must not be null.");
+            throw  new ApiException("The product id must not be null.");
         }
         double price = req.price();
         if (price == 0) {
-            throw new WebApplicationException("The price must not be 0.");
+            throw new ApiException("The price must not be 0.");
         }
         String displayName = req.displayName();
         if (displayName == null || displayName.isBlank()) {
-            throw new WebApplicationException("The display name must not be null or blank.");
+            throw new ApiException("The display name must not be null or blank.");
         }
         String symbolIdentifier = req.symbolIdentifier();
         if (symbolIdentifier == null || symbolIdentifier.isBlank()) {
-            throw new WebApplicationException("The symbol identifier must not be null or blank.");
+            throw new ApiException("The symbol identifier must not be null or blank.");
         }
         int minimalWarning = req.minimalWarning();
         if (minimalWarning == 0) {
-            throw new WebApplicationException("The minimal warning must not be 0.");
+            throw new ApiException("The minimal warning must not be 0.");
         }
 
         try {
             Product created = productService.createProductWithId(productId, foodCourtId, price, displayName, symbolIdentifier, minimalWarning);
             return Response.status(Response.Status.CREATED).entity(created).build();
-        } catch (KeyAlreadyExistsException | EntityNotFoundException e) {
-            throw new WebApplicationException(e);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
         }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("by_food_court_id/many/{foodCourtId}")
+    @RolesAllowed("ADMIN")
+    public Response createProductsByFoodCourtId(@PathParam("foodCourtId") UUID foodCourtId, @PartType(MediaType.APPLICATION_JSON) List<ProductRequest> requests) throws ApiException {
+        if (foodCourtId == null) {
+            throw new ApiException("The food court id must not be null.");
+        }
+        List<Product> createdProducts = requests.stream()//
+                .map(req -> {
+                        UUID productId = req.productId();
+                        if (productId == null) {
+                            throw  new RuntimeException("The product id must not be null.");
+                        }
+                        double price = req.price();
+                        if (price == 0) {
+                            throw new RuntimeException("The price must not be 0.");
+                        }
+                        String displayName = req.displayName();
+                        if (displayName == null || displayName.isBlank()) {
+                            throw new RuntimeException("The display name must not be null or blank.");
+                        }
+                        String symbolIdentifier = req.symbolIdentifier();
+                        if (symbolIdentifier == null || symbolIdentifier.isBlank()) {
+                            throw new RuntimeException("The symbol identifier must not be null or blank.");
+                        }
+                        int minimalWarning = req.minimalWarning();
+                        if (minimalWarning == 0) {
+                            throw new RuntimeException("The minimal warning must not be 0.");
+                        }
+                            try {
+                                return productService.createProductWithId(productId, foodCourtId, price, displayName, symbolIdentifier, minimalWarning);
+                            } catch (ServiceException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }//
+                )//
+                .toList()//
+        ;
+
+        return Response.status(Response.Status.CREATED).entity(createdProducts).build();
     }
 
     @GET
     @Path("/list/by_id/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listProductsById(@PathParam("id") UUID id) {
+    @RolesAllowed("GUEST")
+    public Response listProductsById(@PathParam("id") UUID id) throws ApiException {
         if (id == null) {
-            throw new WebApplicationException("The product id must not be null.");
+            throw new ApiException("The product id must not be null.");
         }
 
-        try {
-            Product data = productService.getProductById(id);
-            return Response.status(Response.Status.OK).entity(data).build();
-        } catch (NotFoundException e) {
-            throw new WebApplicationException(e);
-        }
+        Product data = productService.getProductById(id);
+        return Response.status(Response.Status.OK).entity(data).build();
     }
 
     @DELETE
     @Path("by_id/{id}")
-    public Response deleteProductById(@PathParam("id") UUID id) {
+    @RolesAllowed("ADMIN")
+    public Response deleteProductById(@PathParam("id") UUID id) throws ApiException {
         if (id == null) {
-            throw new WebApplicationException("The product id must not be null.");
+            throw new ApiException("The product id must not be null.");
         }
 
         try {
             productService.deleteProductById(id);
             return Response.status(Response.Status.OK).entity(null).build();
-        } catch (NotFoundException e) {
-            throw new WebApplicationException(e);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
         }
     }
 }

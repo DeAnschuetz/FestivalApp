@@ -3,6 +3,7 @@ package com.ffb.app.dao.impl.account;
 import com.ffb.app.dao.api.account.AccountDao;
 import com.ffb.app.repository.api.account.AccountRepository;
 import com.ffb.model.db.objects.account.Account;
+import com.ffb.model.exception.DaoException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -20,8 +21,10 @@ public class AccountDaoImpl implements AccountDao {
     }
 
     @Override
-    public Optional<Account> findByLoginNr(String loginNr) {
-        return accountRepo.getByLoginNr(loginNr);
+    public Account findByLoginNr(String loginNr) throws DaoException {
+        return accountRepo.getByLoginNr(loginNr)//
+                .orElseThrow(() -> new DaoException("Account not found for loginNr=" + loginNr))//
+        ;
     }
 
     @Override
@@ -40,7 +43,14 @@ public class AccountDaoImpl implements AccountDao {
     }
 
     @Override
-    public Optional<Account> getByLoginNr(String loginNr) {
-        return accountRepo.getByLoginNr(loginNr);
+    public Account getByLoginNr(String loginNr) throws DaoException {
+        return accountRepo.getByLoginNr(loginNr)//
+                .orElseThrow(() -> new DaoException("Account not found for loginNr=" + loginNr))//
+        ;
+    }
+
+    @Override
+    public void flush() {
+        accountRepo.flush();
     }
 }

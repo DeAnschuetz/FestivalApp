@@ -2,21 +2,21 @@ package com.ffb.app.dao.api.food.court;
 
 import com.ffb.model.db.objects.food_court.FoodCourt;
 import com.ffb.model.db.objects.image.Image;
+import com.ffb.model.exception.DaoException;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface FoodCourtDao {
 
-    Optional<FoodCourt> getByLoginNr(String loginNr);
+    FoodCourt getByLoginNr(String loginNr) throws DaoException;
 
-    Optional<FoodCourt> getById(UUID id);
+    FoodCourt getById(UUID id) throws DaoException;
 
-    Optional<Image> getImageByUri(URI uri);
+    Image getImageByUri(URI uri) throws DaoException;
 
-    Optional<Image> getImageByID(UUID id);
+    Image getImageByID(UUID id) throws DaoException;
 
     void persist(FoodCourt foodCourt);
 

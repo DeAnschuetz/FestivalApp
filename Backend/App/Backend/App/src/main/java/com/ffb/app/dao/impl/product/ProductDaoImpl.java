@@ -1,30 +1,31 @@
 package com.ffb.app.dao.impl.product;
 
 import com.ffb.app.dao.api.product.ProductDao;
+import com.ffb.app.repository.api.product.MainProductRepository;
 import com.ffb.app.repository.api.product.MainSubProductLinkRepository;
 import com.ffb.app.repository.api.product.ProductRepository;
+import com.ffb.model.db.objects.product.MainProduct;
 import com.ffb.model.db.objects.product.MainSubProductLink;
 import com.ffb.model.db.objects.product.Product;
+import com.ffb.model.exception.DaoException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.TransactionRequiredException;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @ApplicationScoped
 public class ProductDaoImpl implements ProductDao {
-    private final ProductRepository productRepo;
 
+    private final ProductRepository productRepo;
     private final MainSubProductLinkRepository mainSubProductLinkRepo;
+    private final MainProductRepository mainProductRepo;
 
     @Inject
-    public ProductDaoImpl(ProductRepository productRepo, MainSubProductLinkRepository mainSubProductLinkRepo) {
+    public ProductDaoImpl(ProductRepository productRepo, MainSubProductLinkRepository mainSubProductLinkRepo, MainProductRepository mainProductRepo) {
         this.productRepo = productRepo;
         this.mainSubProductLinkRepo = mainSubProductLinkRepo;
+        this.mainProductRepo = mainProductRepo;
     }
 
     @Override
@@ -55,6 +56,13 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public void delete(Product product) {
         productRepo.delete(product);
+    }
+
+    @Override
+    public MainProduct getMainProductByProductId(UUID id) throws DaoException {
+        return mainProductRepo.getMainProductByProductId(id)
+                .orElseThrow(() -> new DaoException("No main product found for product id: " + id))
+        ;
     }
 
     @Override

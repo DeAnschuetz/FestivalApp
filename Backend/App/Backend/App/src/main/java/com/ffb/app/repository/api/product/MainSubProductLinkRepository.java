@@ -7,11 +7,12 @@ import jakarta.persistence.TransactionRequiredException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface MainSubProductLinkRepository extends PanacheRepositoryBase <MainSubProductLink, UUID> {
 
-    MainSubProductLink findLinkById(UUID linkId) throws IllegalArgumentException;
+    Optional<MainSubProductLink> findLinkById(UUID linkId) throws IllegalArgumentException;
 
     boolean linkExists(UUID mainId, UUID subId) throws IllegalArgumentException, NoSuchElementException, IllegalStateException, PersistenceException;
 

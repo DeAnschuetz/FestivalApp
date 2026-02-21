@@ -5,6 +5,7 @@ import com.ffb.app.repository.api.credit.CreditHistoryRepository;
 import com.ffb.app.repository.api.credit.CreditRepository;
 import com.ffb.model.db.objects.credit.Credit;
 import com.ffb.model.db.objects.credit.CreditHistory;
+import com.ffb.model.exception.DaoException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityExistsException;
@@ -12,7 +13,6 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TransactionRequiredException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -28,8 +28,10 @@ public class CreditDaoImpl implements CreditDao {
     }
 
     @Override
-    public Optional<Credit> findByLoginNr(String loginNr) {
-        return creditRepo.findByLoginNr(loginNr);
+    public Credit findByLoginNr(String loginNr) throws DaoException {
+        return creditRepo.findByLoginNr(loginNr)
+                .orElseThrow(() -> new DaoException("No credit found for loginNr: " + loginNr))
+        ;
     }
 
     @Override

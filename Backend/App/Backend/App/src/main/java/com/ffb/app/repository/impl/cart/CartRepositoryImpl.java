@@ -34,9 +34,9 @@ public class CartRepositoryImpl implements CartRepository {
     @Override
     public Optional<Cart> findByAccountIdWithItems(UUID accountId) {
         return find(
-                "SELECT DISTINCT c" +
-                        "FROM Cart c" +
-                        "LEFT JOIN FETCH c.cartItems" +
+                "SELECT DISTINCT c " +
+                        "FROM Cart c " +
+                        "LEFT JOIN FETCH c.cartItems " +
                         "WHERE c.account.id = ?1",
                     accountId
                 )//
@@ -47,7 +47,7 @@ public class CartRepositoryImpl implements CartRepository {
     @Override
     public Optional<Cart> findByLoginNrWithItems(String loginNr) {
         return find(
-                "SELECT DISTINCT c" +
+                "SELECT DISTINCT c " +
                         "FROM Cart c " +
                         "LEFT JOIN FETCH c.cartItems " +
                         "WHERE c.account.loginNr = ?1",
@@ -60,7 +60,7 @@ public class CartRepositoryImpl implements CartRepository {
     @Override
     public List<Cart> listAllWithItems() {
         return find(
-                "SELECT DISTINCT c" +
+                "SELECT DISTINCT c " +
                         "FROM Cart c" +
                         "LEFT JOIN FETCH c.cartItems"
                 )//

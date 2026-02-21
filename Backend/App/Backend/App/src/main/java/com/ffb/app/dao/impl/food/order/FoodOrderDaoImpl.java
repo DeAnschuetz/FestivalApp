@@ -8,11 +8,11 @@ import com.ffb.model.db.objects.foodorder.FoodOrder;
 import com.ffb.model.db.objects.foodorder.FoodOrderHistory;
 import com.ffb.model.db.objects.foodorder.FoodOrderItem;
 import com.ffb.model.db.objects.foodorder.FoodOrderStatus;
+import com.ffb.model.exception.DaoException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -39,13 +39,17 @@ public class FoodOrderDaoImpl implements FoodOrderDao {
     }
 
     @Override
-    public Optional<FoodOrder> findByIdWithItems(UUID id) {
-        return foodOrderRepo.findByIdWithItems(id);
+    public FoodOrder findByIdWithItems(UUID id) throws DaoException {
+        return foodOrderRepo.findByIdWithItems(id)
+                .orElseThrow(() -> new DaoException("Food order with id " + id + " not found."))
+        ;
     }
 
     @Override
-    public Optional<FoodOrder> findByIdWithItemsAndHistory(UUID id) {
-        return foodOrderRepo.findByIdWithItemsAndHistory(id);
+    public FoodOrder findByIdWithItemsAndHistory(UUID id) throws DaoException {
+        return foodOrderRepo.findByIdWithItemsAndHistory(id)
+                .orElseThrow(() -> new DaoException("Food order with id " + id + " not found."))
+        ;
     }
 
     @Override

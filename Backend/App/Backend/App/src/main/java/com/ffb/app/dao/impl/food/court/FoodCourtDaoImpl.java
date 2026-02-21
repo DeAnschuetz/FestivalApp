@@ -5,11 +5,11 @@ import com.ffb.app.repository.impl.food.court.FoodCourtRepositoryImpl;
 import com.ffb.app.repository.impl.food.court.ImageRepositoryImpl;
 import com.ffb.model.db.objects.food_court.FoodCourt;
 import com.ffb.model.db.objects.image.Image;
+import com.ffb.model.exception.DaoException;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -24,13 +24,17 @@ public class FoodCourtDaoImpl implements FoodCourtDao {
     }
 
     @Override
-    public Optional<FoodCourt> getByLoginNr(String loginNr) {
-        return foodCourtRepo.getByLoginNr(loginNr);
+    public FoodCourt getByLoginNr(String loginNr) throws DaoException {
+        return foodCourtRepo.getByLoginNr(loginNr)
+                .orElseThrow(() -> new DaoException("Food court with login number " + loginNr + " not found."))
+        ;
     }
 
     @Override
-    public Optional<FoodCourt> getById(UUID id) {
-        return foodCourtRepo.findByIdOptional(id);
+    public FoodCourt getById(UUID id) throws DaoException {
+        return foodCourtRepo.findByIdOptional(id)
+                .orElseThrow(() -> new DaoException("Food court with ID " + id + " not found."))
+        ;
     }
 
     @Override
@@ -59,12 +63,16 @@ public class FoodCourtDaoImpl implements FoodCourtDao {
     }
 
     @Override
-    public Optional<Image> getImageByUri(URI uri) {
-        return imageRepo.getImageByUri(uri);
+    public Image getImageByUri(URI uri) throws DaoException {
+        return imageRepo.getImageByUri(uri)
+                .orElseThrow(() -> new DaoException("Image with URI " + uri + " not found."))
+        ;
     }
 
     @Override
-    public Optional<Image> getImageByID(UUID id) {
-        return imageRepo.getImageByID(id);
+    public Image getImageByID(UUID id) throws DaoException {
+        return imageRepo.getImageByID(id)
+                .orElseThrow(() -> new DaoException("Image with ID " + id + " not found."))
+        ;
     }
 }

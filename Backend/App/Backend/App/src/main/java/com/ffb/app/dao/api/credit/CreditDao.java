@@ -2,17 +2,17 @@ package com.ffb.app.dao.api.credit;
 
 import com.ffb.model.db.objects.credit.Credit;
 import com.ffb.model.db.objects.credit.CreditHistory;
+import com.ffb.model.exception.DaoException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TransactionRequiredException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface CreditDao {
 
-    Optional<Credit> findByLoginNr(String loginNr);
+    Credit findByLoginNr(String loginNr) throws DaoException;
 
     boolean existsByLoginNr(String loginNr);
 

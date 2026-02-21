@@ -1,17 +1,14 @@
 package com.ffb.model.db.objects.product;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ffb.model.db.objects.food_court.FoodCourt;
 
+import com.ffb.model.db.objects.foodorder.FoodOrderItem;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.Column;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 
 @MappedSuperclass
 public class ProductPrototype extends PanacheEntityBase {
@@ -23,7 +20,7 @@ public class ProductPrototype extends PanacheEntityBase {
     @Column(name = "price")
 	private double price;
 
-    @Column(name = "display_namme")
+    @Column(name = "display_name")
 	private String displayName;
 
     @Column(name = "symbol_identifier")
@@ -38,7 +35,16 @@ public class ProductPrototype extends PanacheEntityBase {
     private FoodCourt foodCourt;
 
     protected ProductPrototype() {}
-    
+
+	public ProductPrototype(UUID id, double price, String displayName, String symbolIdentifier, int minimalWarning, FoodCourt foodCourt) {
+		this.id = id;
+		this.price = price;
+		this.displayName = displayName;
+		this.symbolIdentifier = symbolIdentifier;
+		this.minimalWarning = minimalWarning;
+		this.foodCourt = foodCourt;
+	}
+
 	public ProductPrototype(UUID id, double price, String displayName, String symbolIdentifier, int minimalWarning) {
 		super();
 		this.id = id;
@@ -92,7 +98,8 @@ public class ProductPrototype extends PanacheEntityBase {
 		return foodCourt;
 	}
 
-	public void setFoodCourt(FoodCourt foodcourt) {
-		this.foodCourt = foodcourt;
+	public void setFoodCourt(FoodCourt foodCourt) {
+		this.foodCourt = foodCourt;
 	}
+
 }

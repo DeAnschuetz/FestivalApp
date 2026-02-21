@@ -9,6 +9,7 @@ import jakarta.persistence.TransactionRequiredException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -16,8 +17,10 @@ public class MainSubProductLinkRepositoryImpl implements MainSubProductLinkRepos
 
 
     @Override
-    public MainSubProductLink findLinkById(UUID linkId) throws IllegalArgumentException {
-        return getEntityManager().find(MainSubProductLink.class, linkId);
+    public Optional<MainSubProductLink> findLinkById(UUID linkId) throws IllegalArgumentException {
+        return find("id", linkId)
+                .firstResultOptional()
+        ;
     }
 
     @Override
@@ -39,9 +42,9 @@ public class MainSubProductLinkRepositoryImpl implements MainSubProductLinkRepos
     @Override
     public long deleteLinkByPair(UUID mainId, UUID subId) throws IllegalArgumentException, IllegalStateException, PersistenceException {
         return delete(
-                    "mainProduct.id = :mainId and subProduct.id = :subId",
+                "mainProduct.id = :mainId and subProduct.id = :subId",
                 Parameters.with("mainId", mainId).and("subId", subId)
-                )//
+            )//
         ;
     }
 
