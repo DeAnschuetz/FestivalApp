@@ -1,6 +1,7 @@
 package com.ffb.app.api;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.net.URI;
@@ -183,15 +184,15 @@ public class FoodCourtApi {
 	}
 
 	@POST
-	@Path("admin")
-	@RolesAllowed("ADMIN")
+	@Path("worker")
+	@RolesAllowed("FOOD_COURT_WORKER")
 	public Response createByLoginNr(@PartType(MediaType.APPLICATION_JSON) FoodCourtRequestSimple req) throws ApiException {
 		String loginNr = jwt.getName();
 		String name = req.name();
 		if (name == null || name.isBlank()) {
 			throw new ApiException("The name must not be null or blank.");
 		}
-        FoodCourt data = null;
+        FoodCourt data;
         try {
             data = foodCourtService.create(loginNr, name);
         } catch (ServiceException e) {
@@ -215,12 +216,15 @@ public class FoodCourtApi {
 			throw new ApiException("The file is null.");
 		}
 
-		PushbackInputStream inputData = new PushbackInputStream(new BufferedInputStream(file));
-		try {
+		try (
+				PushbackInputStream inputData = new PushbackInputStream(new BufferedInputStream(file))
+		) {
 			foodCourtService.addImage(loginNr, inputData);
-		} catch (ServiceException e) {
+
+		} catch (ServiceException | IOException e) {
 			throw new ApiException(e);
 		}
+
 		return Response.status(Response.Status.OK).entity(null).build();
 	}
 

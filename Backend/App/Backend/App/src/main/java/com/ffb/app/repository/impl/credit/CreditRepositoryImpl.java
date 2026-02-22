@@ -26,7 +26,7 @@ public class CreditRepositoryImpl implements CreditRepository {
     @Override
     public Optional<Credit> findByLoginNr(String loginNr) {
         return find(
-                    "account.loginNr",
+                    "account.ticket.loginNr",
                     loginNr
                 )//
                 .firstResultOptional()
@@ -35,6 +35,6 @@ public class CreditRepositoryImpl implements CreditRepository {
 
     @Override
     public boolean existsByLoginNr(String loginNr) {
-        return count("account.loginNr",loginNr) > 0;
+        return count("account.ticket.loginNr",loginNr) > 0;
     }
 }

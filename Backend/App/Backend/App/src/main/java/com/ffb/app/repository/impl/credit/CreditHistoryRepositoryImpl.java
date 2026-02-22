@@ -34,7 +34,7 @@ public class CreditHistoryRepositoryImpl implements CreditHistoryRepository {
     public List<CreditHistory> findHistoryByAccountId(String loginNr, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException {
         return find("SELECT h" +
                         "FROM CreditHistory h" +
-                        "WHERE h.account.loginNr = ?1" +
+                        "WHERE h.account.ticket.loginNr = ?1" +
                         "ORDER BY h.changeTime DESC",
                     loginNr
                 )//

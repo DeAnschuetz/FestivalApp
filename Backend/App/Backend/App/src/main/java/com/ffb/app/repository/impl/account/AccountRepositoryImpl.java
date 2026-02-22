@@ -14,7 +14,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     @Override
     public Optional<Account> getByLoginNr(String loginNr) {
         return find(
-                    "loginNr",
+                    "ticket.loginNr",
                     loginNr
                 )//
                 .firstResultOptional()//
@@ -23,7 +23,7 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     @Override
     public boolean existsByLoginNr(String loginNr) {
-        return count("loginNr", loginNr) > 0;
+        return count("ticket.loginNr", loginNr) > 0;
     }
 
     @Override

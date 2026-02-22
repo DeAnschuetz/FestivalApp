@@ -29,7 +29,7 @@ public class FoodCourtRepositoryImpl implements FoodCourtRepository {
     @Override
     public Optional<FoodCourt> getByLoginNr(String loginNr) {
         return find(
-                    "account.loginNr",
+                    "account.ticket.loginNr",
                     loginNr
                 )//
                 .firstResultOptional()//

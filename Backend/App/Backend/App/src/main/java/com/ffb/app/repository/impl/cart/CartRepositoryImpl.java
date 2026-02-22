@@ -24,7 +24,7 @@ public class CartRepositoryImpl implements CartRepository {
     @Override
     public Optional<Cart> findByLoginNr(String loginNr) {
         return find(
-                    "account.loginNr",
+                    "account.ticket.loginNr",
                     loginNr
                 )//
                 .firstResultOptional()//
@@ -50,7 +50,7 @@ public class CartRepositoryImpl implements CartRepository {
                 "SELECT DISTINCT c " +
                         "FROM Cart c " +
                         "LEFT JOIN FETCH c.cartItems " +
-                        "WHERE c.account.loginNr = ?1",
+                        "WHERE c.account.ticket.loginNr = ?1",
                     loginNr
                  )//
                 .firstResultOptional()//

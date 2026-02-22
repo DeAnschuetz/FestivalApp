@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ffb.model.db.objects.account.Account;
 import com.ffb.model.db.objects.account.AccountType;
+import com.ffb.model.db.objects.account.Ticket;
 import com.ffb.model.exception.ServiceException;
 
 public interface AccountService {
@@ -16,4 +17,7 @@ public interface AccountService {
 	
 	List<Account> getAllAccounts();
 
+	List<Ticket> createTicket(List<String> loginNr) throws ServiceException;
+
+	List<Ticket> getAllTickets();
 }

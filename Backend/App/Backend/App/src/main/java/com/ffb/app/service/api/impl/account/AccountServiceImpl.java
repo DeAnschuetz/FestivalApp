@@ -9,6 +9,7 @@ import com.ffb.app.dao.api.credit.CreditDao;
 import com.ffb.app.service.api.api.account.AccountService;
 import com.ffb.model.db.objects.account.Account;
 import com.ffb.model.db.objects.account.AccountType;
+import com.ffb.model.db.objects.account.Ticket;
 import com.ffb.model.exception.DaoException;
 import com.ffb.model.exception.ServiceException;
 import org.jboss.logging.Logger;
@@ -20,8 +21,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.util.List;
 import java.util.UUID;
 
@@ -73,14 +72,18 @@ public class AccountServiceImpl implements AccountService {
 			LOG.error("loginNr already exists");
 			throw new ServiceException("loginNr already exists");
 		}
-
-		AccountType type = null;
-		type = getAccountTypeFromLoginNr(loginNr);
+		Ticket ticket;
+        try {
+            ticket = accountDao.getTicketByLoginNr(loginNr) ;
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        AccountType type = getAccountTypeFromLoginNr(loginNr);
 
 		UUID id = UUID.randomUUID();
 		String hashedPassword = BcryptUtil.bcryptHash(rawPassword.trim());
 
-		Account account = new Account(id, loginNr, hashedPassword, type);
+		Account account = new Account(id, ticket, hashedPassword, type);
 		Credit credit = new Credit(UUID.randomUUID(), 1000, account);
 		Cart cart = new Cart(UUID.randomUUID(), false, 0, account);
 
@@ -118,6 +121,29 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public List<Account> getAllAccounts() {
 		return accountDao.getAll();
+	}
+
+	@Override
+	@Transactional
+	public List<Ticket> createTicket(List<String> loginNrs) throws ServiceException {
+		return loginNrs.stream()//
+				.map(loginNr -> {
+					boolean exists = accountDao.existsTicketByLoginNr(loginNr);
+					if(exists) {
+						return null;
+					}
+					Ticket ticket = new Ticket(UUID.randomUUID(), loginNr);
+					accountDao.persistTicket(ticket);
+					return ticket;
+					}
+				)
+				.toList()//
+		;
+	}
+
+	@Override
+	public List<Ticket> getAllTickets() {
+		return accountDao.geAllTickets();
 	}
 
 	private AccountType getAccountTypeFromLoginNr(String loginNr) throws ServiceException {

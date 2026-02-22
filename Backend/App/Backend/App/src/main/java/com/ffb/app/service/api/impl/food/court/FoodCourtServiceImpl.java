@@ -5,7 +5,6 @@ import com.ffb.app.dao.api.food.court.FoodCourtDao;
 import com.ffb.app.service.api.api.food.court.FoodCourtService;
 import com.ffb.model.db.objects.account.Account;
 import com.ffb.model.db.objects.food_court.FoodCourt;
-import com.ffb.model.db.objects.image.Image;
 import com.ffb.model.exception.DaoException;
 import com.ffb.model.exception.ServiceException;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -14,7 +13,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.jboss.logging.Logger;
 import java.io.PushbackInputStream;
-import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -131,6 +129,7 @@ public class FoodCourtServiceImpl implements FoodCourtService {
     }
 
     @Override
+    @Transactional
     public byte[] getImageByFoodCourtId(UUID foodCourtId) throws ServiceException {
         try {
             return foodCourtDao.getImageById(foodCourtId);
