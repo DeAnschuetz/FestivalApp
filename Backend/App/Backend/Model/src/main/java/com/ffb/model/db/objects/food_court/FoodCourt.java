@@ -6,38 +6,36 @@ import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ffb.model.db.objects.account.Account;
 import com.ffb.model.db.objects.foodorder.FoodOrder;
 
+import com.ffb.model.db.objects.image.Image;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "food_court", schema = "ffb")
 public class FoodCourt extends PanacheEntityBase {
 
     @Id
+	@GeneratedValue
     @Column(name = "id")
 	private UUID id;
-    
-    @Column(name = "account_id")
-	private UUID accountID;
-    
-    @Column(name = "display_name")
+
+	@Column(name = "display_name")
 	private String displayName;
+
+	@JsonIgnore
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "account_id", referencedColumnName = "id")
+	private Account account;
+
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
+	@Column(name = "image")
+	byte[] image;
     
-    @Column(name = "image_uri")
-	private URI imageURI;
-    
-	private File image;
-    
-    @OneToOne(mappedBy = "foodCourt", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "foodCourt", cascade = CascadeType.ALL)
     private FoodCourtWaitingTime waitingTime;
     
     @JsonIgnore
@@ -46,12 +44,10 @@ public class FoodCourt extends PanacheEntityBase {
     
     protected FoodCourt() {}
     
-	public FoodCourt(UUID id, UUID accountID, String displayName, URI imageURI) {
+	public FoodCourt(String displayName) {
 		super();
-		this.id = id;
-		this.accountID = accountID;
 		this.displayName = displayName;
-		this.imageURI = imageURI;
+		this.waitingTime = new FoodCourtWaitingTime(this, 0);
 	}
 
 	public UUID getId() {
@@ -62,14 +58,6 @@ public class FoodCourt extends PanacheEntityBase {
 		this.id = id;
 	}
 
-	public UUID getAccountID() {
-		return accountID;
-	}
-
-	public void setAccountID(UUID accountID) {
-		this.accountID = accountID;
-	}
-
 	public String getDisplayName() {
 		return displayName;
 	}
@@ -78,28 +66,28 @@ public class FoodCourt extends PanacheEntityBase {
 		this.displayName = displayName;
 	}
 
-	public URI getImageURI() {
-		return imageURI;
+	public Account getAccount() {
+		return account;
 	}
 
-	public void setImageURI(URI imageURI) {
-		this.imageURI = imageURI;
+	public void setAccount(Account account) {
+		this.account = account;
 	}
 
-	public File getImage() {
+	public byte[] getImage() {
 		return image;
 	}
 
-	public void setImage(File image) {
+	public void setImage(byte[] image) {
 		this.image = image;
 	}
 
-	public int getWaitingTime() {
-		return waitingTime.getWaitingTime();
+	public FoodCourtWaitingTime getWaitingTime() {
+		return waitingTime;
 	}
 
-	public void setWaitingTime(int waitingTime) {
-		this.waitingTime.setWaitingTime(waitingTime);
+	public void setWaitingTime(FoodCourtWaitingTime waitingTime) {
+		this.waitingTime = waitingTime;
 	}
 
 	public List<FoodOrder> getFoodOrder() {

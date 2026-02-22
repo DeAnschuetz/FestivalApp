@@ -5,6 +5,8 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ffb.model.db.objects.product.MainProduct;
 
+import com.ffb.model.db.objects.product.Product;
+import com.ffb.model.db.objects.product.ProductPrototype;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +20,6 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "cart_item", schema = "ffb")
 public class CartItem extends PanacheEntityBase {
-
 
     @Id
     @Column(name = "id")
@@ -41,11 +42,20 @@ public class CartItem extends PanacheEntityBase {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", referencedColumnName = "id")
-    private MainProduct product;
+    private Product product;
 	
 	protected CartItem() {}
 
-	public CartItem(UUID id,double price, int itemCount, String extra) {
+    public CartItem(UUID id, double price, int itemCount, String extra, Cart cart, Product product) {
+        this.id = id;
+        this.price = price;
+        this.itemCount = itemCount;
+        this.extra = extra;
+        this.cart = cart;
+        this.product = product;
+    }
+
+    public CartItem(UUID id, double price, int itemCount, String extra) {
 		super();
 		this.id = id;
 		this.price = price;
@@ -93,11 +103,11 @@ public class CartItem extends PanacheEntityBase {
         this.cart = cart;
     }
 
-    public MainProduct getProduct() {
+    public Product getProduct() {
         return product;
     }
 
-    public void setProduct(MainProduct product) {
+    public void setProduct(Product product) {
         this.product = product;
     }
 }

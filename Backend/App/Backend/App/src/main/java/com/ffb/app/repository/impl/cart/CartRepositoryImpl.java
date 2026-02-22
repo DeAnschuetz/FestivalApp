@@ -11,6 +11,7 @@ import java.util.UUID;
 @ApplicationScoped
 public class CartRepositoryImpl implements CartRepository {
 
+    @Override
     public Optional<Cart> findByAccountId(UUID accountId) {
         return find(
                     "account.id",
@@ -20,20 +21,22 @@ public class CartRepositoryImpl implements CartRepository {
         ;
     }
 
+    @Override
     public Optional<Cart> findByLoginNr(String loginNr) {
         return find(
-                    "account.loginNr",
+                    "account.ticket.loginNr",
                     loginNr
                 )//
                 .firstResultOptional()//
         ;
     }
 
+    @Override
     public Optional<Cart> findByAccountIdWithItems(UUID accountId) {
         return find(
-                "SELECT DISTINCT c" +
-                        "FROM Cart c" +
-                        "LEFT JOIN FETCH c.cartItems" +
+                "SELECT DISTINCT c " +
+                        "FROM Cart c " +
+                        "LEFT JOIN FETCH c.cartItems " +
                         "WHERE c.account.id = ?1",
                     accountId
                 )//
@@ -41,21 +44,23 @@ public class CartRepositoryImpl implements CartRepository {
         ;
     }
 
+    @Override
     public Optional<Cart> findByLoginNrWithItems(String loginNr) {
         return find(
-                "SELECT DISTINCT c" +
+                "SELECT DISTINCT c " +
                         "FROM Cart c " +
                         "LEFT JOIN FETCH c.cartItems " +
-                        "WHERE c.account.loginNr = ?1",
+                        "WHERE c.account.ticket.loginNr = ?1",
                     loginNr
                  )//
                 .firstResultOptional()//
         ;
     }
 
+    @Override
     public List<Cart> listAllWithItems() {
         return find(
-                "SELECT DISTINCT c" +
+                "SELECT DISTINCT c " +
                         "FROM Cart c" +
                         "LEFT JOIN FETCH c.cartItems"
                 )//
@@ -63,6 +68,7 @@ public class CartRepositoryImpl implements CartRepository {
         ;
     }
 
+    @Override
     public boolean existsByAccountId(UUID accountId) {
         return count("account.id", accountId) > 0;
     }

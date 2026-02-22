@@ -11,20 +11,24 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class AccountRepositoryImpl implements AccountRepository {
 
-    public Optional<Account> findByLoginNr(String loginNr) {
+    @Override
+    public Optional<Account> getByLoginNr(String loginNr) {
         return find(
-                    "loginNr",
+                    "ticket.loginNr",
                     loginNr
                 )//
                 .firstResultOptional()//
         ;
     }
 
+    @Override
     public boolean existsByLoginNr(String loginNr) {
-        return count("loginNr", loginNr) > 0;
+        return count("ticket.loginNr", loginNr) > 0;
     }
-    
+
+    @Override
     public List<Account> getAllAccounts() {
     	return Account.listAll();
     }
+
 }

@@ -2,16 +2,20 @@ package com.ffb.app.repository.api.account;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.ffb.model.db.objects.account.Account;
 
+import com.ffb.model.db.objects.credit.CreditHistory;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 
-public interface AccountRepository extends PanacheRepository<Account> {
+public interface AccountRepository extends PanacheRepositoryBase<Account, UUID> {
 
-	Optional<Account> findByLoginNr(String loginNr);
+	Optional<Account> getByLoginNr(String loginNr);
 	
 	boolean existsByLoginNr(String loginNr);
 	
 	List<Account> getAllAccounts();
+
 }

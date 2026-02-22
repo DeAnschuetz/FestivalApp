@@ -6,30 +6,24 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ffb.model.db.objects.cart.Cart;
 import com.ffb.model.db.objects.credit.Credit;
+import com.ffb.model.db.objects.food_court.FoodCourt;
 import com.ffb.model.db.objects.foodorder.FoodOrder;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "account", schema = "ffb")
 public class Account extends PanacheEntityBase {
 
 	@Id
-	@Column(name = "id")
+	@Column(name = "id", unique = true, nullable = false)
 	private UUID id;
 
-	@Column(name = "login_nr", unique = true, nullable = false)
-	private String loginNr;
+	@JsonIgnore
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "login_nr", referencedColumnName = "login_nr", unique = true, nullable = false)
+	private Ticket ticket;
 
 	@JsonIgnore
 	@Column(name = "password", nullable = false)
@@ -48,6 +42,10 @@ public class Account extends PanacheEntityBase {
 	private Credit credit;
 
 	@JsonIgnore
+	@OneToOne(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private FoodCourt foodCourt;
+
+	@JsonIgnore
 	@OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<FoodOrder> foodOrders;
 
@@ -58,12 +56,33 @@ public class Account extends PanacheEntityBase {
 	protected Account() {
 	}
 
-	public Account(UUID id, String loginNr, String password, AccountType type) {
-		super();
+	public Account(UUID id, Ticket ticket, String password, AccountType type) {
 		this.id = id;
-		this.loginNr = loginNr;
+		this.ticket = ticket;
 		this.password = password;
 		this.type = type;
+	}
+
+	public Account(UUID id, Ticket ticket, String password, AccountType type, Cart cart, Credit credit, FoodCourt foodCourt) {
+		this.id = id;
+		this.ticket = ticket;
+		this.password = password;
+		this.type = type;
+		this.cart = cart;
+		this.credit = credit;
+		this.foodCourt = foodCourt;
+	}
+
+	public Account(UUID id, Ticket ticket, String password, AccountType type, Cart cart, Credit credit, FoodCourt foodCourt, List<FoodOrder> foodOrders, List<FoodOrder> sharedOrders) {
+		this.id = id;
+		this.ticket = ticket;
+		this.password = password;
+		this.type = type;
+		this.cart = cart;
+		this.credit = credit;
+		this.foodCourt = foodCourt;
+		this.foodOrders = foodOrders;
+		this.sharedOrders = sharedOrders;
 	}
 
 	public UUID getId() {
@@ -75,11 +94,15 @@ public class Account extends PanacheEntityBase {
 	}
 
 	public String getLoginNr() {
-		return loginNr;
+		return ticket.getLoginNr();
 	}
 
-	public void setLoginNr(String loginNr) {
-		this.loginNr = loginNr;
+	public Ticket getTicket() {
+		return ticket;
+	}
+
+	public void setTicket(Ticket ticket) {
+		this.ticket = ticket;
 	}
 
 	public String getPassword() {
@@ -112,6 +135,14 @@ public class Account extends PanacheEntityBase {
 
 	public void setCredit(Credit credit) {
 		this.credit = credit;
+	}
+
+	public FoodCourt getFoodCourt() {
+		return foodCourt;
+	}
+
+	public void setFoodCourt(FoodCourt foodCourt) {
+		this.foodCourt = foodCourt;
 	}
 
 	public List<FoodOrder> getFoodOrders() {

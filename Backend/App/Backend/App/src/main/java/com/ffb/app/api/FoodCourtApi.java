@@ -1,23 +1,42 @@
 package com.ffb.app.api;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
-import com.ffb.app.service.api.food.court.FoodCourtService;
+
+import com.ffb.model.api.response.food_court.FoodCourtRequest;
+import com.ffb.model.exception.ApiException;
+import com.ffb.model.exception.ServiceException;
+import jakarta.annotation.security.RolesAllowed;
+import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.jboss.logging.Logger;
+
+import com.ffb.app.service.api.api.food.court.FoodCourtService;
+
 import com.ffb.model.api.response.food_court.FoodCourtRequestSimple;
 import com.ffb.model.db.objects.food_court.FoodCourt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.reactive.PartType;
+import org.jboss.resteasy.reactive.RestForm;
 
 @ApplicationScoped
-@Path("/food_court")
+@Path("food_court")
 public class FoodCourtApi {
 
-	FoodCourtService foodCourtService;
+	private static final Logger LOG = Logger.getLogger(FoodCourtApi.class);
+
+	@Inject
+	JsonWebToken jwt;
+	private final FoodCourtService foodCourtService;
 
 	@Inject
 	public FoodCourtApi(FoodCourtService foodCourtService) {
@@ -25,93 +44,205 @@ public class FoodCourtApi {
 	}
 
 	@GET
+	@Path("list/all")
+	@RolesAllowed("GUEST")
 	public Response listAll() {
 		List<FoodCourt> data = foodCourtService.listAll();
 		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
 	@GET
-	@Path("/{accountId}")
-	public Response listByAccountId(@PathParam("accountId") UUID accountId) {
-		if (accountId == null) {
-			throw new WebApplicationException("The account id must not be null.");
+	@Path("list/by_id/{id}")
+	@RolesAllowed("GUEST")
+	public Response getById(@PathParam("id") UUID id) throws ApiException {
+		if (id == null) {
+			throw new ApiException("The food court id must not be null.");
 		}
 
-		List<FoodCourt> data = foodCourtService.listByAccountId(accountId);
+		FoodCourt data = null;
+        try {
+			data = foodCourtService.getById(id);
+        } catch (ServiceException e) {
+            throw new RuntimeException(e);
+        }
 		return Response.status(Response.Status.OK).entity(data).build();
-	}
+    }
 
 	@GET
-	@Path("/{id}")
-	public Response getByAccountId(@PathParam("id") UUID id) {
+	@Path("get/by_id/{id}/with-relations")
+	@RolesAllowed("GUEST")
+	public Response getWithRelationsById(@PathParam("id") UUID id, @QueryParam("waitingTime") @DefaultValue("true") boolean waitingTime, @QueryParam("foodOrders") @DefaultValue("false") boolean foodOrders) throws ApiException {
 		if (id == null) {
-			throw new WebApplicationException("The food court id must not be null.");
+			throw new ApiException("The food court id must not be null.");
 		}
 
-		return null;
+        FoodCourt data = null;
+        try {
+            data = foodCourtService.getWithRelations(id, waitingTime, foodOrders);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
+        }
+        return Response.status(Response.Status.OK).entity(data).build();
 	}
 
 	@POST
-	public Response create(FoodCourtRequestSimple req) {
-		UUID accountId = req.accountId();
-		if (accountId == null) {
-			throw new WebApplicationException("The account id must not be null.");
+	@Path("by_id/{id}")
+	@RolesAllowed("ADMIN")
+	public Response createById(@PathParam("id") UUID id, @PartType(MediaType.APPLICATION_JSON) FoodCourtRequest req) throws ApiException {
+		if (id == null) {
+			throw new ApiException("The food court id must not be null.");
+		}
+		String loginNr = req.loginNr();
+		if (loginNr == null || loginNr.isBlank()) {
+			throw new ApiException("");
 		}
 		String name = req.name();
-		if (name == null | name.isBlank()) {
-			throw new WebApplicationException("The name must not be null or blank.");
+		if (name == null || name.isBlank()) {
+			throw new ApiException("The name must not be null or blank.");
 		}
-		URI imageUri = req.imageUri();
-		if (imageUri == null) {
-			throw new WebApplicationException("The image URI must not be null.");
-		}
-
-		FoodCourt data = foodCourtService.create(accountId, name, imageUri);
-		return Response.status(Response.Status.OK).entity(data).build();
+        FoodCourt data;
+        try {
+            data = foodCourtService.create(loginNr, name);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
+        }
+        return Response.status(Response.Status.OK).entity(data).build();
 	}
 
 	@PUT
-	@Path("/{id}")
-	public Response updateById(@PathParam("id") UUID id, @PartType(MediaType.APPLICATION_JSON) FoodCourtRequestSimple req) {
+	@Path("by_id/{id}")
+	@RolesAllowed("ADMIN")
+	public Response updateById(@PathParam("id") UUID id, @PartType(MediaType.APPLICATION_JSON) FoodCourtRequest req) throws ApiException {
 		if (id == null) {
-			throw new WebApplicationException("The food court id must not be null.");
+			throw new ApiException("The food court id must not be null.");
 		}
-		UUID accountId = req.accountId();
-		if (accountId == null) {
-			throw new WebApplicationException("The account id must not be null.");
+		String loginNr = req.loginNr();
+		if (loginNr == null || loginNr.isBlank()) {
+			throw new ApiException("The account id must not be null.");
 		}
 		String name = req.name();
-		if (name == null | name.isBlank()) {
-			throw new WebApplicationException("The name must not be null or blank.");
-		}
-		URI imageUri = req.imageUri();
-		if (imageUri == null) {
-			throw new WebApplicationException("The image URI must not be null.");
+		if (name == null || name.isBlank()) {
+			throw new ApiException("The name must not be null or blank.");
 		}
 
-		FoodCourt data = foodCourtService.update(id, accountId, name, imageUri);
-		return Response.status(Response.Status.OK).entity(data).build();
+        FoodCourt data = null;
+        try {
+            data = foodCourtService.updateById(id, loginNr, name);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
+        }
+        return Response.status(Response.Status.OK).entity(data).build();
 	}
 
 	@DELETE
-	@Path("/{id}")
-	public Response deleteById(@PathParam("id") UUID id) {
+	@Path("by_id/{id}")
+	@RolesAllowed("ADMIN")
+	public Response deleteById(@PathParam("id") UUID id) throws ApiException {
 		if (id == null) {
-			throw new WebApplicationException("The food court id must not be null.");
+			throw new ApiException("The food court id must not be null.");
 		}
 
-		foodCourtService.delete(id);
+        try {
+            foodCourtService.delete(id);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
+        }
+        return Response.status(Response.Status.OK).entity(null).build();
+	}
+
+	@GET
+	@Path("worker")
+	@RolesAllowed("FOOD_COURT_WORKER")
+	public Response getByLoginNr() throws ApiException {
+		String loginNr = jwt.getName();
+        FoodCourt data;
+        try {
+            data = foodCourtService.getByLoginNr(loginNr);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
+        }
+        return Response.status(Response.Status.OK).entity(data).build();
+	}
+
+	@PUT
+	@Path("worker")
+	@RolesAllowed("FOOD_COURT_WORKER")
+	public Response updateByLogiNr(@PartType(MediaType.APPLICATION_JSON) FoodCourtRequestSimple req) throws ApiException {
+		String loginNr = jwt.getName();
+		String name = req.name();
+		if (name == null || name.isBlank()) {
+			throw new ApiException("The name must not be null or blank.");
+		}
+
+        FoodCourt data;
+        try {
+            data = foodCourtService.updateByLoginNr(loginNr, name);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
+        }
+        return Response.status(Response.Status.OK).entity(data).build();
+	}
+
+	@POST
+	@Path("worker")
+	@RolesAllowed("FOOD_COURT_WORKER")
+	public Response createByLoginNr(@PartType(MediaType.APPLICATION_JSON) FoodCourtRequestSimple req) throws ApiException {
+		String loginNr = jwt.getName();
+		String name = req.name();
+		if (name == null || name.isBlank()) {
+			throw new ApiException("The name must not be null or blank.");
+		}
+        FoodCourt data;
+        try {
+            data = foodCourtService.create(loginNr, name);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
+        }
+        return Response.status(Response.Status.OK).entity(data).build();
+	}
+
+	@POST
+	@Path("image")
+	@Produces(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@RolesAllowed("FOOD_COURT_WORKER")
+	public Response addImage(
+			@RestForm("file") @PartType("image/png") InputStream file
+	) throws ApiException {
+		LOG.info("Received request to add image");
+		String loginNr = jwt.getName();
+
+		if (file == null) {
+			throw new ApiException("The file is null.");
+		}
+
+		try (
+				PushbackInputStream inputData = new PushbackInputStream(new BufferedInputStream(file))
+		) {
+			foodCourtService.addImage(loginNr, inputData);
+
+		} catch (ServiceException | IOException e) {
+			throw new ApiException(e);
+		}
+
 		return Response.status(Response.Status.OK).entity(null).build();
 	}
 
 	@GET
-	@Path("/{id}/with-relations")
-	public Response getWithRelationsById(@PathParam("id") UUID id, @QueryParam("waitingTime") @DefaultValue("true") boolean waitingTime, @QueryParam("foodOrders") @DefaultValue("false") boolean foodOrders) {
-		if (id == null) {
-			throw new WebApplicationException("The food court id must not be null.");
-		}
+	@Path("image/by_food_court_id/{foodCourtId}")
+	@Produces("image/png")
+	@RolesAllowed("GUEST")
+	public Response getImageByFoodCourtId(@PathParam("foodCourtId") UUID foodCourtId) throws ApiException {
+        byte[] imageBytes;
+        try {
+            imageBytes = foodCourtService.getImageByFoodCourtId(foodCourtId);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
+        }
 
-		FoodCourt data = foodCourtService.getWithRelations(id, waitingTime, foodOrders);
-		return Response.status(Response.Status.OK).entity(data).build();
+        if (imageBytes == null) {
+			return Response.status(Response.Status.NOT_FOUND).build();
+		}
+		return Response.status(Response.Status.OK).entity(imageBytes).build();
 	}
 }

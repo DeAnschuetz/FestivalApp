@@ -9,7 +9,10 @@ import java.util.UUID;
 
 public interface FoodCourtRepository extends PanacheRepositoryBase<FoodCourt, UUID> {
 
-    List<FoodCourt> findByAccountId(UUID accountId);
+    List<FoodCourt> getByAccountId(UUID accountId);
 
-    Optional<FoodCourt> findByIdOptional(UUID id);
+    Optional<FoodCourt> getById(UUID id);
+
+    Optional<FoodCourt> getByLoginNr(String loginNr);
+
 }

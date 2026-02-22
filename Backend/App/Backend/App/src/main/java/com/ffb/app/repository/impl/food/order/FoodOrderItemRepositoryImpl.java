@@ -10,6 +10,7 @@ import java.util.UUID;
 @ApplicationScoped
 public class FoodOrderItemRepositoryImpl implements FoodOrderItemRepository {
 
+    @Override
     public List<FoodOrderItem> listByFoodOrderId(UUID foodOrderId) {
         return find(
                     "foodOrder.id",

@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ffb.model.db.objects.product.MainProduct;
 
+import com.ffb.model.db.objects.product.Product;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,7 +41,7 @@ public class FoodOrderItem extends PanacheEntityBase {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", referencedColumnName = "id")
-    private MainProduct mainProduct;
+    private Product product;
     
     protected FoodOrderItem() {}
 
@@ -92,11 +93,11 @@ public class FoodOrderItem extends PanacheEntityBase {
         this.foodOrder = foodOrder;
     }
 
-    public MainProduct getMainProduct() {
-        return mainProduct;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setMainProduct(MainProduct mainProduct) {
-        this.mainProduct = mainProduct;
+    public void setMProduct(Product product) {
+        this.product = product;
     }
 }

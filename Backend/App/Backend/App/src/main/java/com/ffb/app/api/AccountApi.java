@@ -1,12 +1,21 @@
 package com.ffb.app.api;
 
 import java.util.List;
-import com.ffb.app.service.api.credit.CreditService;
+import java.util.Set;
+
+import com.ffb.app.service.api.api.token.TokenService;
 import com.ffb.model.api.request.account.RegisterRequest;
+import com.ffb.model.db.objects.account.AccountType;
+import com.ffb.model.exception.ApiException;
+import com.ffb.model.exception.ServiceException;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.PartType;
-import com.ffb.app.service.api.account.AccountService;
+import com.ffb.app.service.api.api.account.AccountService;
 import com.ffb.model.api.request.account.LoginRequest;
 import com.ffb.model.db.objects.account.Account;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -14,64 +23,116 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 
 @ApplicationScoped
-@Path("/account")
+@Path("account")
 public class AccountApi {
-	
+
+	private final Logger LOG = Logger.getLogger(AccountApi.class);
 	private final AccountService accountService;
-	private final CreditService creditService;
+	private final TokenService tokenService;
 
 	@Inject
-	public AccountApi(AccountService accountService, CreditService creditService) {
+	public AccountApi(AccountService accountService, TokenService tokenService) {
 		this.accountService = accountService;
-		this.creditService = creditService;
-	}
+        this.tokenService = tokenService;
+    }
 
     @PUT
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response login(@PartType(MediaType.APPLICATION_JSON) LoginRequest loginRequest) {
+	@Path("login")
+	@PermitAll
+	public Response login(@PartType(MediaType.APPLICATION_JSON) LoginRequest loginRequest) throws ApiException {
 		String loginNr = loginRequest.loginNr();
-		if (loginNr == null| loginNr.isBlank()) {
-			throw new WebApplicationException("The login number must not be null or blank.");
+		LOG.info("Login attempt for loginNr: " + loginNr);
+		if (loginNr == null || loginNr.isBlank()) {
+			// TODO
+			LOG.error("Login attempt failed: login number is null or blank.");
+			throw new ApiException("The login number must not be null or blank.");
 		}
 		String password = loginRequest.password();
-		if (password == null | password.isBlank()) {
-			throw new WebApplicationException("The password must not be null or blank.");
+		if (password == null || password.isBlank()) {
+			// TODO
+			LOG.error("Login attempt failed: password is null or blank.");
+			throw new ApiException("The password must not be null or blank.");
 		}
 
-		Boolean result = accountService.verifyAccount(loginNr, password);
-		Response response =  Response.status(Response.Status.BAD_REQUEST).entity("Wrong Login-Nr or Password").build();
-		if (result) {
-			response = Response.status(Response.Status.OK).entity("Successfully logged in").build();
+        AccountType result;
+        try {
+            result = accountService.verifyAccount(loginNr, password);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
+        }
+
+		Set<String> roles;
+		if (result == AccountType.ADMIN) {
+			roles = Set.of(AccountType.ADMIN.toString(), AccountType.FOOD_COURT_WORKER.toString(), AccountType.GUEST.toString());
+		} else if (result == AccountType.FOOD_COURT_WORKER) {
+			roles = Set.of(AccountType.FOOD_COURT_WORKER.toString(), AccountType.GUEST.toString());
+		} else {
+			roles = Set.of(AccountType.GUEST.toString());
 		}
-		return response;
+		String jwt = tokenService.createToken(loginNr, roles);
+
+		NewCookie cookie = new NewCookie.Builder("access_token")
+				.value(jwt)//
+				.path("/")//
+				.httpOnly(true)//
+				.secure(false)//
+				.sameSite(NewCookie.SameSite.LAX)//
+				.maxAge(2 * 60 * 60)//
+				.build()//
+		;
+
+		LOG.info("Login successful for loginNr: " + loginNr);
+		return Response.status(Response.Status.OK).cookie(cookie).build();
 	}
 
+	@POST
+	@Path("logout")
+	public Response logout() {
+		NewCookie cleared = new NewCookie.Builder("access_token")//
+				.value("")//
+				.path("/")//
+				.httpOnly(true)//
+				.secure(true)//
+				.maxAge(0)//
+				.build()//
+		;
+
+		return Response.noContent().cookie(cleared).build();
+	}
+
+	@Path("register")
     @POST
-	public Response register(@PartType(MediaType.APPLICATION_JSON) RegisterRequest registerRequest) {
+	@PermitAll
+	public Response register(@PartType(MediaType.APPLICATION_JSON) RegisterRequest registerRequest) throws ApiException {
 		String loginNr = registerRequest.loginNr();
-		if (loginNr == null| loginNr.isBlank()) {
-			throw new WebApplicationException("The login number must not be null or blank.");
+		LOG.trace("Register attempt for loginNr: " + loginNr);
+		if (loginNr == null || loginNr.isBlank()) {
+			LOG.error("Register attempt failed: login number is null or blank.");
+			throw new ApiException("The login number must not be null or blank.");
 		}
 		String password = registerRequest.password();
-		if (password == null | password.isBlank()) {
-			throw new WebApplicationException("The password must not be null or blank.");
+		if (password == null || password.isBlank()) {
+			LOG.error("Register attempt failed: password is null or blank.");
+			throw new ApiException("The password must not be null or blank.");
 		}
 
-    	Account createdAccount = accountService.createAccount(loginNr, loginNr);
+		Account createdAccount;
 		try {
-			creditService.createInitialCredit(createdAccount);
-			Response response =  Response.status(Response.Status.OK).entity(createdAccount).build();
-			return response;
-		} catch (IllegalStateException e) {
-			throw new WebApplicationException(e);
+			createdAccount = accountService.createAccount(loginNr, password);
+		} catch (ServiceException e) {
+			LOG.error("Register attempt failed: " + e.getMessage());
+			throw new ApiException(e);
 		}
+		return Response.status(Response.Status.OK).entity(createdAccount).build();
 
 	}
 
     @GET
+	@Path("list_all")
+	@RolesAllowed("ADMIN")
 	public Response listAll() {
     	List<Account> data = accountService.getAllAccounts();
-		Response response = Response.status(Response.Status.OK).entity(data).build();
-		return response;
+		return Response.status(Response.Status.OK).entity(data).build();
 	}
 }

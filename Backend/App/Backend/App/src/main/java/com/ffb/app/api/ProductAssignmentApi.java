@@ -1,7 +1,10 @@
 package com.ffb.app.api;
 
-import com.ffb.app.service.api.product.ProductService;
+import com.ffb.app.service.api.api.product.ProductService;
 import com.ffb.model.db.objects.product.MainSubProductLink;
+import com.ffb.model.exception.ApiException;
+import com.ffb.model.exception.ServiceException;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.PersistenceException;
@@ -15,7 +18,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @ApplicationScoped
-@Path("/products/assignments")
+@Path("products/assignments")
 public class ProductAssignmentApi {
 
     private final ProductService productService;
@@ -26,9 +29,10 @@ public class ProductAssignmentApi {
     }
 
     @POST
-    @Path("/assignments/{mainProductId}/{subProductId}")
+    @Path("by_main_sub_id/{mainProductId}/{subProductId}")
     @Produces(MediaType.TEXT_PLAIN)
-    public Response createAssignmentForIds(@PathParam("mainProductId") UUID mainProductId, @PathParam("subProductId") UUID subProductId) {
+    @RolesAllowed("FOOD_COURT_WORKER")
+    public Response createAssignmentForIds(@PathParam("mainProductId") UUID mainProductId, @PathParam("subProductId") UUID subProductId) throws ApiException {
         if (mainProductId == null) {
             throw new WebApplicationException("The main product id must not be null.");
         }
@@ -36,60 +40,57 @@ public class ProductAssignmentApi {
             throw new WebApplicationException("The sub product id must not be null.");
         }
 
+        boolean result;
         try {
-            UUID linkId = productService.createAssignment(mainProductId, subProductId);
-            return Response.status(Response.Status.CREATED).entity(linkId).build();
-        } catch (IllegalArgumentException | NoSuchElementException | IllegalStateException | PersistenceException e) {
-            throw new WebApplicationException(e);
+            result = productService.createAssignment(mainProductId, subProductId);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
         }
+        return Response.status(Response.Status.CREATED).entity(result).build();
     }
 
     @GET
-    @Path("/assignments/{mainProductId}")
+    @Path("list/by_main_id/{mainProductId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listAssignmentsByMainProductId(@PathParam("mainProductId") UUID mainProductId) {
+    @RolesAllowed("FOOD_COURT_WORKER")
+    public Response listAssignmentsByMainProductId(@PathParam("mainProductId") UUID mainProductId) throws ApiException {
         if (mainProductId == null) {
-            throw new WebApplicationException("The main product id must not be null.");
+            throw new ApiException("The main product id must not be null.");
         }
 
-        try {
-            List<MainSubProductLink> data = productService.listAssignmentsForMainProduct(mainProductId);
-            return Response.status(Response.Status.CREATED).entity(data).build();
-        } catch ( IllegalArgumentException | IllegalStateException | PersistenceException e) {
-            throw new WebApplicationException(e);
-        }
+        List<MainSubProductLink> data = productService.listAssignmentsForMainProduct(mainProductId);
+        return Response.status(Response.Status.CREATED).entity(data).build();
+
     }
 
     @DELETE
-    @Path("/assignments/{id}")
-    public Response deleteAssignmentById(@PathParam("id") UUID id) {
+    @Path("by_id/{id}")
+    @RolesAllowed("FOOD_COURT_WORKER")
+    public Response deleteAssignmentById(@PathParam("id") UUID id) throws ApiException {
         if (id == null) {
-            throw new WebApplicationException("The assignment id must not be null.");
+            throw new ApiException("The assignment id must not be null.");
         }
 
-        try {
-            productService.deleteAssignmentById(id);
-            return Response.status(Response.Status.OK).entity(null).build();
-        } catch (NotFoundException | IllegalArgumentException | TransactionRequiredException e) {
-            throw new WebApplicationException(e);
-        }
+        productService.deleteAssignmentById(id);
+        return Response.status(Response.Status.OK).entity(null).build();
     }
 
     @DELETE
-    @Path("/assignments/{mainProductId}/{subProductId}")
-    public Response deleteAssignmentByMainSubProductIds(@PathParam("mainProductId") UUID mainProductId, @PathParam("subProductId") UUID subProductId) {
+    @Path("by_main_sub_id/{mainProductId}/{subProductId}")
+    @RolesAllowed("ADMIN")
+    public Response deleteAssignmentByMainSubProductIds(@PathParam("mainProductId") UUID mainProductId, @PathParam("subProductId") UUID subProductId) throws ApiException {
         if (mainProductId == null) {
-            throw new WebApplicationException("The main product id must not be null.");
+            throw new ApiException("The main product id must not be null.");
         }
         if (subProductId == null) {
-            throw new WebApplicationException("The sub product id must not be null.");
+            throw new ApiException("The sub product id must not be null.");
         }
 
         try {
             productService.deleteAssignmentByPair(mainProductId, subProductId);
-            return Response.status(Response.Status.OK).entity(null).build();
-        } catch (NotFoundException | PersistenceException | IllegalArgumentException | IllegalStateException e) {
-            throw new WebApplicationException(e);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
         }
+        return Response.status(Response.Status.OK).entity(null).build();
     }
 }

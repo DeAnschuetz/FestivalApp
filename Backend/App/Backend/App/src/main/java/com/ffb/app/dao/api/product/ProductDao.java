@@ -1,0 +1,43 @@
+package com.ffb.app.dao.api.product;
+
+import com.ffb.model.db.objects.product.MainProduct;
+import com.ffb.model.db.objects.product.MainSubProductLink;
+import com.ffb.model.db.objects.product.Product;
+import com.ffb.model.exception.DaoException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.TransactionRequiredException;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+
+public interface ProductDao {
+
+    List<Product> listAll();
+
+    List<Product> listByLoginNr(String loginNr);
+
+    List<Product> listByFoodCourtId(UUID foodCourtId);
+
+    MainProduct getMainProductByProductId(UUID id) throws DaoException;
+
+    void persistLink(MainSubProductLink link);
+
+    boolean linkExists(UUID mainId, UUID subId);
+
+    List<MainSubProductLink> listLinks();
+
+    List<MainSubProductLink> listLinksByMain(UUID mainId) ;
+
+    long deleteLinkByPair(UUID mainId, UUID subId);
+
+    boolean deleteLinkById(UUID linkId);
+
+    void persist(Product product);
+
+    Product getById(UUID id);
+
+    void delete(Product product);
+}

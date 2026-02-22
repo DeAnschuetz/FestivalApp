@@ -41,12 +41,12 @@ public class Cart extends PanacheEntityBase {
     
     protected Cart() {}
 
-	public Cart(UUID id, boolean hasPrio, double total, List<CartItem> cartItems) {
+	public Cart(UUID id, boolean hasPrio, double total, Account account) {
 		super();
 		this.id = id;
 		this.hasPrio = hasPrio;
 		this.total = total;
-		this.cartItems = cartItems;
+		this.account = account;
 	}
 
 	public UUID getId() {
