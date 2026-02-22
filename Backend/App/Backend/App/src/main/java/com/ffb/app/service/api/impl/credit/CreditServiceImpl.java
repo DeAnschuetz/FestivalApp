@@ -57,7 +57,7 @@ public class CreditServiceImpl implements CreditService {
     @Override
     public Credit getByLoginNr(String loginNr) throws ServiceException {
         try {
-            return creditDao.findByLoginNr(loginNr);
+            return creditDao.getByLoginNr(loginNr);
         } catch (DaoException e) {
             throw new ServiceException(e);
         }
@@ -70,10 +70,10 @@ public class CreditServiceImpl implements CreditService {
             throw new IllegalArgumentException("amount must be > 0");
         }
 
-        Credit credit = null;
+        Credit credit;
         try {
-            credit = getByLoginNr(loginNr);
-        } catch (ServiceException e) {
+            credit = creditDao.getByLoginNr(loginNr);
+        } catch (DaoException e) {
             throw new ServiceException(e);
         }
         double oldAmount = credit.getAmount();

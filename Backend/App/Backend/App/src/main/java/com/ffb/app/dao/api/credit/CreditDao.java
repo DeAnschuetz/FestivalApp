@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public interface CreditDao {
 
-    Credit findByLoginNr(String loginNr) throws DaoException;
+    Credit getByLoginNr(String loginNr) throws DaoException;
 
     boolean existsByLoginNr(String loginNr);
 

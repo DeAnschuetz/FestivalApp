@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @ApplicationScoped
-@Path("/products/assignments")
+@Path("products/assignments")
 public class ProductAssignmentApi {
 
     private final ProductService productService;
@@ -29,7 +29,7 @@ public class ProductAssignmentApi {
     }
 
     @POST
-    @Path("/by_main_sub_id/{mainProductId}/{subProductId}")
+    @Path("by_main_sub_id/{mainProductId}/{subProductId}")
     @Produces(MediaType.TEXT_PLAIN)
     @RolesAllowed("FOOD_COURT_WORKER")
     public Response createAssignmentForIds(@PathParam("mainProductId") UUID mainProductId, @PathParam("subProductId") UUID subProductId) throws ApiException {
@@ -40,16 +40,17 @@ public class ProductAssignmentApi {
             throw new WebApplicationException("The sub product id must not be null.");
         }
 
+        boolean result;
         try {
-            boolean result = productService.createAssignment(mainProductId, subProductId);
-            return Response.status(Response.Status.CREATED).entity(result).build();
+            result = productService.createAssignment(mainProductId, subProductId);
         } catch (ServiceException e) {
             throw new ApiException(e);
         }
+        return Response.status(Response.Status.CREATED).entity(result).build();
     }
 
     @GET
-    @Path("/list/by_main_id/{mainProductId}")
+    @Path("list/by_main_id/{mainProductId}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("FOOD_COURT_WORKER")
     public Response listAssignmentsByMainProductId(@PathParam("mainProductId") UUID mainProductId) throws ApiException {
@@ -63,7 +64,7 @@ public class ProductAssignmentApi {
     }
 
     @DELETE
-    @Path("/by_id/{id}")
+    @Path("by_id/{id}")
     @RolesAllowed("FOOD_COURT_WORKER")
     public Response deleteAssignmentById(@PathParam("id") UUID id) throws ApiException {
         if (id == null) {
@@ -75,7 +76,7 @@ public class ProductAssignmentApi {
     }
 
     @DELETE
-    @Path("/by_main_sub_id/{mainProductId}/{subProductId}")
+    @Path("by_main_sub_id/{mainProductId}/{subProductId}")
     @RolesAllowed("ADMIN")
     public Response deleteAssignmentByMainSubProductIds(@PathParam("mainProductId") UUID mainProductId, @PathParam("subProductId") UUID subProductId) throws ApiException {
         if (mainProductId == null) {
@@ -87,9 +88,9 @@ public class ProductAssignmentApi {
 
         try {
             productService.deleteAssignmentByPair(mainProductId, subProductId);
-            return Response.status(Response.Status.OK).entity(null).build();
         } catch (ServiceException e) {
             throw new ApiException(e);
         }
+        return Response.status(Response.Status.OK).entity(null).build();
     }
 }

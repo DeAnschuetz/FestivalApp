@@ -7,14 +7,18 @@ import com.ffb.model.exception.ApiException;
 import com.ffb.model.exception.ServiceException;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 
 @ApplicationScoped
-@Path("/credit")
+@Path("credit")
 public class CreditApi {
 
+	@Inject
+	JsonWebToken jwt;
 	private final CreditService creditService;
 
 	public CreditApi(CreditService creditService) {
@@ -22,39 +26,36 @@ public class CreditApi {
 	}
 
 	@GET
-	@Path("/by_login_nr/{loginNr}")
 	@RolesAllowed("GUEST")
-	public Response getCreditByLoginNr(@PathParam(value = "loginNr") String loginNr) throws ApiException {
-		if (loginNr == null || loginNr.isBlank()) {
-			throw new ApiException("The login number must not be null.");
-		}
+	public Response getCreditByLoginNr() throws ApiException {
+		String loginNr = jwt.getName();
 
+		Credit credit;
 		try {
-			Credit credit =  creditService.getByLoginNr(loginNr);
-			CreditResponse data = new CreditResponse(credit.getAmount());
-			return Response.status(Response.Status.OK).entity(data).build();
+			credit =  creditService.getByLoginNr(loginNr);
 		} catch (ServiceException e) {
 			throw new ApiException(e);
 		}
+		CreditResponse data = new CreditResponse(credit.getAmount());
+		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
 	@PUT
-	@Path("add/by_login_nr/{loginNr}/{amount}")
+	@Path("add/{amount}")
 	@RolesAllowed("GUEST")
-	public Response addCredit(@PathParam(value = "loginNr") String loginNr, @PathParam(value = "amount") int amount) throws ApiException {// TODO Request?
-		if (loginNr == null || loginNr.isBlank()) {
-			throw new ApiException("The login number must not be null.");
-		}
+	public Response addCredit(@PathParam(value = "amount") int amount) throws ApiException {// TODO Request?
+		String loginNr = jwt.getName();
 		if (amount == 0) {
 			throw new ApiException("The amount must not be 0.");
 		}
 
+		Credit credit;
 		try {
-			Credit credit =  creditService.changeAmount(loginNr, amount);
-			CreditResponse data = new CreditResponse(credit.getAmount());
-			return Response.status(Response.Status.OK).entity(data).build();
+			credit =  creditService.changeAmount(loginNr, amount);
 		} catch (ServiceException e) {
 			throw new ApiException(e);
 		}
+		CreditResponse data = new CreditResponse(credit.getAmount());
+		return Response.status(Response.Status.OK).entity(data).build();
 	}
 }

@@ -2,13 +2,12 @@ package com.ffb.app.dao.impl.food.court;
 
 import com.ffb.app.dao.api.food.court.FoodCourtDao;
 import com.ffb.app.repository.impl.food.court.FoodCourtRepositoryImpl;
-import com.ffb.app.repository.impl.food.court.ImageRepositoryImpl;
 import com.ffb.model.db.objects.food_court.FoodCourt;
-import com.ffb.model.db.objects.image.Image;
 import com.ffb.model.exception.DaoException;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.net.URI;
+import java.io.IOException;
+import java.io.PushbackInputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,11 +15,9 @@ import java.util.UUID;
 public class FoodCourtDaoImpl implements FoodCourtDao {
 
     private final FoodCourtRepositoryImpl foodCourtRepo;
-    private final ImageRepositoryImpl imageRepo;
 
-    public FoodCourtDaoImpl(FoodCourtRepositoryImpl foodCourtRepo, ImageRepositoryImpl imageRepo) {
+    public FoodCourtDaoImpl(FoodCourtRepositoryImpl foodCourtRepo) {
         this.foodCourtRepo = foodCourtRepo;
-        this.imageRepo = imageRepo;
     }
 
     @Override
@@ -53,26 +50,27 @@ public class FoodCourtDaoImpl implements FoodCourtDao {
     }
 
     @Override
-    public void persistImage(Image image) {
-        imageRepo.persist(image);
+    public void addImage(String loginNr, PushbackInputStream inputData) throws DaoException {
+        try {
+            byte[] bytes = inputData.readAllBytes();
+            if (bytes.length == 0) {
+                throw new DaoException("Uploaded image is empty.");
+            }
+            FoodCourt foodcourt = foodCourtRepo.getByLoginNr(loginNr)
+                    .orElseThrow(() -> new DaoException("Food court with login number " + loginNr + " not found."))
+            ;
+            foodcourt.setImage(bytes);
+            foodCourtRepo.persist(foodcourt);
+        } catch (IOException e) {
+            throw new DaoException("Failed to read image data from stream.", e);
+        }
     }
 
     @Override
-    public void deleteImage(Image image) {
-        imageRepo.delete(image);
-    }
-
-    @Override
-    public Image getImageByUri(URI uri) throws DaoException {
-        return imageRepo.getImageByUri(uri)
-                .orElseThrow(() -> new DaoException("Image with URI " + uri + " not found."))
-        ;
-    }
-
-    @Override
-    public Image getImageByID(UUID id) throws DaoException {
-        return imageRepo.getImageByID(id)
+    public byte[] getImageById(UUID id) throws DaoException {
+        return foodCourtRepo.getById(id)
                 .orElseThrow(() -> new DaoException("Image with ID " + id + " not found."))
+                .getImage()
         ;
     }
 }

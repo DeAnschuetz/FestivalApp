@@ -10,6 +10,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.resteasy.reactive.PartType;
 import com.ffb.model.api.request.order.ShareOrderRequest;
 import com.ffb.model.db.objects.foodorder.FoodOrder;
@@ -18,9 +19,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.MediaType;
 
 @ApplicationScoped
-@Path("/food_order")
+@Path("food_order")
 public class FoodOrderApi {
 
+	@Inject
+	JsonWebToken jwt;
 	private final FoodOrderService foodOrderService;
 
 	@Inject
@@ -30,7 +33,7 @@ public class FoodOrderApi {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/list/all")
+	@Path("list/all")
 	@RolesAllowed("ADMIN")
 	public Response listAll() {
 		List<FoodOrder> data = foodOrderService.listAll(true);
@@ -38,25 +41,21 @@ public class FoodOrderApi {
 	}
 
 	@GET
-	@Path("/list/by_login_nr/{loginNr}")
+	@Path("list")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("GUEST")
-	public Response listByLoginNr(@PathParam(value = "loginNr") String loginNr) throws ApiException {
-		if(loginNr == null || loginNr.isEmpty()) {
-			throw new ApiException("Login number must be provided.");
-		}
+	public Response listByLoginNr() throws ApiException {
+		String loginNr = jwt.getName();
 		List<FoodOrder> data = foodOrderService.listByLoginNr(loginNr);
 		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
 	@GET
-	@Path("/list/by_login_nr_and_status/{loginNr}/{status}")
+	@Path("list/by_status/{status}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("GUEST")
-	public Response listByStatus(@PathParam(value = "loginNr") String loginNr, @PathParam(value = "status") FoodOrderStatus status) throws ApiException {
-		if(loginNr == null || loginNr.isEmpty()) {
-			throw new ApiException("Login number must be provided.");
-		}
+	public Response listByStatus(@PathParam(value = "status") FoodOrderStatus status) throws ApiException {
+		String loginNr = jwt.getName();
 		if(status == null) {
 			throw new ApiException("Status must be provided.");
 		}
@@ -66,14 +65,12 @@ public class FoodOrderApi {
 	}
 
 	@POST
-	@Path("/order/{loginNr}")
+	@Path("order")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("GUEST")
-	public Response order(@PathParam(value = "loginNr") String loginNr) throws ApiException {
-		if(loginNr == null || loginNr.isEmpty()) {
-			throw new ApiException("Login number must be provided.");
-		}
-        List<FoodOrder> data = null;
+	public Response order() throws ApiException {
+		String loginNr = jwt.getName();
+        List<FoodOrder> data;
         try {
             data = foodOrderService.create(loginNr);
         } catch (ServiceException e) {
@@ -83,10 +80,11 @@ public class FoodOrderApi {
 	}
 
 	@PUT
-	@Path("/share/{loginNr}")
+	@Path("share")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("GUEST")
-	public Response shareOrder(@PathParam(value = "loginNr") String loginNr, @PartType(MediaType.APPLICATION_JSON) ShareOrderRequest request) throws ApiException {
+	public Response shareOrder(@PartType(MediaType.APPLICATION_JSON) ShareOrderRequest request) throws ApiException {
+		String loginNr = jwt.getName();
 		UUID orderId = request.orderId();
 		if(orderId == null) {
 			throw new ApiException("Order ID is required");
@@ -105,7 +103,7 @@ public class FoodOrderApi {
 	}
 
 	@PUT
-	@Path("/update/{orderId}/{status}")
+	@Path("update/{orderId}/{status}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("FOOD_COURT_WORKER")
 	public Response updateOrderStatus(@PathParam(value = "orderId") UUID orderId, @PathParam(value = "status") FoodOrderStatus status) throws ApiException {
@@ -116,7 +114,7 @@ public class FoodOrderApi {
 			throw new ApiException("Status is required");
 		}
 
-        FoodOrder data = null;
+        FoodOrder data;
         try {
             data = foodOrderService.updateStatus(orderId, status);
         } catch (ServiceException e) {

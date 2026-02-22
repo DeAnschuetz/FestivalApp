@@ -13,6 +13,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.resteasy.reactive.PartType;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
@@ -20,9 +21,11 @@ import java.util.List;
 import java.util.UUID;
 
 @ApplicationScoped
-@Path("/products")
+@Path("products")
 public class ProductApi {
 
+    @Inject
+    JsonWebToken jwt;
     private final ProductService productService;
 
     @Inject
@@ -32,7 +35,7 @@ public class ProductApi {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/list/all")
+    @Path("list/all")
     @RolesAllowed("GUEST")
     public Response listAll() {
         List<Product> data = productService.listProducts();
@@ -41,12 +44,9 @@ public class ProductApi {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/by_login_nr/{loginNr}")
     @RolesAllowed("FOOD_COURT_WORKER")
-    public Response createProductByLoginNr(@PathParam("loginNr") String loginNr, ProductRequestSimple req) throws ApiException {
-        if (loginNr == null || loginNr.isBlank()) {
-            throw new ApiException("The login number must not be null or blank.");
-        }
+    public Response createProductByLoginNr(ProductRequestSimple req) throws ApiException {
+        String loginNr = jwt.getName();
         double price = req.price();
         if (price == 0) {
             throw new ApiException("The price must not be 0.");
@@ -73,20 +73,17 @@ public class ProductApi {
     }
 
     @GET
-    @Path("/list/by_login_nr/{loginNr}")
+    @Path("list")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("FOOD_COURT_WORKER")
-    public Response listProductsByLoginNr(@PathParam("loginNr") String loginNr) throws ApiException {
-        if (loginNr == null || loginNr.isBlank()) {
-            throw new ApiException("The login number must not be null or blank.");
-        }
-
+    public Response listProductsByLoginNr() throws ApiException {
+        String loginNr = jwt.getName();
         List<Product> data = productService.listProductsByLoginNr(loginNr);
         return Response.status(Response.Status.OK).entity(data).build();
     }
 
     @GET
-    @Path("/list/by_food_court_id/{foodCourtId}")
+    @Path("list/by_food_court_id/{foodCourtId}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GUEST")
     public Response listProductsByFoodCourtId(@PathParam("foodCourtId") UUID foodCourtId) throws ApiException {
@@ -127,12 +124,13 @@ public class ProductApi {
             throw new ApiException("The minimal warning must not be 0.");
         }
 
+        Product created;
         try {
-            Product created = productService.createProductWithId(productId, foodCourtId, price, displayName, symbolIdentifier, minimalWarning);
-            return Response.status(Response.Status.CREATED).entity(created).build();
+            created = productService.createProductWithId(productId, foodCourtId, price, displayName, symbolIdentifier, minimalWarning);
         } catch (ServiceException e) {
             throw new ApiException(e);
         }
+        return Response.status(Response.Status.CREATED).entity(created).build();
     }
 
     @POST
@@ -179,7 +177,7 @@ public class ProductApi {
     }
 
     @GET
-    @Path("/list/by_id/{id}")
+    @Path("list/by_id/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GUEST")
     public Response listProductsById(@PathParam("id") UUID id) throws ApiException {

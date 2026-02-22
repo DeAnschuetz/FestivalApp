@@ -21,7 +21,6 @@ import com.ffb.model.exception.ServiceException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -155,7 +154,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                                 );
                                 Credit currentCredit = null;
                                 try {
-                                    currentCredit = creditDao.findByLoginNr(loginNr);
+                                    currentCredit = creditDao.getByLoginNr(loginNr);
                                 } catch (DaoException e) {
                                     throw new RuntimeException(e);
                                 }

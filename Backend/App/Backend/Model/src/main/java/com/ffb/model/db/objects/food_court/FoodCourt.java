@@ -30,10 +30,10 @@ public class FoodCourt extends PanacheEntityBase {
 	@JoinColumn(name = "account_id", referencedColumnName = "id")
 	private Account account;
 
-	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "image_id", referencedColumnName = "id")
-	Image image; // TODO zu byte[] machen
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
+	@Column(name = "image")
+	byte[] image;
     
     @OneToOne(mappedBy = "foodCourt", cascade = CascadeType.ALL)
     private FoodCourtWaitingTime waitingTime;
@@ -74,11 +74,11 @@ public class FoodCourt extends PanacheEntityBase {
 		this.account = account;
 	}
 
-	public Image getImage() {
+	public byte[] getImage() {
 		return image;
 	}
 
-	public void setImage(Image image) {
+	public void setImage(byte[] image) {
 		this.image = image;
 	}
 

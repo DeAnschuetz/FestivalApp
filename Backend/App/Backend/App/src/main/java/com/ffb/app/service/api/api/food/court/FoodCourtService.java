@@ -3,7 +3,6 @@ package com.ffb.app.service.api.api.food.court;
 import com.ffb.model.db.objects.food_court.FoodCourt;
 import com.ffb.model.db.objects.image.Image;
 import com.ffb.model.exception.ServiceException;
-import jakarta.persistence.EntityNotFoundException;
 
 import java.io.PushbackInputStream;
 import java.net.URI;
@@ -28,11 +27,7 @@ public interface FoodCourtService {
 
     FoodCourt getWithRelations(UUID id, boolean waitingTime, boolean foodOrders) throws ServiceException;
 
-    Image getImageByUri(URI uri) throws ServiceException;
+    void addImage(String loginNr, PushbackInputStream inputData) throws ServiceException;
 
-    Image getImageByID(UUID id) throws ServiceException;
-
-    URI addImage(String loginNr, PushbackInputStream inputData) throws ServiceException;
-
-    byte[] getImageByFoodCourtId(UUID foodCourtId);
+    byte[] getImageByFoodCourtId(UUID foodCourtId) throws ServiceException;
 }

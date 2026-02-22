@@ -23,7 +23,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 
 @ApplicationScoped
-@Path("/account")
+@Path("account")
 public class AccountApi {
 
 	private final Logger LOG = Logger.getLogger(AccountApi.class);
@@ -38,7 +38,7 @@ public class AccountApi {
 
     @PUT
 	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/login")
+	@Path("login")
 	@PermitAll
 	public Response login(@PartType(MediaType.APPLICATION_JSON) LoginRequest loginRequest) throws ApiException {
 		String loginNr = loginRequest.loginNr();
@@ -55,14 +55,21 @@ public class AccountApi {
 			throw new ApiException("The password must not be null or blank.");
 		}
 
-        AccountType result = null;
+        AccountType result;
         try {
             result = accountService.verifyAccount(loginNr, password);
         } catch (ServiceException e) {
             throw new ApiException(e);
         }
 
-		Set<String> roles = Set.of(result.toString());
+		Set<String> roles;
+		if (result == AccountType.ADMIN) {
+			roles = Set.of(AccountType.ADMIN.toString(), AccountType.FOOD_COURT_WORKER.toString(), AccountType.GUEST.toString());
+		} else if (result == AccountType.FOOD_COURT_WORKER) {
+			roles = Set.of(AccountType.FOOD_COURT_WORKER.toString(), AccountType.GUEST.toString());
+		} else {
+			roles = Set.of(AccountType.GUEST.toString());
+		}
 		String jwt = tokenService.createToken(loginNr, roles);
 
 		NewCookie cookie = new NewCookie.Builder("access_token")
@@ -80,20 +87,21 @@ public class AccountApi {
 	}
 
 	@POST
-	@Path("/logout")
+	@Path("logout")
 	public Response logout() {
-		NewCookie cleared = new NewCookie.Builder("access_token")
-				.value("")
-				.path("/")
-				.httpOnly(true)
-				.secure(true)
-				.maxAge(0)
-				.build();
+		NewCookie cleared = new NewCookie.Builder("access_token")//
+				.value("")//
+				.path("/")//
+				.httpOnly(true)//
+				.secure(true)//
+				.maxAge(0)//
+				.build()//
+		;
 
 		return Response.noContent().cookie(cleared).build();
 	}
 
-	@Path("/register")
+	@Path("register")
     @POST
 	@PermitAll
 	public Response register(@PartType(MediaType.APPLICATION_JSON) RegisterRequest registerRequest) throws ApiException {
@@ -109,22 +117,22 @@ public class AccountApi {
 			throw new ApiException("The password must not be null or blank.");
 		}
 
+		Account createdAccount;
 		try {
-			Account createdAccount = accountService.createAccount(loginNr, password);
-			return Response.status(Response.Status.OK).entity(createdAccount).build();
+			createdAccount = accountService.createAccount(loginNr, password);
 		} catch (ServiceException e) {
 			LOG.error("Register attempt failed: " + e.getMessage());
 			throw new ApiException(e);
 		}
+		return Response.status(Response.Status.OK).entity(createdAccount).build();
 
 	}
 
     @GET
-	@Path("/list_all")
+	@Path("list_all")
 	@RolesAllowed("ADMIN")
 	public Response listAll() {
     	List<Account> data = accountService.getAllAccounts();
-		Response response = Response.status(Response.Status.OK).entity(data).build();
-		return response;
+		return Response.status(Response.Status.OK).entity(data).build();
 	}
 }

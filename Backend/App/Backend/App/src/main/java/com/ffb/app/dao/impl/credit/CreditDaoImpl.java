@@ -28,7 +28,7 @@ public class CreditDaoImpl implements CreditDao {
     }
 
     @Override
-    public Credit findByLoginNr(String loginNr) throws DaoException {
+    public Credit getByLoginNr(String loginNr) throws DaoException {
         return creditRepo.findByLoginNr(loginNr)
                 .orElseThrow(() -> new DaoException("No credit found for loginNr: " + loginNr))
         ;
