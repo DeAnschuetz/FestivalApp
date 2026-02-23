@@ -31,39 +31,6 @@ public class FoodOrderApi {
 		this.foodOrderService = foodOrderService;
 	}
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("list/all")
-	@RolesAllowed("ADMIN")
-	public Response listAll() {
-		List<FoodOrder> data = foodOrderService.listAll(true);
-		return Response.status(Response.Status.OK).entity(data).build();
-	}
-
-	@GET
-	@Path("list")
-	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("GUEST")
-	public Response listByLoginNr() throws ApiException {
-		String loginNr = jwt.getName();
-		List<FoodOrder> data = foodOrderService.listByLoginNr(loginNr);
-		return Response.status(Response.Status.OK).entity(data).build();
-	}
-
-	@GET
-	@Path("list/by_status/{status}")
-	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("GUEST")
-	public Response listByStatus(@PathParam(value = "status") FoodOrderStatus status) throws ApiException {
-		String loginNr = jwt.getName();
-		if(status == null) {
-			throw new ApiException("Status must be provided.");
-		}
-
-		List<FoodOrder> data = foodOrderService.listByLoginNrAndStatus(loginNr, status);
-		return Response.status(Response.Status.OK).entity(data).build();
-	}
-
 	@POST
 	@Path("order")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -87,11 +54,11 @@ public class FoodOrderApi {
 		String loginNr = jwt.getName();
 		UUID orderId = request.orderId();
 		if(orderId == null) {
-			throw new ApiException("Order ID is required");
+			throw new ApiException("Order ID is required.", Response.Status.BAD_REQUEST);
 		}
 		String sharedLoginNr = request.loginNr();
 		if(sharedLoginNr == null || sharedLoginNr.isEmpty()) {
-			throw  new ApiException("Login ID is required");
+			throw  new ApiException("Login ID is required.", Response.Status.BAD_REQUEST);
 		}
 
         try {
@@ -102,16 +69,40 @@ public class FoodOrderApi {
         return Response.status(Response.Status.OK).entity(null).build();
 	}
 
+	@GET
+	@Path("list_all")
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({"GUEST", "FOOD_COURT_WORKER"})
+	public Response listAll() throws ApiException {
+		String loginNr = jwt.getName();
+		List<FoodOrder> data = foodOrderService.listByLoginNr(loginNr);
+		return Response.status(Response.Status.OK).entity(data).build();
+	}
+
+	@GET
+	@Path("list_all/by_status/{status}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({"GUEST", "FOOD_COURT_WORKER"})
+	public Response listByStatus(@PathParam(value = "status") FoodOrderStatus status) throws ApiException {
+		String loginNr = jwt.getName();
+		if(status == null) {
+			throw new ApiException("Status must be provided.", Response.Status.BAD_REQUEST);
+		}
+
+		List<FoodOrder> data = foodOrderService.listByLoginNrAndStatus(loginNr, status);
+		return Response.status(Response.Status.OK).entity(data).build();
+	}
+
 	@PUT
 	@Path("update/{orderId}/{status}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("FOOD_COURT_WORKER")
 	public Response updateOrderStatus(@PathParam(value = "orderId") UUID orderId, @PathParam(value = "status") FoodOrderStatus status) throws ApiException {
 		if(orderId == null) {
-			throw new ApiException("Order ID is required");
+			throw new ApiException("Order ID is required.", Response.Status.BAD_REQUEST);
 		}
 		if (status == null) {
-			throw new ApiException("Status is required");
+			throw new ApiException("Status is required.", Response.Status.BAD_REQUEST);
 		}
 
         FoodOrder data;
@@ -121,5 +112,15 @@ public class FoodOrderApi {
             throw new ApiException(e);
         }
         return Response.status(Response.Status.OK).entity(data).build();
+	}
+
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("admin/list_all")
+	@RolesAllowed("ADMIN")
+	public Response listAllAdmin() {
+		List<FoodOrder> data = foodOrderService.listAll(true);
+		return Response.status(Response.Status.OK).entity(data).build();
 	}
 }

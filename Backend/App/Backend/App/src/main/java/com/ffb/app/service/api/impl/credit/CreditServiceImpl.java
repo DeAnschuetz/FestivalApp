@@ -16,6 +16,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class CreditServiceImpl implements CreditService {
@@ -30,36 +31,11 @@ public class CreditServiceImpl implements CreditService {
     }
 
     @Override
-    @Transactional
-    public void createInitialCredit(Account account) throws ServiceException {
-        if (account == null) throw new IllegalArgumentException("account must not be null");
-
-        String loginNr = account.getLoginNr();
-        if (creditDao.existsByLoginNr(loginNr)) {
-            throw new ServiceException("Credit already exists for loginNr=" + loginNr);
-        }
-
-        Credit credit = new Credit(UUID.randomUUID(), INITIAL_AMMOUNT, account);
-        creditDao.persist(credit);
-
-        CreditHistory creditHistory = new CreditHistory(
-                UUID.randomUUID(),
-                0.0,
-                INITIAL_AMMOUNT,
-                LocalDateTime.now()
-        );
-        creditHistory.setAccount(account);
-        creditHistory.setCredit(credit);
-        creditDao.persistHistory(creditHistory);
-
-    }
-
-    @Override
     public Credit getByLoginNr(String loginNr) throws ServiceException {
         try {
             return creditDao.getByLoginNr(loginNr);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
     }
 
@@ -67,20 +43,20 @@ public class CreditServiceImpl implements CreditService {
     @Transactional
     public Credit changeAmount(String loginNr, double amount) throws ServiceException {
         if (amount <= 0) {
-            throw new IllegalArgumentException("amount must be > 0");
+            throw new ServiceException("amount must be > 0", Response.Status.BAD_REQUEST);
         }
 
         Credit credit;
         try {
             credit = creditDao.getByLoginNr(loginNr);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
         double oldAmount = credit.getAmount();
         double newAmount = oldAmount - amount;
 
         if (newAmount < 0) {
-            throw new ServiceException("Insufficient credit");
+            throw new ServiceException("Insufficient credit", Response.Status.BAD_REQUEST);
         }
         credit.setAmount(newAmount);
 

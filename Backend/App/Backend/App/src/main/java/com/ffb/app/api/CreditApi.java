@@ -9,6 +9,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
@@ -26,8 +27,9 @@ public class CreditApi {
 	}
 
 	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("GUEST")
-	public Response getCreditByLoginNr() throws ApiException {
+	public Response getCredit() throws ApiException {
 		String loginNr = jwt.getName();
 
 		Credit credit;
@@ -41,12 +43,13 @@ public class CreditApi {
 	}
 
 	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("add/{amount}")
 	@RolesAllowed("GUEST")
 	public Response addCredit(@PathParam(value = "amount") int amount) throws ApiException {// TODO Request?
 		String loginNr = jwt.getName();
 		if (amount == 0) {
-			throw new ApiException("The amount must not be 0.");
+			throw new ApiException("The amount must not be 0.", Response.Status.BAD_REQUEST);
 		}
 
 		Credit credit;

@@ -1,18 +1,29 @@
 package com.ffb.model.exception;
 
+import jakarta.ws.rs.core.Response;
+
 import java.io.IOException;
 
 public class ServiceException extends FestivalFoodException {
 
-    public ServiceException(String message) {
+    private final Response.Status status;
+
+    public ServiceException(String message, Response.Status status) {
         super(message);
+        this.status = status;
     }
 
-    public ServiceException(String message, IOException cause) {
+    public ServiceException(String message, IOException cause, Response.Status status) {
         super(message, cause);
+        this.status = status;
     }
 
-    public ServiceException(DaoException exception) {
-        super(exception.getMessage(), exception);
+    public ServiceException(Exception cause, Response.Status status) {
+        super(cause.getMessage(), cause);
+        this.status = status;
+    }
+
+    public Response.Status getStatus() {
+        return status;
     }
 }

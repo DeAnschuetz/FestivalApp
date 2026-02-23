@@ -9,9 +9,8 @@ import com.ffb.model.exception.ServiceException;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 
@@ -30,10 +29,16 @@ public class TicketApi {
     }
 
     @POST
-    @Path("register")
+    @Path("admin/register")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed("ADMIN")
     public Response register(TicketRequest request) throws ApiException {
         List<String> loginNrs = request.loginNrs();
+        if(loginNrs == null || loginNrs.isEmpty()) {
+            LOG.error("loginNrs is empty");
+            throw new ApiException("LoginNrs must not be empty.", Response.Status.BAD_REQUEST);
+        }
         LOG.info("Registering tickets for login numbers: " + loginNrs);
 
         List<Ticket> data;
@@ -48,8 +53,9 @@ public class TicketApi {
     }
 
     @GET
-    @Path("list_all")
+    @Path("admin/list_all")
     @RolesAllowed("ADMIN")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response listAll() {
         List<Ticket> data = accountService.getAllTickets();
         return Response.status(Response.Status.OK).entity(data).build();

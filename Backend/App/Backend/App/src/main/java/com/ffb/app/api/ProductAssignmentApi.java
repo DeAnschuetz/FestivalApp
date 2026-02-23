@@ -30,14 +30,14 @@ public class ProductAssignmentApi {
 
     @POST
     @Path("by_main_sub_id/{mainProductId}/{subProductId}")
-    @Produces(MediaType.TEXT_PLAIN)
-    @RolesAllowed("FOOD_COURT_WORKER")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"FOOD_COURT_WORKER", "ADMIN"})
     public Response createAssignmentForIds(@PathParam("mainProductId") UUID mainProductId, @PathParam("subProductId") UUID subProductId) throws ApiException {
         if (mainProductId == null) {
-            throw new WebApplicationException("The main product id must not be null.");
+            throw new ApiException("The main product id must not be null.", Response.Status.BAD_REQUEST);
         }
         if (subProductId == null) {
-            throw new WebApplicationException("The sub product id must not be null.");
+            throw new ApiException("The sub product id must not be null.", Response.Status.BAD_REQUEST);
         }
 
         boolean result;
@@ -52,10 +52,10 @@ public class ProductAssignmentApi {
     @GET
     @Path("list/by_main_id/{mainProductId}")
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed("FOOD_COURT_WORKER")
+    @RolesAllowed({"FOOD_COURT_WORKER", "ADMIN"})
     public Response listAssignmentsByMainProductId(@PathParam("mainProductId") UUID mainProductId) throws ApiException {
         if (mainProductId == null) {
-            throw new ApiException("The main product id must not be null.");
+            throw new ApiException("The main product id must not be null.", Response.Status.BAD_REQUEST);
         }
 
         List<MainSubProductLink> data = productService.listAssignmentsForMainProduct(mainProductId);
@@ -65,10 +65,11 @@ public class ProductAssignmentApi {
 
     @DELETE
     @Path("by_id/{id}")
-    @RolesAllowed("FOOD_COURT_WORKER")
+    @Produces(MediaType.TEXT_PLAIN)
+    @RolesAllowed({"FOOD_COURT_WORKER", "ADMIN"})
     public Response deleteAssignmentById(@PathParam("id") UUID id) throws ApiException {
         if (id == null) {
-            throw new ApiException("The assignment id must not be null.");
+            throw new ApiException("The assignment id must not be null.", Response.Status.BAD_REQUEST);
         }
 
         productService.deleteAssignmentById(id);
@@ -77,13 +78,14 @@ public class ProductAssignmentApi {
 
     @DELETE
     @Path("by_main_sub_id/{mainProductId}/{subProductId}")
-    @RolesAllowed("ADMIN")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"FOOD_COURT_WORKER", "ADMIN"})
     public Response deleteAssignmentByMainSubProductIds(@PathParam("mainProductId") UUID mainProductId, @PathParam("subProductId") UUID subProductId) throws ApiException {
         if (mainProductId == null) {
-            throw new ApiException("The main product id must not be null.");
+            throw new ApiException("The main product id must not be null.", Response.Status.BAD_REQUEST);
         }
         if (subProductId == null) {
-            throw new ApiException("The sub product id must not be null.");
+            throw new ApiException("The sub product id must not be null.", Response.Status.BAD_REQUEST);
         }
 
         try {

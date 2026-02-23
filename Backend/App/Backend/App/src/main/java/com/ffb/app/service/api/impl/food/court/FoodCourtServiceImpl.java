@@ -11,6 +11,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 import java.io.PushbackInputStream;
 import java.util.List;
@@ -35,7 +36,7 @@ public class FoodCourtServiceImpl implements FoodCourtService {
         try {
             return foodCourtDao.getById(id);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
     }
 
@@ -43,7 +44,7 @@ public class FoodCourtServiceImpl implements FoodCourtService {
         try {
             return foodCourtDao.getByLoginNr(loginNr);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
     }
 
@@ -55,55 +56,60 @@ public class FoodCourtServiceImpl implements FoodCourtService {
     @Override
     @Transactional
     public FoodCourt create(String loginNr, String name) throws ServiceException {
+        Account account;
         try {
-            Account account = accountDao.findByLoginNr(loginNr);
-            FoodCourt foodCourt = new FoodCourt(
-                    name
-            );
-            foodCourt.setAccount(account);
-            foodCourtDao.persist(foodCourt);
-            return foodCourt;
+            account = accountDao.findByLoginNr(loginNr);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
+        FoodCourt foodCourt = new FoodCourt(
+                name
+        );
+        foodCourt.setAccount(account);
+        foodCourtDao.persist(foodCourt);
+        return foodCourt;
     }
 
     @Override
     public FoodCourt updateByLoginNr(String loginNr, String name) throws ServiceException {
+        FoodCourt foodCourt;
         try {
-            FoodCourt foodCourt = foodCourtDao.getByLoginNr(loginNr);
-            foodCourt.setDisplayName(name);
-            foodCourtDao.persist(foodCourt);
-            return foodCourt;
+            foodCourt = foodCourtDao.getByLoginNr(loginNr);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
+        foodCourt.setDisplayName(name);
+        foodCourtDao.persist(foodCourt);
+        return foodCourt;
     }
 
     @Override
     @Transactional
     public FoodCourt updateById(UUID id, String loginNr, String name) throws EntityNotFoundException, ServiceException {
+        Account account;
+        FoodCourt foodCourt;
         try {
-            Account account = accountDao.getByLoginNr(loginNr);
-            FoodCourt foodCourt = getById(id);
-            foodCourt.setAccount(account);
-            foodCourt.setDisplayName(name);
-            foodCourtDao.persist(foodCourt);
-            return foodCourt;
+            account = accountDao.getByLoginNr(loginNr);
+            foodCourt = getById(id);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
+        foodCourt.setAccount(account);
+        foodCourt.setDisplayName(name);
+        foodCourtDao.persist(foodCourt);
+        return foodCourt;
     }
 
     @Override
     @Transactional
     public void delete(UUID id) throws EntityNotFoundException, ServiceException {
+        FoodCourt foodCourt;
         try {
-            FoodCourt foodCourt = foodCourtDao.getById(id);
-            foodCourtDao.delete(foodCourt);
+            foodCourt = foodCourtDao.getById(id);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
+        foodCourtDao.delete(foodCourt);
     }
 
     @Override
@@ -112,7 +118,7 @@ public class FoodCourtServiceImpl implements FoodCourtService {
         try {
             return foodCourtDao.getById(id);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
     }
 
@@ -124,7 +130,7 @@ public class FoodCourtServiceImpl implements FoodCourtService {
             foodCourtDao.addImage(loginNr, inputData);
             LOG.info("Added image for food court with loginNr: " + loginNr);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
     }
 
@@ -134,7 +140,7 @@ public class FoodCourtServiceImpl implements FoodCourtService {
         try {
             return foodCourtDao.getImageById(foodCourtId);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
     }
 }

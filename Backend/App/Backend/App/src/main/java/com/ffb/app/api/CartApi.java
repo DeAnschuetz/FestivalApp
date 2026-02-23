@@ -31,7 +31,8 @@ public class CartApi {
 	}
 
 	@GET
-	@RolesAllowed("GUEST")
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({"GUEST", "ADMIN"})
 	public Response getCart() throws ApiException {
 		String loginNr = jwt.getName();
         CartSimple data;
@@ -45,22 +46,23 @@ public class CartApi {
 	}
 
 	@PUT
+	@Path("add_cart_item")
+	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("add")
 	@RolesAllowed("GUEST")
 	public Response addItemToCart( CartItemCreationRequest request ) throws ApiException {
 		String loginNr = jwt.getName();
 		UUID productId = request.productId();
 		if(productId == null) {
-			throw new ApiException("Product id must be provided");
+			throw new ApiException("Product id must be provided.", Response.Status.BAD_REQUEST);
 		}
 		int itemCount = request.itemCount();
 		if (itemCount <= 0) {
-			throw new ApiException("Item count must be greater than 0");
+			throw new ApiException("Item count must be greater than 0.", Response.Status.BAD_REQUEST);
 		}
 		String extra = request.extra();
 		if (extra != null && extra.length() > 255) {
-			throw new ApiException("Extra must be less than 255 characters");
+			throw new ApiException("Extra must be less than 255 characters.", Response.Status.BAD_REQUEST);
 		}
 
         CartSimple data;
@@ -73,23 +75,24 @@ public class CartApi {
 	}
 
 	@PUT
-	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("update")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@RolesAllowed("GUEST")
 	public Response updateCartItem(CartItemUpdateRequest request ) throws ApiException {
 		String loginNr = jwt.getName();
 
 		UUID cartItemId = request.cartItemId();
 		if(cartItemId == null) {
-			throw new ApiException("Cart item id must be provided");
+			throw new ApiException("Cart item id must be provided.", Response.Status.BAD_REQUEST);
 		}
 		int itemCount = request.itemCount();
 		if (itemCount <= 0) {
-			throw  new ApiException("Item count must be greater than 0");
+			throw  new ApiException("Item count must be greater than 0.", Response.Status.BAD_REQUEST);
 		}
 		String extra = request.extra();
 		if (extra != null && extra.length() > 255) {
-			throw new ApiException("Extra must be less than 255 characters");
+			throw new ApiException("Extra must be less than 255 characters.", Response.Status.BAD_REQUEST);
 		}
 
         CartSimple data;
@@ -102,27 +105,29 @@ public class CartApi {
 	}
 
 	@DELETE
-	@RolesAllowed("GUEST")
 	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed("GUEST")
 	public Response removeItemFromCart(@PathParam(value = "id")  UUID id) throws ApiException {
 		String loginNr = jwt.getName();
 		if(loginNr == null || loginNr.isEmpty()) {
-			throw new ApiException("LoginNr must be provided");
+			throw new ApiException("LoginNr must be provided", Response.Status.BAD_REQUEST);
 		}
 		if(id == null) {
-			throw new ApiException("Cart item id must be provided");
+			throw new ApiException("Cart item id must be provided", Response.Status.BAD_REQUEST);
 		}
-        CartSimple data;
-        try {
-            data = cartService.removeItemFromCart(loginNr, id);
-        } catch (ServiceException e) {
-            throw new ApiException(e);
-        }
-        return Response.ok().entity(data).build();
+		CartSimple data;
+		try {
+			data = cartService.removeItemFromCart(loginNr, id);
+		} catch (ServiceException e) {
+			throw new ApiException(e);
+		}
+		return Response.ok().entity(data).build();
 	}
 
 	@PUT
 	@Path("{newPrio}")
+	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("GUEST")
 	public Response changePrio(@PathParam(value = "newPrio") boolean newPrio) throws ApiException {
 		String loginNr = jwt.getName();

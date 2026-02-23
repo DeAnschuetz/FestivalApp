@@ -11,8 +11,6 @@ import java.util.UUID;
 
 public interface CreditService {
 
-    void createInitialCredit(Account account) throws ServiceException;
-
     Credit getByLoginNr(String loginNr) throws ServiceException;
 
     Credit changeAmount(String loginNr, double amount) throws ServiceException;

@@ -15,7 +15,7 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
     @Override
     public List<FoodOrder> listAllWithItems() {
         return find(
-                "SELECT DISTINCT fo" +
+                        "SELECT DISTINCT fo" +
                         "FROM FoodOrder fo" +
                         "LEFT JOIN FETCH fo.foodOrderItems"
                 )//
@@ -26,7 +26,7 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
     @Override
     public Optional<FoodOrder> findByIdWithItems(UUID id) {
         return find(
-                "SELECT DISTINCT fo" +
+                        "SELECT DISTINCT fo" +
                         "FROM FoodOrder fo" +
                         "LEFT JOIN FETCH fo.foodOrderItems" +
                         "WHERE fo.id = ?1",
@@ -38,12 +38,13 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
 
     @Override
     public Optional<FoodOrder> findByIdWithItemsAndHistory(UUID id) {
-        return find("SELECT DISTINCT fo" +
+        return find(
+                        "SELECT DISTINCT fo" +
                         "FROM FoodOrder fo" +
                         "LEFT JOIN FETCH fo.foodOrderItems" +
                         "LEFT JOIN FETCH fo.foodOrderHistory" +
                         "WHERE fo.id = ?1",
-                    id
+                        id
                 )//
                 .firstResultOptional()//
                 ;
@@ -51,12 +52,29 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
 
     @Override
     public List<FoodOrder> listByLoginNr(String loginNr) {
-        return List.of();
+        return find(
+                        "SELECT DISTINCT fo" +
+                        "FROM FoodOrder fo" +
+                        "LEFT JOIN FETCH fo.foodOrderItems" +
+                        "Where fo.account.ticket.loginNr = ?1",
+                        loginNr
+                 )//
+                .list()//
+                ;
     }
 
     @Override
     public List<FoodOrder> listByLoginNrAndStatus(String loginNr, FoodOrderStatus status) {
-        return List.of();
+        return find(
+                        "SELECT DISTINCT fo" +
+                        "FROM FoodOrder fo" +
+                        "LEFT JOIN FETCH fo.foodOrderItems" +
+                        "Where fo.account.ticket.loginNr = ?1 AND status = ?2",
+                        loginNr,
+                        status
+                )//
+                .list()//
+                ;
     }
 
 }

@@ -8,11 +8,14 @@ import com.ffb.model.api.response.cart.CartSimple;
 import com.ffb.model.db.objects.cart.Cart;
 import com.ffb.model.db.objects.cart.CartItem;
 import com.ffb.model.db.objects.product.Product;
+import com.ffb.model.exception.ApiException;
 import com.ffb.model.exception.DaoException;
 import com.ffb.model.exception.ServiceException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
+import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +23,8 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class CartServiceImpl implements CartService {
+
+    private final Logger LOG = Logger.getLogger(CartServiceImpl.class);
 
     private final double EXTRA_PRICE = 2;
     private final CartDao cartDao;
@@ -33,11 +38,15 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartSimple getCartByLoginNr(String loginNr) throws ServiceException {
+        if (loginNr == null || loginNr.isEmpty()) {
+            LOG.error("LoginNr is null or Empty");
+            throw new ServiceException("LoginNr is null or Empty", Response.Status.BAD_REQUEST);
+        }
         Cart cart;
         try {
             cart = cartDao.findByLoginNrWithItems(loginNr);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
 
         return toSimple(cart);
@@ -46,11 +55,15 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public CartSimple changePrio(String loginNr, boolean newPrio) throws ServiceException {
+        if (loginNr == null || loginNr.isEmpty()) {
+            LOG.error("LoginNr is null or Empty");
+            throw new ServiceException("LoginNr is null or Empty", Response.Status.BAD_REQUEST);
+        }
         Cart cart = null;
         try {
             cart = cartDao.findByLoginNrWithItems(loginNr);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
 
         cart.setHasPrio(newPrio);
@@ -62,19 +75,33 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public CartSimple addItemToCart(String loginNr, UUID productId, int itemCount, String extra) throws ServiceException {
-
+        if (loginNr == null || loginNr.isEmpty()) {
+            LOG.error("LoginNr is null or Empty");
+            throw new ServiceException("LoginNr is null or Empty", Response.Status.BAD_REQUEST);
+        }
+        if (productId==null){
+            LOG.error("productId is null");
+            throw new ServiceException("productId is null", Response.Status.BAD_REQUEST);
+        }
+        if (itemCount<=0){
+            LOG.error("itemCount is <= 0");
+            throw new ServiceException("itemCount is <= 0", Response.Status.BAD_REQUEST);
+        }
+        if (extra != null && extra.length() > 255) {
+            throw new ServiceException("Extra must be less than 255 characters.", Response.Status.BAD_REQUEST);
+        }
         // get the cart for the user, if it does not exist, throw an exception
         Cart cart;
         try {
             cart = cartDao.findByLoginNrWithItems(loginNr);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
 
         // get the product, if it does not exist, throw an exception
         Product product = productDao.getById(productId);
         if (product == null) {
-            throw new ServiceException("Product not found: " + productId);
+            throw new ServiceException("Product not found: " + productId, Response.Status.BAD_REQUEST);
         }
 
         // check if the cart already contains an item with the same product and extra
@@ -130,7 +157,7 @@ public class CartServiceImpl implements CartService {
         try {
             cart = cartDao.findByLoginNrWithItems(loginNr);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
 
         // remove the cart item with the given id from the cart, if it does not exist, throw an exception
@@ -138,7 +165,7 @@ public class CartServiceImpl implements CartService {
                 .removeIf(item -> item.getId().equals(cartItemId))//
         ;
         if (!removed) {
-            throw new ServiceException("CartItem not found: " + cartItemId);
+            throw new ServiceException("CartItem not found: " + cartItemId, Response.Status.NOT_FOUND);
         }
 
         // recalculate the cart total and persist the cart
@@ -155,7 +182,7 @@ public class CartServiceImpl implements CartService {
         try {
             cart = cartDao.findByLoginNrWithItems(loginNr);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
 
         // find the cart item with the given id, if it does not exist, throw an exception

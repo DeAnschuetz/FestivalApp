@@ -15,6 +15,7 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TransactionRequiredException;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 import java.util.List;
@@ -47,11 +48,11 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public Product createProductByLoginNr(String loginNr, double price, String displayName, String symbolIdentifier, int minimalWarning) throws ServiceException {
         UUID id = UUID.randomUUID();
-        FoodCourt foodcourt = null;
+        FoodCourt foodcourt;
         try {
             foodcourt = foodCourtDao.getByLoginNr(loginNr);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
         Product product = new Product(id, price, displayName, symbolIdentifier, minimalWarning, foodcourt);
         productDao.persist(product);
@@ -72,14 +73,14 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public Product createProductWithId(UUID id, UUID foodCourtId, double price, String displayName, String symbolIdentifier, int minimalWarning) throws ServiceException {
         if (productDao.getById(id) != null) {
-            throw new ServiceException("Product already exists: " + id);
+            throw new ServiceException("Product already exists: " + id, Response.Status.NOT_FOUND);
         }
 
-        FoodCourt foodcourt = null;
+        FoodCourt foodcourt;
         try {
             foodcourt = foodCourtDao.getById(foodCourtId);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
         Product product = new Product(id, price, displayName, symbolIdentifier, minimalWarning, foodcourt);
         productDao.persist(product);
@@ -91,7 +92,7 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProductById(UUID id) throws ServiceException {
         Product p = productDao.getById(id);
         if (p == null) {
-            throw new ServiceException("Product not found: " + id);
+            throw new ServiceException("Product not found: " + id, Response.Status.NOT_FOUND);
         }
         productDao.delete(p);
     }
@@ -102,16 +103,16 @@ public class ProductServiceImpl implements ProductService {
 
         Product main = productDao.getById(mainProductId);
         if (main == null) {
-            throw new ServiceException("Main product not found: " + mainProductId);
+            throw new ServiceException("Main product not found: " + mainProductId, Response.Status.NOT_FOUND);
         }
 
         Product sub = productDao.getById(subProductId);
         if (sub == null) {
-            throw new ServiceException("Sub product not found: " + subProductId);
+            throw new ServiceException("Sub product not found: " + subProductId, Response.Status.NOT_FOUND);
         }
 
         if (productDao.linkExists(mainProductId, subProductId)) {
-            throw new ServiceException("Assignment already exists");
+            throw new ServiceException("Assignment already exists", Response.Status.NOT_FOUND);
         }
 
         MainSubProductLink link = new MainSubProductLink(main, sub);
@@ -137,7 +138,7 @@ public class ProductServiceImpl implements ProductService {
     public void deleteAssignmentByPair(UUID mainProductId, UUID subProductId) throws ServiceException {
         long deleted = productDao.deleteLinkByPair(mainProductId, subProductId);
         if (deleted == 0) {
-            throw new ServiceException("Assignment not found for given pair");
+            throw new ServiceException("Assignment not found for given pair", Response.Status.NOT_FOUND);
         }
     }
 }

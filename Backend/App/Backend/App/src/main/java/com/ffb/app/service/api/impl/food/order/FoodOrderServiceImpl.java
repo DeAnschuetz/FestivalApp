@@ -21,6 +21,7 @@ import com.ffb.model.exception.ServiceException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -72,24 +73,26 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 
     @Override
     public FoodOrder getById(UUID id, boolean withItems, boolean withHistory) throws ServiceException {
-        FoodOrder foodOrder = null;
+        FoodOrder foodOrder;
         if (withItems && withHistory) {
             try {
                 foodOrder = foodOrderDao.findByIdWithItemsAndHistory(id);
             } catch (DaoException e) {
-                throw new ServiceException(e);
+                throw new ServiceException(e, Response.Status.NOT_FOUND);
             }
         } else if (withItems) {
             try {
                 foodOrder = foodOrderDao.findByIdWithItems(id);
             } catch (DaoException e) {
-                throw new ServiceException(e);
+                throw new ServiceException(e, Response.Status.NOT_FOUND);
             }
         } else {
             foodOrder = foodOrderDao.findById(id);
         }
 
-        if (foodOrder == null) throw new ServiceException("FoodOrder not found: " + id);
+        if (foodOrder == null) {
+            throw new ServiceException("FoodOrder not found: " + id, Response.Status.NOT_FOUND);
+        }
         return foodOrder;
     }
 
@@ -173,7 +176,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                     .toList()//
                     ;
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
 
     }
@@ -183,7 +186,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
     public FoodOrder updateStatus(UUID orderId, FoodOrderStatus newStatus) throws ServiceException {
         FoodOrder foodOrder = foodOrderDao.findById(orderId);
         if (foodOrder == null) {
-            throw new ServiceException("FoodOrder not found: " + orderId);
+            throw new ServiceException("FoodOrder not found: " + orderId, Response.Status.NOT_FOUND);
         }
 
         FoodOrderStatus oldStatus = foodOrder.getStatus();
@@ -209,7 +212,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
     public void delete(UUID id) throws ServiceException {
         FoodOrder foodOrder = foodOrderDao.findById(id);
         if (foodOrder == null) {
-            throw new ServiceException("FoodOrder not found: " + id);
+            throw new ServiceException("FoodOrder not found: " + id, Response.Status.NOT_FOUND);
         }
 
         foodOrderDao.delete(foodOrder);
@@ -218,11 +221,11 @@ public class FoodOrderServiceImpl implements FoodOrderService {
     @Override
     public void shareOrder(String loginNr, UUID orderId, String sharedLoginNr) throws ServiceException {
         FoodOrder foodOrder = foodOrderDao.findById(orderId);
-        Account sharedAccount = null;
+        Account sharedAccount;
         try {
             sharedAccount = accountDao.findByLoginNr(sharedLoginNr);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
         foodOrder.setSharedAccount(sharedAccount);
         foodOrderDao.persist(foodOrder);

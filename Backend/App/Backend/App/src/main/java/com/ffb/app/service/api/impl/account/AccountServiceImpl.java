@@ -12,6 +12,7 @@ import com.ffb.model.db.objects.account.AccountType;
 import com.ffb.model.db.objects.account.Ticket;
 import com.ffb.model.exception.DaoException;
 import com.ffb.model.exception.ServiceException;
+import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 import com.ffb.model.db.objects.cart.Cart;
 import com.ffb.model.db.objects.credit.Credit;
@@ -45,13 +46,13 @@ public class AccountServiceImpl implements AccountService {
 		LOG.trace("ENTER: getAccountByLoginNr");
 		if (loginNr == null || loginNr.isBlank()) {
 			LOG.error("loginNr is null or empty");
-			throw new IllegalArgumentException("loginNr must not be blank");
+			throw new ServiceException("loginNr must not be blank", Response.Status.BAD_REQUEST);
 		}
 		LOG.trace("EXIT: getAccountByLoginNr");
         try {
             return accountDao.findByLoginNr(loginNr);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
     }
 
@@ -61,22 +62,22 @@ public class AccountServiceImpl implements AccountService {
 		LOG.trace("ENTER: createAccount");
 		if (loginNr == null || loginNr.isBlank()) {
 			LOG.error("loginNr is null or empty");
-			throw new ServiceException("loginNr must not be blank");
+			throw new ServiceException("loginNr must not be blank.", Response.Status.BAD_REQUEST);
 		}
 		if (rawPassword == null || rawPassword.isBlank()) {
 			LOG.error("rawPassword is null or empty");
-			throw new ServiceException("password must not be blank");
+			throw new ServiceException("password must not be blank.", Response.Status.BAD_REQUEST);
 		}
 
 		if (accountDao.existsByLoginNr(loginNr)) {
 			LOG.error("loginNr already exists");
-			throw new ServiceException("loginNr already exists");
+			throw new ServiceException("loginNr already exists.", Response.Status.BAD_REQUEST);
 		}
 		Ticket ticket;
         try {
             ticket = accountDao.getTicketByLoginNr(loginNr) ;
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
         AccountType type = getAccountTypeFromLoginNr(loginNr);
 
@@ -84,12 +85,13 @@ public class AccountServiceImpl implements AccountService {
 		String hashedPassword = BcryptUtil.bcryptHash(rawPassword.trim());
 
 		Account account = new Account(id, ticket, hashedPassword, type);
-		Credit credit = new Credit(UUID.randomUUID(), 1000, account);
-		Cart cart = new Cart(UUID.randomUUID(), false, 0, account);
-
 		accountDao.persist(account);
-		creditDao.persist(credit);
-		cartDao.persist(cart);
+		if(type == AccountType.GUEST) {
+			Credit credit = new Credit(UUID.randomUUID(), 1000, account);
+			creditDao.persist(credit);
+			Cart cart = new Cart(UUID.randomUUID(), false, 0, account);
+			cartDao.persist(cart);
+		}
 
 		accountDao.flush();
 
@@ -102,14 +104,14 @@ public class AccountServiceImpl implements AccountService {
 		LOG.trace("ENTER: verifyAccount");
 		if (loginNr == null || rawPassword == null) {
 			LOG.error("loginNr is null or empty");
-			throw new ServiceException("loginNr and password must not be null");
+			throw new ServiceException("loginNr and password must not be null.", Response.Status.BAD_REQUEST);
 		}
 
         Account account = null;
         try {
             account = accountDao.findByLoginNr(loginNr);
         } catch (DaoException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
         AccountType type = account.getType();
 		boolean verified = BcryptUtil.matches(rawPassword.trim(), account.getPassword());
@@ -154,7 +156,7 @@ public class AccountServiceImpl implements AccountService {
 		} else if (loginNr.startsWith("A")) {
 			return AccountType.ADMIN;
 		} else {
-			throw new ServiceException("Invalid loginNr format. Must start with 'V', 'F', or 'A'.");
+			throw new ServiceException("Invalid loginNr format. Must start with 'V', 'F', or 'A'.", Response.Status.BAD_REQUEST);
 		}
 	}
 	
