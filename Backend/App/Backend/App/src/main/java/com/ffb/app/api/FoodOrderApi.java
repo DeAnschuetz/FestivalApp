@@ -1,18 +1,25 @@
 package com.ffb.app.api;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import com.ffb.app.service.api.api.food.order.FoodOrderService;
+import com.ffb.model.api.response.order.FoodOrderItemResponse;
+import com.ffb.model.api.response.order.FoodOrderResponse;
+import com.ffb.model.db.objects.account.AccountType;
+import com.ffb.model.db.objects.foodorder.FoodOrderItem;
+import com.ffb.model.db.objects.product.Product;
 import com.ffb.model.exception.ApiException;
 import com.ffb.model.exception.ServiceException;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.resteasy.reactive.PartType;
-import com.ffb.model.api.request.order.ShareOrderRequest;
+import com.ffb.model.api.request.food.order.ShareOrderRequest;
 import com.ffb.model.db.objects.foodorder.FoodOrder;
 import com.ffb.model.db.objects.foodorder.FoodOrderStatus;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -37,9 +44,9 @@ public class FoodOrderApi {
 	@RolesAllowed("GUEST")
 	public Response order() throws ApiException {
 		String loginNr = jwt.getName();
-        List<FoodOrder> data;
+        List<FoodOrderResponse> data;
         try {
-            data = foodOrderService.create(loginNr);
+			data = foodOrderService.create(loginNr);
         } catch (ServiceException e) {
             throw new ApiException(e);
         }
@@ -72,24 +79,106 @@ public class FoodOrderApi {
 	@GET
 	@Path("list_all")
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({"GUEST", "FOOD_COURT_WORKER"})
+	@RolesAllowed({"GUEST", "FOOD_COURT_WORKER", "ADMIN"})
+	@Transactional
 	public Response listAll() throws ApiException {
 		String loginNr = jwt.getName();
-		List<FoodOrder> data = foodOrderService.listByLoginNr(loginNr);
+		Set<String> groups = jwt.getGroups();
+		AccountType accountType;
+		if (groups.contains("ADMIN")) {
+			accountType = AccountType.ADMIN;
+		} else if (groups.contains("FOOD_COURT_WORKER")) {
+			accountType = AccountType.FOOD_COURT_WORKER;
+		} else if (groups.contains("GUEST")) {
+			accountType = AccountType.GUEST;
+		} else {
+			throw new ApiException("Unknown AccountType: " + groups, Response.Status.BAD_REQUEST);
+		}
+        List<FoodOrderResponse> data;
+        try {
+            data = foodOrderService.listByLoginNrAndAccountType(loginNr, accountType, false);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
+        }
 		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
 	@GET
 	@Path("list_all/by_status/{status}")
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({"GUEST", "FOOD_COURT_WORKER"})
+	@RolesAllowed({"GUEST", "FOOD_COURT_WORKER", "ADMIN"})
 	public Response listByStatus(@PathParam(value = "status") FoodOrderStatus status) throws ApiException {
 		String loginNr = jwt.getName();
-		if(status == null) {
-			throw new ApiException("Status must be provided.", Response.Status.BAD_REQUEST);
+		Set<String> groups = jwt.getGroups();
+		AccountType accountType;
+		if (groups.contains("ADMIN")) {
+			accountType = AccountType.ADMIN;
+		} else if (groups.contains("FOOD_COURT_WORKER")) {
+			accountType = AccountType.FOOD_COURT_WORKER;
+		} else if (groups.contains("GUEST")) {
+			accountType = AccountType.GUEST;
+		} else {
+			throw new ApiException("Unknown AccountType: " + groups, Response.Status.BAD_REQUEST);
 		}
+		List<FoodOrderResponse> data;
+		try {
+			data = foodOrderService.listByLoginNrAndAccountTypeAndStatus(loginNr, accountType, status, false);
+		} catch (ServiceException e) {
+			throw new ApiException(e);
+		}
+		return Response.status(Response.Status.OK).entity(data).build();
+	}
 
-		List<FoodOrder> data = foodOrderService.listByLoginNrAndStatus(loginNr, status);
+
+	@GET
+	@Path("list_all/items")
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({"GUEST", "FOOD_COURT_WORKER", "ADMIN"})
+	public Response listAllWithItems() throws ApiException {
+		String loginNr = jwt.getName();
+		Set<String> groups = jwt.getGroups();
+		AccountType accountType;
+		if (groups.contains("ADMIN")) {
+			accountType = AccountType.ADMIN;
+		} else if (groups.contains("FOOD_COURT_WORKER")) {
+			accountType = AccountType.FOOD_COURT_WORKER;
+		} else if (groups.contains("GUEST")) {
+			accountType = AccountType.GUEST;
+		} else {
+			throw new ApiException("Unknown AccountType: " + groups, Response.Status.BAD_REQUEST);
+		}
+		List<FoodOrderResponse> data;
+		try {
+			data = foodOrderService.listByLoginNrAndAccountType(loginNr, accountType, false);
+		} catch (ServiceException e) {
+			throw new ApiException(e);
+		}
+		return Response.status(Response.Status.OK).entity(data).build();
+	}
+
+	@GET
+	@Path("list_all/by_status/{status}/items")
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({"GUEST", "FOOD_COURT_WORKER", "ADMIN"})
+	public Response listByStatusWithItems(@PathParam(value = "status") FoodOrderStatus status) throws ApiException {
+		String loginNr = jwt.getName();
+		Set<String> groups = jwt.getGroups();
+		AccountType accountType;
+		if (groups.contains("ADMIN")) {
+			accountType = AccountType.ADMIN;
+		} else if (groups.contains("FOOD_COURT_WORKER")) {
+			accountType = AccountType.FOOD_COURT_WORKER;
+		} else if (groups.contains("GUEST")) {
+			accountType = AccountType.GUEST;
+		} else {
+			throw new ApiException("Unknown AccountType: " + groups, Response.Status.BAD_REQUEST);
+		}
+		List<FoodOrderResponse> data;
+		try {
+			data = foodOrderService.listByLoginNrAndAccountTypeAndStatus(loginNr, accountType, status, false);
+		} catch (ServiceException e) {
+			throw new ApiException(e);
+		}
 		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
@@ -105,22 +194,13 @@ public class FoodOrderApi {
 			throw new ApiException("Status is required.", Response.Status.BAD_REQUEST);
 		}
 
-        FoodOrder data;
+        FoodOrderResponse data;
         try {
-            data = foodOrderService.updateStatus(orderId, status);
+			data = foodOrderService.updateStatus(orderId, status);
         } catch (ServiceException e) {
             throw new ApiException(e);
         }
         return Response.status(Response.Status.OK).entity(data).build();
 	}
 
-
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("admin/list_all")
-	@RolesAllowed("ADMIN")
-	public Response listAllAdmin() {
-		List<FoodOrder> data = foodOrderService.listAll(true);
-		return Response.status(Response.Status.OK).entity(data).build();
-	}
 }

@@ -1,11 +1,11 @@
 package com.ffb.app.dao.impl.food.court;
 
 import com.ffb.app.dao.api.food.court.FoodCourtDao;
-import com.ffb.app.repository.impl.food.court.FoodCourtRepositoryImpl;
+import com.ffb.app.repository.api.food.court.FoodCourtRepository;
 import com.ffb.model.db.objects.food_court.FoodCourt;
 import com.ffb.model.exception.DaoException;
 import jakarta.enterprise.context.ApplicationScoped;
-
+import jakarta.inject.Inject;
 import java.io.IOException;
 import java.io.PushbackInputStream;
 import java.util.List;
@@ -14,10 +14,18 @@ import java.util.UUID;
 @ApplicationScoped
 public class FoodCourtDaoImpl implements FoodCourtDao {
 
-    private final FoodCourtRepositoryImpl foodCourtRepo;
+    private final FoodCourtRepository foodCourtRepo;
 
-    public FoodCourtDaoImpl(FoodCourtRepositoryImpl foodCourtRepo) {
+    @Inject
+    public FoodCourtDaoImpl(FoodCourtRepository foodCourtRepo) {
         this.foodCourtRepo = foodCourtRepo;
+    }
+
+    @Override
+    public FoodCourt getById(UUID id) throws DaoException {
+        return foodCourtRepo.getById(id)
+                .orElseThrow(() -> new DaoException("Food court with ID " + id + " not found."))
+                ;
     }
 
     @Override
@@ -28,20 +36,32 @@ public class FoodCourtDaoImpl implements FoodCourtDao {
     }
 
     @Override
-    public FoodCourt getById(UUID id) throws DaoException {
-        return foodCourtRepo.findByIdOptional(id)
+    public FoodCourt getByIdWithWaitingTimeAndFoodOrders(UUID id) throws DaoException {
+        return foodCourtRepo.getByIdWithWaitingTimeAndFoodOrders(id)
                 .orElseThrow(() -> new DaoException("Food court with ID " + id + " not found."))
         ;
     }
 
     @Override
-    public void persist(FoodCourt foodCourt) {
-        foodCourtRepo.persist(foodCourt);
+    public FoodCourt getByIdWithWaitingTime(UUID id) throws DaoException {
+        return foodCourtRepo.getByIdWithWaitingTime(id)
+                .orElseThrow(() -> new DaoException("Food court with ID " + id + " not found."))
+        ;
     }
 
     @Override
-    public void delete(FoodCourt foodCourt) {
-        foodCourtRepo.delete(foodCourt);
+    public FoodCourt getByIdWithFoodOrders(UUID id) throws DaoException {
+        return foodCourtRepo.getByIdWithFoodOrders(id)
+                .orElseThrow(() -> new DaoException("Food court with ID " + id + " not found."))
+        ;
+    }
+
+    @Override
+    public byte[] getImageById(UUID id) throws DaoException {
+        return foodCourtRepo.getById(id)
+                .orElseThrow(() -> new DaoException("Image with ID " + id + " not found."))
+                .getImage()
+        ;
     }
 
     @Override
@@ -67,10 +87,12 @@ public class FoodCourtDaoImpl implements FoodCourtDao {
     }
 
     @Override
-    public byte[] getImageById(UUID id) throws DaoException {
-        return foodCourtRepo.getById(id)
-                .orElseThrow(() -> new DaoException("Image with ID " + id + " not found."))
-                .getImage()
-        ;
+    public void persist(FoodCourt foodCourt) {
+        foodCourtRepo.persist(foodCourt);
+    }
+
+    @Override
+    public void delete(FoodCourt foodCourt) {
+        foodCourtRepo.delete(foodCourt);
     }
 }

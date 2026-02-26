@@ -3,6 +3,7 @@ package com.ffb.app.api;
 import com.ffb.app.service.api.api.product.ProductService;
 import com.ffb.model.api.request.product.ProductRequest;
 import com.ffb.model.api.request.product.ProductRequestSimple;
+import com.ffb.model.api.response.product.ProductResponse;
 import com.ffb.model.db.objects.product.Product;
 import com.ffb.model.exception.ApiException;
 import com.ffb.model.exception.ServiceException;
@@ -13,6 +14,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.PartType;
 
 import java.util.List;
@@ -22,8 +24,10 @@ import java.util.UUID;
 @Path("product")
 public class ProductApi {
 
+    private final Logger LOG = Logger.getLogger(ProductApi.class);
+
     @Inject
-    JsonWebToken jwt;
+    JsonWebToken webToken;
     private final ProductService productService;
 
     @Inject
@@ -40,7 +44,7 @@ public class ProductApi {
             throw new ApiException("The food court id must not be null.", Response.Status.BAD_REQUEST);
         }
 
-        List<Product> data = productService.listProductsByFoodCourtId(foodCourtId);
+        List<ProductResponse> data = productService.listProductsByFoodCourtId(foodCourtId);
         return Response.status(Response.Status.OK).entity(data).build();
     }
 
@@ -53,16 +57,16 @@ public class ProductApi {
             throw new ApiException("The product id must not be null.", Response.Status.BAD_REQUEST);
         }
 
-        Product data = productService.getProductById(id);
+        ProductResponse data = productService.getProductById(id);
         return Response.status(Response.Status.OK).entity(data).build();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("list/all")
+    @Path("list_all")
     @RolesAllowed({"GUEST", "FOOD_COURT_WORKER", "ADMIN"})
     public Response listAll() {
-        List<Product> data = productService.listProducts();
+        List<ProductResponse> data = productService.listProducts();
         return Response.status(Response.Status.OK).entity(data).build();
     }
 
@@ -71,9 +75,9 @@ public class ProductApi {
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed("FOOD_COURT_WORKER")
     public Response createProductByLoginNr(ProductRequestSimple req) throws ApiException {
-        String loginNr = jwt.getName();
+        String loginNr = webToken.getName();
         double price = req.price();
-        if (price == 0) {
+        if (price < 0) {
             throw new ApiException("The price must not be 0.", Response.Status.BAD_REQUEST);
         }
         String displayName = req.displayName();
@@ -90,7 +94,7 @@ public class ProductApi {
         }
 
         try {
-            Product created = productService.createProductByLoginNr(loginNr, price, displayName, symbolIdentifier, minimalWarning);
+            ProductResponse created = productService.createProductByLoginNr(loginNr, price, displayName, symbolIdentifier, minimalWarning);
             return Response.status(Response.Status.CREATED).entity(created).build();
         } catch (ServiceException e) {
             throw new ApiException(e);
@@ -102,8 +106,8 @@ public class ProductApi {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("FOOD_COURT_WORKER")
     public Response listProductsByLoginNr() {
-        String loginNr = jwt.getName();
-        List<Product> data = productService.listProductsByLoginNr(loginNr);
+        String loginNr = webToken.getName();
+        List<ProductResponse> data = productService.listProductsByLoginNr(loginNr);
         return Response.status(Response.Status.OK).entity(data).build();
     }
 
@@ -133,12 +137,12 @@ public class ProductApi {
         if (foodCourtId == null) {
             throw new ApiException("The food court id must not be null.", Response.Status.BAD_REQUEST);
         }
-        UUID productId = req.productId();
+        UUID productId = req.id();
         if (productId == null) {
             throw  new ApiException("The product id must not be null.", Response.Status.BAD_REQUEST);
         }
         double price = req.price();
-        if (price == 0) {
+        if (price < 0) {
             throw new ApiException("The price must not be 0.", Response.Status.BAD_REQUEST);
         }
         String displayName = req.displayName();
@@ -154,7 +158,7 @@ public class ProductApi {
             throw new ApiException("The minimal warning must not be 0.", Response.Status.BAD_REQUEST);
         }
 
-        Product created;
+        ProductResponse created;
         try {
             created = productService.createProductWithId(productId, foodCourtId, price, displayName, symbolIdentifier, minimalWarning);
         } catch (ServiceException e) {
@@ -172,14 +176,15 @@ public class ProductApi {
         if (foodCourtId == null) {
             throw new ApiException("The food court id must not be null.", Response.Status.BAD_REQUEST);
         }
-        List<Product> createdProducts = requests.stream()//
+        List<ProductResponse> createdProducts = requests.stream()//
                 .map(req -> {
-                        UUID productId = req.productId();
+                        UUID productId = req.id();
                         if (productId == null) {
+                            LOG.info("req: " + req);
                             throw  new RuntimeException("The product id must not be null.");
                         }
-                        double price = req.price();
-                        if (price == 0) {
+                    double price = req.price();
+                        if (price < 0) {
                             throw new RuntimeException("The price must not be 0.");
                         }
                         String displayName = req.displayName();

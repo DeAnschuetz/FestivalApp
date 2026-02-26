@@ -3,6 +3,7 @@ package com.ffb.app.api;
 import com.ffb.app.service.api.api.account.AccountService;
 import com.ffb.app.service.api.api.token.TokenService;
 import com.ffb.model.api.request.ticket.TicketRequest;
+import com.ffb.model.api.response.ticket.TicketResponse;
 import com.ffb.model.db.objects.account.Ticket;
 import com.ffb.model.exception.ApiException;
 import com.ffb.model.exception.ServiceException;
@@ -41,7 +42,7 @@ public class TicketApi {
         }
         LOG.info("Registering tickets for login numbers: " + loginNrs);
 
-        List<Ticket> data;
+        List<TicketResponse> data;
         try {
             data = accountService.createTicket(loginNrs);
         } catch (ServiceException e) {
@@ -57,7 +58,7 @@ public class TicketApi {
     @RolesAllowed("ADMIN")
     @Produces(MediaType.APPLICATION_JSON)
     public Response listAll() {
-        List<Ticket> data = accountService.getAllTickets();
+        List<TicketResponse> data = accountService.getAllTickets();
         return Response.status(Response.Status.OK).entity(data).build();
     }
 }

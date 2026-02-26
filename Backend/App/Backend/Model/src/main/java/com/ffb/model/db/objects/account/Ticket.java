@@ -3,6 +3,8 @@ package com.ffb.model.db.objects.account;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
@@ -11,10 +13,12 @@ import java.util.UUID;
 public class Ticket extends PanacheEntityBase {
 
     @Id
+    @JdbcTypeCode(SqlTypes.UUID)
     @Column(name = "ticket_id", unique = true, nullable = false)
     private UUID id;
 
-    @Column(name = "login_nr", unique = true, nullable = false)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "login_nr", unique = true, length = 13, nullable = false)
     private String loginNr;
 
     @JsonIgnore

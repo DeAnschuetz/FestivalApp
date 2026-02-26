@@ -6,7 +6,11 @@ import com.ffb.app.dao.api.credit.CreditDao;
 import com.ffb.app.dao.api.food.court.FoodCourtDao;
 import com.ffb.app.dao.api.food.order.FoodOrderDao;
 import com.ffb.app.service.api.api.food.order.FoodOrderService;
+import com.ffb.app.service.api.impl.food.court.FoodCourtSimulationService;
+import com.ffb.model.api.response.order.FoodOrderItemResponse;
+import com.ffb.model.api.response.order.FoodOrderResponse;
 import com.ffb.model.db.objects.account.Account;
+import com.ffb.model.db.objects.account.AccountType;
 import com.ffb.model.db.objects.cart.Cart;
 import com.ffb.model.db.objects.cart.CartItem;
 import com.ffb.model.db.objects.credit.Credit;
@@ -22,6 +26,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logging.Logger;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,7 +37,11 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class FoodOrderServiceImpl implements FoodOrderService {
 
-    private final double EXTRA_PRICE = 2;
+
+    private static final Logger LOG = Logger.getLogger(FoodOrderService.class);
+
+    @ConfigProperty(name = "order.extra.price")
+    double EXTRA_PRICE;
 
     private final FoodOrderDao foodOrderDao;
     private final AccountDao accountDao;
@@ -54,52 +64,11 @@ public class FoodOrderServiceImpl implements FoodOrderService {
         this.creditDao = creditDao;
     }
 
-    @Override
-    public List<FoodOrder> listAll(boolean withItems) {
-        return withItems ? foodOrderDao.listAllWithItems() : foodOrderDao.listAll();
-    }
-
-    @Override
-    public List<FoodOrder> listByLoginNr(String loginNr) {
-        return foodOrderDao.listByLoginNr(loginNr);
-    }
-
-
-    @Override
-    public List<FoodOrder> listByLoginNrAndStatus(String loginNr, FoodOrderStatus status) {
-        return foodOrderDao.listByLoginNrAndStatus(loginNr, status);
-    }
-
-
-    @Override
-    public FoodOrder getById(UUID id, boolean withItems, boolean withHistory) throws ServiceException {
-        FoodOrder foodOrder;
-        if (withItems && withHistory) {
-            try {
-                foodOrder = foodOrderDao.findByIdWithItemsAndHistory(id);
-            } catch (DaoException e) {
-                throw new ServiceException(e, Response.Status.NOT_FOUND);
-            }
-        } else if (withItems) {
-            try {
-                foodOrder = foodOrderDao.findByIdWithItems(id);
-            } catch (DaoException e) {
-                throw new ServiceException(e, Response.Status.NOT_FOUND);
-            }
-        } else {
-            foodOrder = foodOrderDao.findById(id);
-        }
-
-        if (foodOrder == null) {
-            throw new ServiceException("FoodOrder not found: " + id, Response.Status.NOT_FOUND);
-        }
-        return foodOrder;
-    }
-
-    @Override
     @Transactional
-    public List<FoodOrder> create(String loginNr) throws ServiceException {
+    @Override
+    public List<FoodOrderResponse> create(String loginNr) throws ServiceException {
         try {
+            Account account = accountDao.findByLoginNr(loginNr);
             Cart cart = cartDao.findByLoginNrWithItems(loginNr);
             List<CartItem> cartItems = cart.getCartItems();
             return cartItems.stream()//
@@ -118,9 +87,9 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                                                         UUID.randomUUID(),
                                                         price,
                                                         item.getItemCount(),
-                                                        extra
+                                                        extra,
+                                                        item.getProduct()
                                                 );
-                                                foodOrderDao.persistItem(foodOrderItem);
                                                 return foodOrderItem;
                                             },
                                             Collectors.toList()
@@ -134,7 +103,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                                         .mapToDouble(item -> item.getPrice() * item.getItemCount())//
                                         .sum()//
                                         ;
-                                FoodCourt foodCourt = null;
+                                FoodCourt foodCourt;
                                 try {
                                     foodCourt = foodCourtDao.getById(entry.getKey());
                                 } catch (DaoException e) {
@@ -145,8 +114,10 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                                         FoodOrderStatus.ORDERED,
                                         cart.isHasPrio(),
                                         total,
-                                        foodCourt.getWaitingTime().getWaitingTime(),
-                                        foodOrderItems
+                                        foodCourt.getWaitingTimeObject().getWaitingTime(),
+                                        foodOrderItems,
+                                        foodCourt,
+                                        account
                                 );
                                 FoodOrderHistory history = new FoodOrderHistory(
                                         UUID.randomUUID(),
@@ -155,7 +126,11 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                                         null,
                                         FoodOrderStatus.ORDERED
                                 );
-                                Credit currentCredit = null;
+                                foodOrderItems.forEach(foodOrderItem -> {
+                                    foodOrderItem.setFoodOrder(foodOrder);
+                                });
+
+                                Credit currentCredit;
                                 try {
                                     currentCredit = creditDao.getByLoginNr(loginNr);
                                 } catch (DaoException e) {
@@ -167,31 +142,38 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                                 }
                                 currentCredit.setAmount(currentCreditAmount - total);
 
+                                foodCourtDao.persist(foodCourt);
                                 creditDao.persist(currentCredit);
-                                foodOrderDao.persistHistory(history);
                                 foodOrderDao.persist(foodOrder);
+                                cartDao.empty(cart);
                                 return foodOrder;
                             }//
                     )//
+                    .map(this::getFoodOrderResponse)
                     .toList()//
-                    ;
+            ;
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
 
     }
 
-    @Override
     @Transactional
-    public FoodOrder updateStatus(UUID orderId, FoodOrderStatus newStatus) throws ServiceException {
-        FoodOrder foodOrder = foodOrderDao.findById(orderId);
+    @Override
+    public FoodOrderResponse updateStatus(UUID orderId, FoodOrderStatus newStatus) throws ServiceException {
+        FoodOrder foodOrder;
+        try {
+            foodOrder = foodOrderDao.getById(orderId);
+        } catch (DaoException e) {
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
+        }
         if (foodOrder == null) {
             throw new ServiceException("FoodOrder not found: " + orderId, Response.Status.NOT_FOUND);
         }
 
         FoodOrderStatus oldStatus = foodOrder.getStatus();
         if (oldStatus == newStatus) {
-            return foodOrder;
+            return getFoodOrderResponse(foodOrder);
         }
 
         foodOrder.setStatus(newStatus);
@@ -204,13 +186,18 @@ public class FoodOrderServiceImpl implements FoodOrderService {
         );
 
         foodOrderDao.persist(foodOrder);
-        return foodOrder;
+        return getFoodOrderResponse(foodOrder);
     }
 
-    @Override
     @Transactional
+    @Override
     public void delete(UUID id) throws ServiceException {
-        FoodOrder foodOrder = foodOrderDao.findById(id);
+        FoodOrder foodOrder;
+        try {
+            foodOrder = foodOrderDao.getById(id);
+        } catch (DaoException e) {
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
+        }
         if (foodOrder == null) {
             throw new ServiceException("FoodOrder not found: " + id, Response.Status.NOT_FOUND);
         }
@@ -218,9 +205,15 @@ public class FoodOrderServiceImpl implements FoodOrderService {
         foodOrderDao.delete(foodOrder);
     }
 
+    @Transactional
     @Override
     public void shareOrder(String loginNr, UUID orderId, String sharedLoginNr) throws ServiceException {
-        FoodOrder foodOrder = foodOrderDao.findById(orderId);
+        FoodOrder foodOrder;
+        try {
+            foodOrder = foodOrderDao.getById(orderId);
+        } catch (DaoException e) {
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
+        }
         Account sharedAccount;
         try {
             sharedAccount = accountDao.findByLoginNr(sharedLoginNr);
@@ -229,5 +222,156 @@ public class FoodOrderServiceImpl implements FoodOrderService {
         }
         foodOrder.setSharedAccount(sharedAccount);
         foodOrderDao.persist(foodOrder);
+    }
+
+    @Override
+    public FoodOrderResponse getById(UUID id, boolean withItems, boolean withHistory) throws ServiceException {
+        FoodOrder foodOrder;
+        if (withItems && withHistory) {
+            try {
+                foodOrder = foodOrderDao.getByIdWithItemsAndHistory(id);
+            } catch (DaoException e) {
+                throw new ServiceException(e, Response.Status.NOT_FOUND);
+            }
+        } else if (withItems) {
+            try {
+                foodOrder = foodOrderDao.getByIdWithItems(id);
+            } catch (DaoException e) {
+                throw new ServiceException(e, Response.Status.NOT_FOUND);
+            }
+        } else {
+            try {
+                foodOrder = foodOrderDao.getById(id);
+            } catch (DaoException e) {
+                throw new ServiceException(e, Response.Status.NOT_FOUND);
+            }
+        }
+
+        if (foodOrder == null) {
+            throw new ServiceException("FoodOrder not found: " + id, Response.Status.NOT_FOUND);
+        }
+        return getFoodOrderResponse(foodOrder);
+    }
+
+    @Override
+    public List<FoodOrderResponse> listAll(boolean withItems) {
+        List<FoodOrder> foodOrders = withItems ? foodOrderDao.listAllWithItems() : foodOrderDao.listAll();
+        return foodOrders.stream()//
+                .map(this::getFoodOrderResponse)//
+                .toList()//
+        ;
+    }
+
+    @Override
+    public List<FoodOrderResponse> listByLoginNrAndAccountType(String loginNr, AccountType accountType, boolean withItems) throws ServiceException {
+        List<FoodOrder> foodOrders;
+        if (accountType == AccountType.ADMIN) {
+            LOG.info("Listing all Food Orders (ADMIN)");
+            if (withItems) {
+                foodOrders = foodOrderDao.listAllWithItems();
+            } else {
+                foodOrders = foodOrderDao.listAll();
+            }
+        } else if (accountType == AccountType.FOOD_COURT_WORKER) {
+            LOG.info("Listing all Food Orders (FOOD_COURT_WORKER)");
+            FoodCourt foodCourt;
+            try {
+                foodCourt = foodCourtDao.getByLoginNr(loginNr);
+            } catch (DaoException e) {
+                throw new ServiceException(e, Response.Status.NOT_FOUND);
+            }
+            UUID foodCourtId = foodCourt.getId();
+            if (withItems) {
+                foodOrders = foodOrderDao.listByFoodCourtIdWithItems(foodCourtId);
+            } else {
+                foodOrders = foodOrderDao.listByFoodCourtId(foodCourtId);
+            }
+        } else if (accountType == AccountType.GUEST) {
+            LOG.info("Listing all Food Orders (GUEST)");
+            if (withItems) {
+                foodOrders = foodOrderDao.listByLoginNrWithItems(loginNr);
+            } else {
+                foodOrders = foodOrderDao.listByLoginNr(loginNr);
+            }
+        } else {
+            throw new ServiceException("Unknown Account type: " + accountType.toString(), Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        return foodOrders.stream().map(this::getFoodOrderResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FoodOrderResponse> listByLoginNrAndAccountTypeAndStatus(String loginNr, AccountType accountType, FoodOrderStatus status, boolean withItems) throws ServiceException {
+        List<FoodOrder> foodOrders;
+        if (accountType == AccountType.ADMIN) {
+            if (withItems) {
+                foodOrders = foodOrderDao.listAllByStatus(status);
+            } else {
+                foodOrders = foodOrderDao.listAllWithItemsByStatus(status);
+            }
+        } else if (accountType == AccountType.FOOD_COURT_WORKER) {
+            FoodCourt foodCourt;
+            try {
+                foodCourt = foodCourtDao.getByLoginNr(loginNr);
+            } catch (DaoException e) {
+                throw new ServiceException(e, Response.Status.NOT_FOUND);
+            }
+            UUID foodCourtId = foodCourt.getId();
+            if (withItems) {
+                foodOrders = foodOrderDao.listByFoodCourtIdAndStatusWithItems(foodCourtId, status);
+            } else {
+                foodOrders = foodOrderDao.listByFoodCourtIdAndStatus(foodCourtId, status);
+            }
+        } else if (accountType == AccountType.GUEST) {
+            if (withItems) {
+                foodOrders = foodOrderDao.listByLoginNrAndStatusWithItems(loginNr, status);
+            } else {
+                foodOrders = foodOrderDao.listByLoginNrAndStatus(loginNr, status);
+            }
+        } else {
+            throw new ServiceException("Unknown Account type: " + accountType.toString(), Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        return foodOrders.stream()//
+                .map(this::getFoodOrderResponse)//
+                .toList()//
+        ;
+    }
+
+    /*
+        Private Helper Functions
+    */
+
+    private FoodOrderResponse getFoodOrderResponse(FoodOrder foodOrder) {
+        List<FoodOrderItemResponse> foodOrderItems = foodOrder.getFoodOrderItems().stream().map(this::getFoodOrderItemResponse).toList();
+        return new FoodOrderResponse(
+                foodOrder.getId(),
+                foodOrder.getStatus(),
+                foodOrder.getFoodCourt().getDisplayName(),
+                foodOrder.getWaitingTime(),
+                foodOrderItems
+        );
+    }
+
+    private FoodOrderItemResponse getFoodOrderItemResponse(FoodOrderItem foodOrderItem) {
+        Product product = foodOrderItem.getProduct();
+        List<FoodOrderItemResponse> subItems = product.getSubProducts().stream().map(subProduct -> getFoodOrderItemResponse(subProduct, foodOrderItem.getItemCount())).toList();
+        return new FoodOrderItemResponse(
+                product.getId(),
+                product.getDisplayName(),
+                product.getSymbolIdentifier(),
+                foodOrderItem.getItemCount(),
+                foodOrderItem.getExtra(),
+                subItems
+        );
+    }
+
+    private FoodOrderItemResponse getFoodOrderItemResponse(Product product, int count) {
+        return new FoodOrderItemResponse(
+                product.getId(),
+                product.getDisplayName(),
+                product.getSymbolIdentifier(),
+                count,
+                null,
+                null
+        );
     }
 }

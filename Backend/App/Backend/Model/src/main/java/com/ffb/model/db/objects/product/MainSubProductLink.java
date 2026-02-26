@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import com.ffb.model.db.objects.id.MainSubProductId;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "main_sub_product", schema = "ffb")
@@ -14,11 +16,13 @@ public class MainSubProductLink {
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@MapsId("mainProductId")
+	@JdbcTypeCode(SqlTypes.UUID)
 	@JoinColumn(name = "main_product_id", referencedColumnName = "id")
 	public Product mainProduct;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@MapsId("subProductId")
+	@JdbcTypeCode(SqlTypes.UUID)
 	@JoinColumn(name = "sub_product_id", referencedColumnName = "id")
 	public Product subProduct;
 

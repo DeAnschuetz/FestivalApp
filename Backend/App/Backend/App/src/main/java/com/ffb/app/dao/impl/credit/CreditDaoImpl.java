@@ -11,9 +11,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TransactionRequiredException;
-
 import java.util.List;
-import java.util.UUID;
 
 @ApplicationScoped
 public class CreditDaoImpl implements CreditDao {
@@ -41,17 +39,12 @@ public class CreditDaoImpl implements CreditDao {
 
     @Override
     public void persistHistory(CreditHistory history) throws EntityExistsException, IllegalArgumentException, TransactionRequiredException {
-        creditHistoryRepo.persistHistory(history);
+        creditHistoryRepo.persist(history);
     }
 
     @Override
     public List<CreditHistory> findHistoryByAccountId(String loginNr, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException {
-        return creditHistoryRepo.findHistoryByAccountId(loginNr, pageIndex, pageSize);
-    }
-
-    @Override
-    public List<CreditHistory> findHistoryByCreditId(UUID creditId, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException {
-        return creditHistoryRepo.findHistoryByCreditId(creditId, pageIndex, pageSize);
+        return creditHistoryRepo.findHistoryByLoginNr(loginNr, pageIndex, pageSize);
     }
 
     @Override

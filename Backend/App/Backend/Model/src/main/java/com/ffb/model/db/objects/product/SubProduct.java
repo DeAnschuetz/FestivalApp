@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Immutable
@@ -14,10 +16,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class SubProduct extends ProductPrototype {
 
     @Id
+    @JdbcTypeCode(SqlTypes.UUID)
     @Column(name = "v_id")
     private UUID viewId;
 
     @JsonIgnore
+    @JdbcTypeCode(SqlTypes.UUID)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_product_id", referencedColumnName = "id")
 	private MainProduct mainProduct;

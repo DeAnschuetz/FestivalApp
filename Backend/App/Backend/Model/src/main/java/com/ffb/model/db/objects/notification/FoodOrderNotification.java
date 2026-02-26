@@ -17,12 +17,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "food_order_notification", schema = "ffb")
 public class FoodOrderNotification extends PanacheEntityBase {
 
     @Id
+	@JdbcTypeCode(SqlTypes.UUID)
     @Column(name = "id")
 	private UUID id;
 
@@ -34,16 +37,20 @@ public class FoodOrderNotification extends PanacheEntityBase {
     @Column(name = "status")
 	private NotificationStatus status;
 
-    @Column(name = "message")
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "message", length = 255, nullable = true)
 	private String message;
-    
+
+	@JdbcTypeCode(SqlTypes.LOCAL_DATE_TIME)
     @Column(name = "order_time")
 	private LocalDateTime orderTime;
-	
+
+	@JdbcTypeCode(SqlTypes.LOCAL_DATE_TIME)
     @Column(name = "pickup_time")
 	private LocalDateTime pickupTime;
-    
+
     @JsonIgnore
+	@JdbcTypeCode(SqlTypes.UUID)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
@@ -65,6 +72,14 @@ public class FoodOrderNotification extends PanacheEntityBase {
 		this.id = id;
 	}
 
+	public FoodOrderStatus getType() {
+		return type;
+	}
+
+	public void setType(FoodOrderStatus type) {
+		this.type = type;
+	}
+
 	public NotificationStatus getStatus() {
 		return status;
 	}
@@ -81,9 +96,27 @@ public class FoodOrderNotification extends PanacheEntityBase {
 		this.message = message;
 	}
 
-	@Override
-	public String toString() {
-		return "Notification [message=" + message + "]";
+	public LocalDateTime getOrderTime() {
+		return orderTime;
 	}
 
+	public void setOrderTime(LocalDateTime orderTime) {
+		this.orderTime = orderTime;
+	}
+
+	public LocalDateTime getPickupTime() {
+		return pickupTime;
+	}
+
+	public void setPickupTime(LocalDateTime pickupTime) {
+		this.pickupTime = pickupTime;
+	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
 }

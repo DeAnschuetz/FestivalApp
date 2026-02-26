@@ -1,5 +1,6 @@
 package com.ffb.model.db.objects.product;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -11,28 +12,36 @@ import com.ffb.model.db.objects.food_court.FoodCourt;
 import com.ffb.model.db.objects.foodorder.FoodOrderItem;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "product", schema = "ffb")
 public class Product extends PanacheEntityBase {
 
 	@Id
+	@JdbcTypeCode(SqlTypes.UUID)
 	@Column(name = "id")
 	private UUID id;
 
-	@Column(name = "price")
+	@JdbcTypeCode(SqlTypes.DECIMAL)
+	@Column(name = "price", precision = 10, scale = 2)
 	private double price;
 
-	@Column(name = "display_name")
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@Column(name = "display_name", length = 100, nullable = false)
 	private String displayName;
 
-	@Column(name = "symbol_identifier")
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@Column(name = "symbol_identifier", length =  100, nullable = false)
 	private String symbolIdentifier;
 
+	@JdbcTypeCode(SqlTypes.INTEGER)
 	@Column(name = "minimal_warning")
 	private int minimalWarning;
 
 	@JsonIgnore
+	@JdbcTypeCode(SqlTypes.UUID)
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "food_court_id", referencedColumnName = "id")
 	private FoodCourt foodCourt;
@@ -66,9 +75,10 @@ public class Product extends PanacheEntityBase {
 			List<Product> products = Collections.emptyList();
 			return products;
 		}
-		return subLinks.stream()
-				.map(MainSubProductLink::getSubProduct)
-				.collect(Collectors.toList());
+		return subLinks.stream()//
+				.map(MainSubProductLink::getSubProduct)//
+				.collect(Collectors.toList())//
+		;
 	}
 
 	public UUID getId() {

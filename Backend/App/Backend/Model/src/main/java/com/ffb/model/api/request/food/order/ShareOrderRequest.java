@@ -1,4 +1,4 @@
-package com.ffb.model.api.request.order;
+package com.ffb.model.api.request.food.order;
 
 import java.util.UUID;
 

@@ -1,6 +1,5 @@
 package com.ffb.app.service.api.impl.token;
 
-import com.ffb.app.dao.api.account.AccountDao;
 import com.ffb.app.service.api.api.token.TokenService;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;

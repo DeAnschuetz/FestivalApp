@@ -1,5 +1,7 @@
 package com.ffb.model.db.objects.cart;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,28 +18,34 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "cart", schema = "ffb")
 public class Cart extends PanacheEntityBase {
 
     @Id
+	@JdbcTypeCode(SqlTypes.UUID)
     @Column(name = "id")
 	private UUID id;
     
     @JsonIgnore
+	@JdbcTypeCode(SqlTypes.UUID)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
 	private Account account;
-	
+
+	@JdbcTypeCode(SqlTypes.BOOLEAN)
     @Column(name = "has_prio")
 	private boolean hasPrio;
-	
+
+	@JdbcTypeCode(SqlTypes.DECIMAL)
     @Column(name = "total")
 	private double total;
 	
     @OneToMany(mappedBy = "cart", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
-	private List<CartItem> cartItems;
+	private List<CartItem> cartItems = new ArrayList<>();;
     
     protected Cart() {}
 

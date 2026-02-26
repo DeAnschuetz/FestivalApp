@@ -11,22 +11,27 @@ import com.ffb.model.db.objects.foodorder.FoodOrder;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "account", schema = "ffb")
 public class Account extends PanacheEntityBase {
 
 	@Id
+	@JdbcTypeCode(SqlTypes.UUID)
 	@Column(name = "id", unique = true, nullable = false)
 	private UUID id;
 
 	@JsonIgnore
+	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "login_nr", referencedColumnName = "login_nr", unique = true, nullable = false)
 	private Ticket ticket;
 
 	@JsonIgnore
-	@Column(name = "password", nullable = false)
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@Column(name = "password", length = 60, nullable = false)
 	private String password;
 
 	@Column(name = "type", nullable = false)

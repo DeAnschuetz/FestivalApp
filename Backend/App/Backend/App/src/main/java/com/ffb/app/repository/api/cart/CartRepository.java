@@ -9,15 +9,7 @@ import java.util.UUID;
 
 public interface CartRepository extends PanacheRepositoryBase<Cart, UUID> {
 
-    Optional<Cart> findByAccountId(UUID accountId);
-
     Optional<Cart> findByLoginNr(String loginNr);
 
-    Optional<Cart> findByAccountIdWithItems(UUID accountId);
-
     Optional<Cart> findByLoginNrWithItems(String loginNr);
-
-    List<Cart> listAllWithItems();
-
-    boolean existsByAccountId(UUID accountId);
 }

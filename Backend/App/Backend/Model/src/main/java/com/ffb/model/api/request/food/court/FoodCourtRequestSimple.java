@@ -1,4 +1,4 @@
-package com.ffb.model.api.response.food_court;
+package com.ffb.model.api.request.food.court;
 
 public record FoodCourtRequestSimple(String name) {
 }

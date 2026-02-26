@@ -7,6 +7,6 @@ import com.ffb.model.db.objects.foodorder.FoodOrderStatus;
 
 
 
-public record OrderSimple(UUID id, FoodOrderStatus status, String foodCourtName, int waitingTime, List<OrderItemSimple> orderItems) {
+public record FoodOrderResponse(UUID id, FoodOrderStatus status, String foodCourtName, int waitingTime, List<FoodOrderItemResponse> orderItems) {
 
 }

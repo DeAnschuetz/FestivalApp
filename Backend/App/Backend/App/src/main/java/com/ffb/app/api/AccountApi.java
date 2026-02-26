@@ -2,7 +2,8 @@ package com.ffb.app.api;
 
 import java.util.List;
 import java.util.Set;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import com.ffb.app.service.api.api.token.TokenService;
 import com.ffb.model.api.request.account.RegisterRequest;
 import com.ffb.model.api.response.account.AccountResponse;
@@ -26,7 +27,6 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.PartType;
 import com.ffb.app.service.api.api.account.AccountService;
 import com.ffb.model.api.request.account.LoginRequest;
-import com.ffb.model.db.objects.account.Account;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
@@ -55,18 +55,12 @@ public class AccountApi {
 			@APIResponse(
 					responseCode = "200",
 					description = "Login succeeded; cookie set",
-					content = @Content(
-							mediaType = MediaType.APPLICATION_JSON,
-							schema = @Schema(implementation = LoginResponse.class)
-					)
+					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = LoginResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
 					responseCode = "400",
 					description = "Invalid request",
-					content = @Content(
-							mediaType = MediaType.APPLICATION_JSON,
-							schema = @Schema(implementation = ErrorResponse.class)
-					)
+					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			)
 	})
 	public Response login(@PartType(MediaType.APPLICATION_JSON) LoginRequest loginRequest) throws ApiException {
@@ -111,16 +105,14 @@ public class AccountApi {
 	@POST
 	@Path("logout")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
 	@RolesAllowed({"GUEST", "FOOD_COURT_WORKER", "ADMIN"})
 	@Operation(summary = "Logout")
 	@APIResponse(responseCode = "204", description = "Logout succeeded; access token cleared")
 	@APIResponse(
 			responseCode = "400",
 			description = "Invalid request",
-			content = @Content(
-					mediaType = MediaType.APPLICATION_JSON,
-					schema = @Schema(implementation = ErrorResponse.class)
-			)
+			content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 	)
 	public Response logout() {
 		NewCookie cleared = new NewCookie.Builder("access_token")//
@@ -145,18 +137,12 @@ public class AccountApi {
 			@APIResponse(
 					responseCode = "201",
 					description = "Account created",
-					content = @Content(
-							mediaType = MediaType.APPLICATION_JSON,
-							schema = @Schema(implementation = AccountResponse.class)
-					)
+					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AccountResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
 					responseCode = "400",
 					description = "Invalid Request",
-					content = @Content(
-							mediaType = MediaType.APPLICATION_JSON,
-							schema = @Schema(implementation = ErrorResponse.class)
-					)
+					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			)
 	})
 	public Response register(@PartType(MediaType.APPLICATION_JSON) RegisterRequest registerRequest) throws ApiException {
@@ -171,8 +157,13 @@ public class AccountApi {
 			LOG.error("Register attempt failed: password is null or blank.");
 			throw new ApiException("The password must not be null or blank.", Response.Status.BAD_REQUEST);
 		}
+		Pattern loginNrPattern = Pattern.compile("[AFV][-]\\d{3}[-]\\d{3}[-]\\d{3}");
+		Matcher matcher = loginNrPattern.matcher(loginNr);
+		if (!matcher.find()) {
+			throw new ApiException("loginNr has no Valid Format", Response.Status.BAD_REQUEST);
+		}
 
-		Account createdAccount;
+		AccountResponse createdAccount;
 		try {
 			createdAccount = accountService.createAccount(loginNr, password);
 		} catch (ServiceException e) {
@@ -186,30 +177,26 @@ public class AccountApi {
     @GET
 	@Path("admin/list_all")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
 	@RolesAllowed("ADMIN")
 	@Operation(summary = "List all Accounts")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
 					description = "List of Accounts",
-					content = @Content(
-							mediaType = MediaType.APPLICATION_JSON,
-							schema = @Schema(implementation = AccountResponse.class, type = SchemaType.ARRAY)
+					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AccountResponse.class, type = SchemaType.ARRAY)
 					)
 			),
 			@APIResponse(
 					responseCode = "400",
 					description = "Invalid request",
-					content = @Content(
-							mediaType = MediaType.APPLICATION_JSON,
-							schema = @Schema(implementation = ErrorResponse.class)
-					)
+					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(responseCode = "401", description = "Not Authorized"),
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response listAll() {
-    	List<Account> data = accountService.getAllAccounts();
+    	List<AccountResponse> data = accountService.getAllAccounts();
 		return Response.status(Response.Status.OK).entity(data).build();
 	}
 }

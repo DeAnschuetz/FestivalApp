@@ -1,5 +1,6 @@
 package com.ffb.model.db.objects.cart;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,6 +16,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 
 @Entity
@@ -22,24 +25,30 @@ import jakarta.persistence.Table;
 public class CartItem extends PanacheEntityBase {
 
     @Id
+    @JdbcTypeCode(SqlTypes.UUID)
     @Column(name = "id")
 	private UUID id;
-	
+
+    @JdbcTypeCode(SqlTypes.DECIMAL)
     @Column(name = "price")
 	private double price;
-	
+
+    @JdbcTypeCode(SqlTypes.INTEGER)
     @Column(name = "item_count")
 	private int itemCount;
-	
-    @Column(name = "extra")
+
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "extra", length = 255, nullable = true)
 	private String extra;
     
     @JsonIgnore
+    @JdbcTypeCode(SqlTypes.UUID)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", referencedColumnName = "id")
     private Cart cart;
     
     @JsonIgnore
+    @JdbcTypeCode(SqlTypes.UUID)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;

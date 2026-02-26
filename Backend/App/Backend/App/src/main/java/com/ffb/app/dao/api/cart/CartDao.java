@@ -10,19 +10,15 @@ import java.util.UUID;
 
 public interface CartDao {
 
-    Cart findByAccountId(UUID accountId) throws DaoException;
-
     Cart findByLoginNr(String loginNr) throws DaoException;
 
-    Cart findByAccountIdWithItems(UUID accountId) throws DaoException;
-
     Cart findByLoginNrWithItems(String loginNr) throws DaoException;
-
-    List<Cart> listAllWithItems();
-
-    boolean existsByAccountId(UUID accountId);
 
     void persist(Cart cart);
 
     void persistCartItem(CartItem item);
+
+    List<Cart> listAll();
+
+    void empty(Cart cart);
 }

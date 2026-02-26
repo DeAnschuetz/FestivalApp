@@ -5,30 +5,39 @@ package com.ffb.app.service.api.impl.account;
 import com.ffb.app.dao.api.account.AccountDao;
 import com.ffb.app.dao.api.cart.CartDao;
 import com.ffb.app.dao.api.credit.CreditDao;
-
 import com.ffb.app.service.api.api.account.AccountService;
+import com.ffb.model.api.response.account.AccountResponse;
+import com.ffb.model.api.response.ticket.TicketResponse;
 import com.ffb.model.db.objects.account.Account;
 import com.ffb.model.db.objects.account.AccountType;
 import com.ffb.model.db.objects.account.Ticket;
 import com.ffb.model.exception.DaoException;
 import com.ffb.model.exception.ServiceException;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 import com.ffb.model.db.objects.cart.Cart;
 import com.ffb.model.db.objects.credit.Credit;
-
-import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import at.favre.lib.crypto.bcrypt.BCrypt;
 
 @ApplicationScoped
 public class AccountServiceImpl implements AccountService {
 
 	private final Logger LOG = Logger.getLogger(AccountServiceImpl.class);
+
+
+	@ConfigProperty(name = "account.initial.credit")
+	int INITIAL_CREDIT;
 
 	private final AccountDao accountDao;
 	private final CreditDao creditDao;
@@ -42,23 +51,25 @@ public class AccountServiceImpl implements AccountService {
     }
 
 	@Override
-	public Account getAccountByLoginNr(String loginNr) throws ServiceException {
+	public AccountResponse getAccountByLoginNr(String loginNr) throws ServiceException {
 		LOG.trace("ENTER: getAccountByLoginNr");
 		if (loginNr == null || loginNr.isBlank()) {
 			LOG.error("loginNr is null or empty");
 			throw new ServiceException("loginNr must not be blank", Response.Status.BAD_REQUEST);
 		}
 		LOG.trace("EXIT: getAccountByLoginNr");
+		Account account;
         try {
-            return accountDao.findByLoginNr(loginNr);
+            account = accountDao.findByLoginNr(loginNr);
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
+		return getAccountResponse(account);
     }
 
 	@Override
 	@Transactional
-	public Account createAccount(String loginNr, String rawPassword) throws ServiceException {
+	public AccountResponse createAccount(String loginNr, String rawPassword) throws ServiceException {
 		LOG.trace("ENTER: createAccount");
 		if (loginNr == null || loginNr.isBlank()) {
 			LOG.error("loginNr is null or empty");
@@ -82,21 +93,21 @@ public class AccountServiceImpl implements AccountService {
         AccountType type = getAccountTypeFromLoginNr(loginNr);
 
 		UUID id = UUID.randomUUID();
-		String hashedPassword = BcryptUtil.bcryptHash(rawPassword.trim());
+		String hashedPassword = BCrypt.withDefaults().hashToString(12, rawPassword.trim().toCharArray());
 
 		Account account = new Account(id, ticket, hashedPassword, type);
 		accountDao.persist(account);
 		if(type == AccountType.GUEST) {
-			Credit credit = new Credit(UUID.randomUUID(), 1000, account);
+			Credit credit = new Credit(UUID.randomUUID(), INITIAL_CREDIT, account);
 			creditDao.persist(credit);
-			Cart cart = new Cart(UUID.randomUUID(), false, 0, account);
+			Cart cart = new Cart(UUID.randomUUID(), false,  0, account);
 			cartDao.persist(cart);
 		}
 
 		accountDao.flush();
 
 		LOG.trace("EXIT: createAccount");
-		return account;
+		return getAccountResponse(account);
 	}
 
 	@Override
@@ -113,21 +124,29 @@ public class AccountServiceImpl implements AccountService {
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
+		String storedPassword = account.getPassword();
         AccountType type = account.getType();
-		boolean verified = BcryptUtil.matches(rawPassword.trim(), account.getPassword());
+		boolean verified =  BCrypt.verifyer()//
+				.verify(rawPassword.toCharArray(), storedPassword)//
+				.verified//
+		;
 
 		LOG.trace("EXIT: verifyAccount: " + verified);
 		return verified ? type : null;
 	}
 
 	@Override
-	public List<Account> getAllAccounts() {
-		return accountDao.getAll();
+	public List<AccountResponse> getAllAccounts() {
+		return accountDao.getAll()//
+				.stream()//
+				.map(this::getAccountResponse)//
+				.toList()//
+		;
 	}
 
 	@Override
 	@Transactional
-	public List<Ticket> createTicket(List<String> loginNrs) throws ServiceException {
+	public List<TicketResponse> createTicket(List<String> loginNrs) throws ServiceException {
 		return loginNrs.stream()//
 				.map(loginNr -> {
 					boolean exists = accountDao.existsTicketByLoginNr(loginNr);
@@ -139,13 +158,18 @@ public class AccountServiceImpl implements AccountService {
 					return ticket;
 					}
 				)
+				.map(this::getTicketResponse)//
 				.toList()//
 		;
 	}
 
 	@Override
-	public List<Ticket> getAllTickets() {
-		return accountDao.geAllTickets();
+	public List<TicketResponse> getAllTickets() {
+		return accountDao.geAllTickets()
+				.stream()//
+				.map(this::getTicketResponse)//
+				.toList()//
+		;
 	}
 
 	private AccountType getAccountTypeFromLoginNr(String loginNr) throws ServiceException {
@@ -158,6 +182,25 @@ public class AccountServiceImpl implements AccountService {
 		} else {
 			throw new ServiceException("Invalid loginNr format. Must start with 'V', 'F', or 'A'.", Response.Status.BAD_REQUEST);
 		}
+	}
+
+	/*
+		Private Helper Functions
+	 */
+
+	private AccountResponse getAccountResponse(Account account) {
+		return new AccountResponse(
+				account.getId(),
+				account.getLoginNr(),
+				account.getType()
+		);
+	}
+
+	private TicketResponse getTicketResponse(Ticket ticket) {
+		return new TicketResponse(
+				ticket.getId(),
+				ticket.getLoginNr()
+		);
 	}
 	
 }

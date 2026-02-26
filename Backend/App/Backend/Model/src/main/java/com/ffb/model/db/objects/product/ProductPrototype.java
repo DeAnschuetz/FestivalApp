@@ -9,27 +9,35 @@ import com.ffb.model.db.objects.food_court.FoodCourt;
 import com.ffb.model.db.objects.foodorder.FoodOrderItem;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @MappedSuperclass
 public class ProductPrototype extends PanacheEntityBase {
 
     @Id
+	@JdbcTypeCode(SqlTypes.UUID)
     @Column(name = "id")
 	private UUID id;
 
-    @Column(name = "price")
+	@JdbcTypeCode(SqlTypes.DECIMAL)
+    @Column(name = "price", precision = 10, scale = 2)
 	private double price;
 
-    @Column(name = "display_name")
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "display_name", length =  100, nullable = false)
 	private String displayName;
 
-    @Column(name = "symbol_identifier")
+	@JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "symbol_identifier", length =  200, nullable = false)
 	private String symbolIdentifier;
 
+	@JdbcTypeCode(SqlTypes.INTEGER)
     @Column(name = "minimal_warning")
 	private int minimalWarning;
     
     @JsonIgnore
+	@JdbcTypeCode(SqlTypes.UUID)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "food_court_id", referencedColumnName = "id")
     private FoodCourt foodCourt;

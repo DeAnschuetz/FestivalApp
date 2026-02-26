@@ -1,5 +1,6 @@
 package com.ffb.app.service.api.api.product;
 
+import com.ffb.model.api.response.product.ProductResponse;
 import com.ffb.model.db.objects.product.MainSubProductLink;
 import com.ffb.model.db.objects.product.Product;
 import com.ffb.model.exception.ServiceException;
@@ -9,23 +10,24 @@ import jakarta.persistence.TransactionRequiredException;
 import jakarta.ws.rs.NotFoundException;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public interface ProductService {
 
-    List<Product> listProducts();
+    List<ProductResponse> listProducts();
 
-    List<Product> listProductsByLoginNr(String loginNr);
+    List<ProductResponse> listProductsByLoginNr(String loginNr);
 
-    Product createProductByLoginNr(String loginNr, double price, String displayName, String symbolIdentifier, int minimalWarning) throws NotFoundException, ServiceException;
+    ProductResponse createProductByLoginNr(String loginNr, double price, String displayName, String symbolIdentifier, int minimalWarning) throws NotFoundException, ServiceException;
 
-    List<Product> listProductsByFoodCourtId(UUID foodCourtId);
+    List<ProductResponse> listProductsByFoodCourtId(UUID foodCourtId);
 
-    Product getProductById(UUID id) throws NotFoundException;
+    ProductResponse getProductById(UUID id) throws NotFoundException;
 
-    Product createProductWithId(UUID id, UUID foodCourtId, double price, String displayName, String symbolIdentifier, int minimalWarning) throws KeyAlreadyExistsException, EntityNotFoundException, ServiceException;
+    ProductResponse createProductWithId(UUID id, UUID foodCourtId, double price, String displayName, String symbolIdentifier, int minimalWarning) throws KeyAlreadyExistsException, EntityNotFoundException, ServiceException;
 
     void deleteProductById(UUID id) throws NotFoundException, ServiceException;
 

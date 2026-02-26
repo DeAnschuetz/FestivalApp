@@ -3,18 +3,18 @@ package com.ffb.app.service.api.impl.cart;
 import com.ffb.app.dao.api.cart.CartDao;
 import com.ffb.app.dao.api.product.ProductDao;
 import com.ffb.app.service.api.api.cart.CartService;
-import com.ffb.model.api.response.cart.CartItemSimple;
-import com.ffb.model.api.response.cart.CartSimple;
+import com.ffb.model.api.response.cart.CartItemResponse;
+import com.ffb.model.api.response.cart.CartResponse;
 import com.ffb.model.db.objects.cart.Cart;
 import com.ffb.model.db.objects.cart.CartItem;
 import com.ffb.model.db.objects.product.Product;
-import com.ffb.model.exception.ApiException;
 import com.ffb.model.exception.DaoException;
 import com.ffb.model.exception.ServiceException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
@@ -26,7 +26,9 @@ public class CartServiceImpl implements CartService {
 
     private final Logger LOG = Logger.getLogger(CartServiceImpl.class);
 
-    private final double EXTRA_PRICE = 2;
+
+    @ConfigProperty(name = "order.extra.price")
+    double EXTRA_PRICE;
     private final CartDao cartDao;
     private final ProductDao productDao;
 
@@ -37,11 +39,12 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartSimple getCartByLoginNr(String loginNr) throws ServiceException {
+    public CartResponse getCartByLoginNr(String loginNr) throws ServiceException {
         if (loginNr == null || loginNr.isEmpty()) {
             LOG.error("LoginNr is null or Empty");
             throw new ServiceException("LoginNr is null or Empty", Response.Status.BAD_REQUEST);
         }
+
         Cart cart;
         try {
             cart = cartDao.findByLoginNrWithItems(loginNr);
@@ -49,17 +52,18 @@ public class CartServiceImpl implements CartService {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
 
-        return toSimple(cart);
+        return getCartResponse(cart);
     }
 
-    @Override
     @Transactional
-    public CartSimple changePrio(String loginNr, boolean newPrio) throws ServiceException {
+    @Override
+    public CartResponse changePrio(String loginNr, boolean newPrio) throws ServiceException {
         if (loginNr == null || loginNr.isEmpty()) {
             LOG.error("LoginNr is null or Empty");
             throw new ServiceException("LoginNr is null or Empty", Response.Status.BAD_REQUEST);
         }
-        Cart cart = null;
+
+        Cart cart;
         try {
             cart = cartDao.findByLoginNrWithItems(loginNr);
         } catch (DaoException e) {
@@ -68,20 +72,21 @@ public class CartServiceImpl implements CartService {
 
         cart.setHasPrio(newPrio);
         calculateCartTotal(cart);
+        cartDao.persist(cart);
 
-        return toSimple(cart);
+        return getCartResponse(cart);
     }
 
-    @Override
     @Transactional
-    public CartSimple addItemToCart(String loginNr, UUID productId, int itemCount, String extra) throws ServiceException {
+    @Override
+    public CartResponse addItemToCart(String loginNr, UUID productId, int itemCount, String extra) throws ServiceException {
         if (loginNr == null || loginNr.isEmpty()) {
             LOG.error("LoginNr is null or Empty");
             throw new ServiceException("LoginNr is null or Empty", Response.Status.BAD_REQUEST);
         }
         if (productId==null){
-            LOG.error("productId is null");
-            throw new ServiceException("productId is null", Response.Status.BAD_REQUEST);
+            LOG.error("id is null");
+            throw new ServiceException("id is null", Response.Status.BAD_REQUEST);
         }
         if (itemCount<=0){
             LOG.error("itemCount is <= 0");
@@ -90,7 +95,7 @@ public class CartServiceImpl implements CartService {
         if (extra != null && extra.length() > 255) {
             throw new ServiceException("Extra must be less than 255 characters.", Response.Status.BAD_REQUEST);
         }
-        // get the cart for the user, if it does not exist, throw an exception
+
         Cart cart;
         try {
             cart = cartDao.findByLoginNrWithItems(loginNr);
@@ -116,51 +121,45 @@ public class CartServiceImpl implements CartService {
             // if the item already exists, increase the item count and update the price if the extra has changed
             existing.setItemCount(existing.getItemCount() + itemCount);
         } else {
-            // if the item does not exist, create a new cart item for each sub product (or the main product if there are no sub products)
-            List<Product> products = product.getSubProducts();
+            // create a new cart item with the given product, item count, and extra
+            CartItem item = new CartItem(UUID.randomUUID(),  0, itemCount, extra, cart, product);
+            item.setPrice(calculateCartItemPrice(product, extra));
 
-            // if there are no sub products, we still want to create a cart item for the main product
-            if (products == null) {
-                products = List.of(product);
+            // add the new cart item to the cart, if the cart does not have any items yet, initialize the list first
+            if (cart.getCartItems() == null) {
+                cart.setCartItems(new ArrayList<>());
             }
 
-            // create a cart item for each product
-            products.forEach(subProduct -> {
-                    // create a new cart item with the given product, item count, and extra
-                    CartItem item = new CartItem(UUID.randomUUID(), 0.0, itemCount, extra, cart, subProduct);
-                    item.setPrice(calculateCartItemPrice(subProduct, extra));
-
-                    // add the new cart item to the cart, if the cart does not have any items yet, initialize the list first
-                    if (cart.getCartItems() == null) {
-                        cart.setCartItems(new ArrayList<>());
-                    }
-
-                    // persist the new cart item and add it to the cart
-                    cartDao.persistCartItem(item);
-                    cart.getCartItems().add(item);
-                }//
-            );
+            // persist the new cart item and add it to the cart
+            cartDao.persistCartItem(item);
+            cart.getCartItems().add(item);
         }
 
         // recalculate the cart total and persist the cart
         calculateCartTotal(cart);
         cartDao.persist(cart);
-        return toSimple(cart);
+        return getCartResponse(cart);
     }
 
-    @Override
     @Transactional
-    public CartSimple removeItemFromCart(String loginNr, UUID cartItemId) throws ServiceException {
+    @Override
+    public CartResponse removeItemFromCart(String loginNr, UUID cartItemId) throws ServiceException {
+        if (loginNr == null || loginNr.isEmpty()) {
+            LOG.error("LoginNr is null or Empty");
+            throw new ServiceException("LoginNr is null or Empty", Response.Status.BAD_REQUEST);
+        }
+        if (cartItemId == null) {
+            LOG.error("cartItemId is null");
+            throw new ServiceException("cartItemId is null", Response.Status.BAD_REQUEST);
+        }
 
-        // get the cart for the user, if it does not exist, throw an exception
-        Cart cart = null;
+        Cart cart;
         try {
             cart = cartDao.findByLoginNrWithItems(loginNr);
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
 
-        // remove the cart item with the given id from the cart, if it does not exist, throw an exception
         boolean removed = cart.getCartItems()//
                 .removeIf(item -> item.getId().equals(cartItemId))//
         ;
@@ -168,24 +167,34 @@ public class CartServiceImpl implements CartService {
             throw new ServiceException("CartItem not found: " + cartItemId, Response.Status.NOT_FOUND);
         }
 
-        // recalculate the cart total and persist the cart
         calculateCartTotal(cart);
         cartDao.persist(cart);
-        return toSimple(cart);
+        return getCartResponse(cart);
     }
 
+    @Transactional
     @Override
-    public CartSimple updateCartItemById(String loginNr, UUID cartItemId, int newItemCount, String newExtra) throws ServiceException {
+    public CartResponse updateCartItemById(String loginNr, UUID cartItemId, int newItemCount, String newExtra) throws ServiceException {
+        if (loginNr == null || loginNr.isEmpty()) {
+            LOG.error("LoginNr is null or Empty");
+            throw new ServiceException("LoginNr is null or Empty", Response.Status.BAD_REQUEST);
+        }
+        if (cartItemId == null) {
+            LOG.error("cartItemId is null");
+            throw new ServiceException("cartItemId is null", Response.Status.BAD_REQUEST);
+        }
+        if (newItemCount == 0) {
+            LOG.error("newItemCount is 0");
+            throw new ServiceException("newItemCount is 0", Response.Status.BAD_REQUEST);
+        }
 
-        // get the cart for the user, if it does not exist, throw an exception
-        Cart cart = null;
+        Cart cart;
         try {
             cart = cartDao.findByLoginNrWithItems(loginNr);
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
 
-        // find the cart item with the given id, if it does not exist, throw an exception
         List<CartItem> cartItems = cart.getCartItems();
         CartItem itemToUpdate = cartItems.stream()//
                 .filter(item -> item.getId().equals(cartItemId))//
@@ -193,27 +202,39 @@ public class CartServiceImpl implements CartService {
                 .orElseThrow(() -> new IllegalArgumentException("CartItem not found: " + cartItemId))//
         ;
 
-        // update the item count and extra if they have changed, also update the price if the extra has changed
         if (itemToUpdate.getItemCount() != newItemCount) {
             itemToUpdate.setItemCount(newItemCount);
         }
+
         if (!itemToUpdate.getExtra().equalsIgnoreCase(newExtra)) {
             itemToUpdate.setExtra(newExtra);
             itemToUpdate.setPrice(calculateCartItemPrice(itemToUpdate.getProduct(), newExtra));
         }
 
-        // persist the updated cart item, recalculate the cart total, and persist the cart
         cartDao.persistCartItem(itemToUpdate);
         calculateCartTotal(cart);
         cartDao.persist(cart);
-        return null;
+        return getCartResponse(cart);
     }
 
+    @Override
+    public List<CartResponse> listAll() {
+        return cartDao.listAll().stream()//
+                .map(this::getCartResponse)//
+                .toList()//
+        ;
+    }
+
+    /*
+        Private Helper Functions
+    */
+
     private void calculateCartTotal(Cart cart) {
-        double cartTotal = 0.0;
+        double cartTotal =  0;
         if (cart.getCartItems() != null) {
             for (CartItem i : cart.getCartItems()) {
-                cartTotal += i.getPrice() * i.getItemCount();
+                int itemCount = i.getItemCount();
+                cartTotal = cartTotal + i.getPrice() * itemCount;
             }
         }
         cart.setTotal(cartTotal);
@@ -221,27 +242,50 @@ public class CartServiceImpl implements CartService {
 
     private double calculateCartItemPrice(Product product, String extra) {
         double basePrice = product.getPrice();
-        double extraCost = (extra != null && !extra.isEmpty()) ? EXTRA_PRICE : 0.0;
-        return basePrice + extraCost;
+        double extraCost = (extra != null && !extra.isEmpty()) ?  EXTRA_PRICE :  0;
+        return basePrice + extraCost ;
     }
 
-    private CartSimple toSimple(Cart cart) {
-        List<CartItemSimple> items = new ArrayList<>();
+    	/*
+		Private Helper Functions
+	*/
+
+
+    private CartResponse getCartResponse(Cart cart) {
+        List<CartItemResponse> items = new ArrayList<>();
 
         if (cart.getCartItems() != null) {
             for (CartItem i : cart.getCartItems()) {
-                items.add(new CartItemSimple(
-                        i.getId(),
-                        i.getProduct() != null ? i.getProduct().getDisplayName() : "Unknown",
-                        i.getProduct() != null ? i.getProduct().getSymbolIdentifier() : null,
-                        i.getPrice(),
-                        i.getItemCount(),
-                        i.getExtra(),
-                        null
-                ));
+                items.add(getCartItemResponse(i));
             }
         }
 
-        return new CartSimple(cart.isHasPrio(), cart.getTotal(), items);
+        return new CartResponse(cart.isHasPrio(), cart.getTotal(), items);
+    }
+
+    private CartItemResponse getCartItemResponse(CartItem cartItem) {
+        Product product = cartItem.getProduct();
+        List<CartItemResponse> subItems = product.getSubProducts().stream().map(subProduct -> getCartItemResponse(subProduct, cartItem.getItemCount())).toList();
+        return new CartItemResponse(
+                cartItem.getId(),
+                product.getDisplayName(),
+                product.getSymbolIdentifier(),
+                cartItem.getPrice(),
+                cartItem.getItemCount(),
+                cartItem.getExtra(),
+                subItems
+        );
+    }
+
+    private CartItemResponse getCartItemResponse(Product product, int count) {
+        return new CartItemResponse(
+                product.getId(),
+                product.getDisplayName(),
+                product.getSymbolIdentifier(),
+                0,
+                count,
+                null,
+                null
+        );
     }
 }

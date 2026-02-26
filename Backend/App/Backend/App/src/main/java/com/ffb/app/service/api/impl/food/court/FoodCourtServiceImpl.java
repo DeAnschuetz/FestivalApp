@@ -3,6 +3,7 @@ package com.ffb.app.service.api.impl.food.court;
 import com.ffb.app.dao.api.account.AccountDao;
 import com.ffb.app.dao.api.food.court.FoodCourtDao;
 import com.ffb.app.service.api.api.food.court.FoodCourtService;
+import com.ffb.model.api.response.food_court.FoodCourtResponse;
 import com.ffb.model.db.objects.account.Account;
 import com.ffb.model.db.objects.food_court.FoodCourt;
 import com.ffb.model.exception.DaoException;
@@ -32,46 +33,133 @@ public class FoodCourtServiceImpl implements FoodCourtService {
     }
 
     @Override
-    public FoodCourt getById(UUID id) throws ServiceException {
+    public FoodCourtResponse get(UUID id) throws ServiceException {
+        FoodCourt foodCourt;
         try {
-            return foodCourtDao.getById(id);
+            foodCourt = foodCourtDao.getById(id);
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
-    }
-
-    public FoodCourt getByLoginNr(String loginNr) throws ServiceException {
-        try {
-            return foodCourtDao.getByLoginNr(loginNr);
-        } catch (DaoException e) {
-            throw new ServiceException(e, Response.Status.NOT_FOUND);
-        }
+        return getFoodCourtResponse(foodCourt);
     }
 
     @Override
-    public List<FoodCourt> listAll() {
-        return foodCourtDao.listAll();
+    public FoodCourtResponse get(String loginNr) throws ServiceException {
+        FoodCourt foodCourt;
+        try {
+            foodCourt = foodCourtDao.getByLoginNr(loginNr);
+        } catch (DaoException e) {
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
+        }
+        return getFoodCourtResponse(foodCourt);
+    }
+
+    @Override
+    public FoodCourtResponse get(UUID id, boolean waitingTime, boolean foodOrders) throws ServiceException  {
+        FoodCourt foodCourt;
+        if (waitingTime && foodOrders) {
+            try {
+                foodCourt = foodCourtDao.getByIdWithWaitingTimeAndFoodOrders(id);
+            } catch (DaoException e) {
+                throw new ServiceException(e, Response.Status.NOT_FOUND);
+            }
+        } else if(waitingTime) {
+            try {
+                foodCourt = foodCourtDao.getByIdWithWaitingTime(id);
+            } catch (DaoException e) {
+                throw new ServiceException(e, Response.Status.NOT_FOUND);
+            }
+        } else if(foodOrders) {
+            try {
+                foodCourt = foodCourtDao.getByIdWithFoodOrders(id);
+            } catch (DaoException e) {
+                throw new ServiceException(e, Response.Status.NOT_FOUND);
+            }
+        } else {
+            try {
+                foodCourt = foodCourtDao.getById(id);
+            } catch (DaoException e) {
+                throw new ServiceException(e, Response.Status.NOT_FOUND);
+            }
+        }
+        return getFoodCourtResponse(foodCourt);
     }
 
     @Override
     @Transactional
-    public FoodCourt create(String loginNr, String name) throws ServiceException {
+    public byte[] getImage(UUID foodCourtId) throws ServiceException {
+        try {
+            return foodCourtDao.getImageById(foodCourtId);
+        } catch (DaoException e) {
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public List<FoodCourtResponse> listAll() {
+        return foodCourtDao.listAll()//
+                .stream()//
+                .map(this::getFoodCourtResponse)//
+                .toList()//
+        ;
+    }
+
+    @Override
+    @Transactional
+    public FoodCourtResponse create(String loginNr, String name) throws ServiceException {
         Account account;
         try {
             account = accountDao.findByLoginNr(loginNr);
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
-        FoodCourt foodCourt = new FoodCourt(
+        FoodCourt foodCourt = null;
+        try {
+            foodCourt = foodCourtDao.getByLoginNr(loginNr);
+        } catch (DaoException e) {
+            // DO Nothing
+        }
+        if (foodCourt != null) {
+            throw new ServiceException("The FoodCourt already Exists", Response.Status.CONFLICT);
+        }
+        foodCourt = new FoodCourt(
                 name
         );
         foodCourt.setAccount(account);
         foodCourtDao.persist(foodCourt);
-        return foodCourt;
+        return getFoodCourtResponse(foodCourt);
     }
 
     @Override
-    public FoodCourt updateByLoginNr(String loginNr, String name) throws ServiceException {
+    @Transactional
+    public FoodCourtResponse create(UUID id, String loginNr, String name) throws ServiceException {
+        Account account;
+        try {
+            account = accountDao.findByLoginNr(loginNr);
+        } catch (DaoException e) {
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
+        }
+        FoodCourt foodCourt = null;
+        try {
+            foodCourt = foodCourtDao.getByLoginNr(loginNr);
+        } catch (DaoException e) {
+            // DO Nothing
+        }
+        if (foodCourt != null) {
+            throw new ServiceException("The FoodCourt already Exists", Response.Status.CONFLICT);
+        }
+        foodCourt = new FoodCourt(
+                id,
+                name
+        );
+        foodCourt.setAccount(account);
+        foodCourtDao.persist(foodCourt);
+        return getFoodCourtResponse(foodCourt);
+    }
+
+    @Override
+    @Transactional
+    public FoodCourtResponse update(String loginNr, String name) throws ServiceException {
         FoodCourt foodCourt;
         try {
             foodCourt = foodCourtDao.getByLoginNr(loginNr);
@@ -80,24 +168,24 @@ public class FoodCourtServiceImpl implements FoodCourtService {
         }
         foodCourt.setDisplayName(name);
         foodCourtDao.persist(foodCourt);
-        return foodCourt;
+        return getFoodCourtResponse(foodCourt);
     }
 
     @Override
     @Transactional
-    public FoodCourt updateById(UUID id, String loginNr, String name) throws EntityNotFoundException, ServiceException {
+    public FoodCourtResponse update(UUID id, String loginNr, String name) throws EntityNotFoundException, ServiceException {
         Account account;
         FoodCourt foodCourt;
         try {
             account = accountDao.getByLoginNr(loginNr);
-            foodCourt = getById(id);
+            foodCourt = foodCourtDao.getById(id);
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
         foodCourt.setAccount(account);
         foodCourt.setDisplayName(name);
         foodCourtDao.persist(foodCourt);
-        return foodCourt;
+        return getFoodCourtResponse(foodCourt);
     }
 
     @Override
@@ -114,16 +202,6 @@ public class FoodCourtServiceImpl implements FoodCourtService {
 
     @Override
     @Transactional
-    public FoodCourt getWithRelations(UUID id, boolean waitingTime, boolean foodOrders) throws ServiceException  {
-        try {
-            return foodCourtDao.getById(id);
-        } catch (DaoException e) {
-            throw new ServiceException(e, Response.Status.NOT_FOUND);
-        }
-    }
-
-    @Override
-    @Transactional
     public void addImage(String loginNr, PushbackInputStream inputData) throws ServiceException {
         LOG.info("Adding image for food court with loginNr: " + loginNr);
         try {
@@ -135,12 +213,30 @@ public class FoodCourtServiceImpl implements FoodCourtService {
     }
 
     @Override
-    @Transactional
-    public byte[] getImageByFoodCourtId(UUID foodCourtId) throws ServiceException {
+    public void addImage(UUID id, PushbackInputStream inputData) throws ServiceException {
+        LOG.info("Adding image for food court with id: " + id);
+        FoodCourt foodCourt;
         try {
-            return foodCourtDao.getImageById(foodCourtId);
+            foodCourt = foodCourtDao.getById(id);
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
+        Account account = foodCourt.getAccount();
+        String loginNr = account.getLoginNr();
+
+        try {
+            foodCourtDao.addImage(loginNr, inputData);
+            LOG.info("Added image for food court with loginNr: " + loginNr);
+        } catch (DaoException e) {
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
+        }
+    }
+
+    /*
+		Private Helper Functions
+	*/
+
+    private FoodCourtResponse getFoodCourtResponse(FoodCourt foodCourt) {
+        return new FoodCourtResponse(foodCourt.getId(), foodCourt.getDisplayName(), foodCourt.getWaitingTime());
     }
 }

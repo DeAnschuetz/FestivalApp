@@ -1,5 +1,6 @@
 package com.ffb.model.api.response.food_court;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 

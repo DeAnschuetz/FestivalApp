@@ -8,6 +8,8 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.vertx.core.cli.annotations.DefaultValue;
 import jakarta.enterprise.inject.Default;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 
 @Entity
@@ -16,15 +18,18 @@ public class FoodCourtWaitingTime extends PanacheEntityBase {
 
 	@Id
 	@GeneratedValue
+	@JdbcTypeCode(SqlTypes.UUID)
 	@Column(name = "id")
 	private UUID id;
 
 
 	@JsonIgnore
+	@JdbcTypeCode(SqlTypes.UUID)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "food_court_id", referencedColumnName = "id")
 	private FoodCourt foodCourt;
 
+	@JdbcTypeCode(SqlTypes.INTEGER)
     @Column(name = "waiting_time", nullable = false, columnDefinition = "integer default 0 check (waiting_time >= 0)")
 	private int waitingTime;
 

@@ -3,6 +3,7 @@ package com.ffb.app.service.api.impl.product;
 import com.ffb.app.dao.api.food.court.FoodCourtDao;
 import com.ffb.app.dao.api.product.ProductDao;
 import com.ffb.app.service.api.api.product.ProductService;
+import com.ffb.model.api.response.product.ProductResponse;
 import com.ffb.model.db.objects.food_court.FoodCourt;
 import com.ffb.model.db.objects.product.MainSubProductLink;
 import com.ffb.model.db.objects.product.Product;
@@ -18,6 +19,7 @@ import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -35,18 +37,26 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> listProducts() {
-        return productDao.listAll();
+    public List<ProductResponse> listProducts() {
+        return productDao.listAll()
+                .stream()//
+                .map(this::getProductResponse)//
+                .toList()//
+        ;
     }
 
     @Override
-    public List<Product> listProductsByLoginNr(String loginNr) {
-        return productDao.listByLoginNr(loginNr);
+    public List<ProductResponse> listProductsByLoginNr(String loginNr) {
+        return productDao.listByLoginNr(loginNr)
+                .stream()//
+                .map(this::getProductResponse)//
+                .toList()//
+        ;
     }
 
     @Override
     @Transactional
-    public Product createProductByLoginNr(String loginNr, double price, String displayName, String symbolIdentifier, int minimalWarning) throws ServiceException {
+    public ProductResponse createProductByLoginNr(String loginNr, double price, String displayName, String symbolIdentifier, int minimalWarning) throws ServiceException {
         UUID id = UUID.randomUUID();
         FoodCourt foodcourt;
         try {
@@ -56,22 +66,27 @@ public class ProductServiceImpl implements ProductService {
         }
         Product product = new Product(id, price, displayName, symbolIdentifier, minimalWarning, foodcourt);
         productDao.persist(product);
-        return product;
+        return getProductResponse(product);
     }
 
     @Override
-    public List<Product> listProductsByFoodCourtId(UUID foodCourtId) {
-        return productDao.listByFoodCourtId(foodCourtId);
+    public List<ProductResponse> listProductsByFoodCourtId(UUID foodCourtId) {
+        return productDao.listByFoodCourtId(foodCourtId)//
+                .stream()//
+                .map(this::getProductResponse)//
+                .toList()//
+        ;
     }
 
     @Override
-    public Product getProductById(UUID id) throws NotFoundException {
-        return productDao.getById(id);
+    public ProductResponse getProductById(UUID id) throws NotFoundException {
+        Product product = productDao.getById(id);
+        return getProductResponse(product);
     }
 
     @Override
     @Transactional
-    public Product createProductWithId(UUID id, UUID foodCourtId, double price, String displayName, String symbolIdentifier, int minimalWarning) throws ServiceException {
+    public ProductResponse createProductWithId(UUID id, UUID foodCourtId, double price, String displayName, String symbolIdentifier, int minimalWarning) throws ServiceException {
         if (productDao.getById(id) != null) {
             throw new ServiceException("Product already exists: " + id, Response.Status.NOT_FOUND);
         }
@@ -84,17 +99,17 @@ public class ProductServiceImpl implements ProductService {
         }
         Product product = new Product(id, price, displayName, symbolIdentifier, minimalWarning, foodcourt);
         productDao.persist(product);
-        return product;
+        return getProductResponse(product);
     }
 
     @Override
     @Transactional
     public void deleteProductById(UUID id) throws ServiceException {
-        Product p = productDao.getById(id);
-        if (p == null) {
+        Product product = productDao.getById(id);
+        if (product == null) {
             throw new ServiceException("Product not found: " + id, Response.Status.NOT_FOUND);
         }
-        productDao.delete(p);
+        productDao.delete(product);
     }
 
     @Override
@@ -140,5 +155,19 @@ public class ProductServiceImpl implements ProductService {
         if (deleted == 0) {
             throw new ServiceException("Assignment not found for given pair", Response.Status.NOT_FOUND);
         }
+    }
+
+    /*
+        Private Helper Functions
+    */
+    private ProductResponse getProductResponse(Product product) {
+        return new ProductResponse(
+                product.getId(),
+                product.getPrice(),
+                product.getDisplayName(),
+                product.getSymbolIdentifier(),
+                product.getMinimalWarning(),
+                product.getFoodCourt().getId()
+        );
     }
 }
