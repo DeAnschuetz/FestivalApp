@@ -28,16 +28,16 @@ import java.util.List;
 
 @ApplicationScoped
 @Path("credit")
-public class CreditApi {
+public class CreditEndpointImpl {
 
 	// TODO Logging
-	private final Logger LOG = LoggerFactory.getLogger(CreditApi.class);
+	private final Logger LOG = LoggerFactory.getLogger(CreditEndpointImpl.class);
 
 	@Inject
 	JsonWebToken webToken;
 	private final CreditService creditService;
 
-	public CreditApi(CreditService creditService) {
+	public CreditEndpointImpl(CreditService creditService) {
 		this.creditService = creditService;
 	}
 
@@ -133,12 +133,7 @@ public class CreditApi {
 			throw  new ApiException("Page size is required.", Response.Status.BAD_REQUEST);
 		}
 
-		List<CreditHistoryResponse> data;
-		try {
-			data =  creditService.getHistoryByLoginNr(request);
-		} catch (ServiceException e) {
-			throw new ApiException(e);
-		}
-		return Response.status(Response.Status.OK).entity(data).build();
+		List<CreditHistoryResponse> data =  creditService.getHistoryByLoginNr(request);
+        return Response.status(Response.Status.OK).entity(data).build();
 	}
 }

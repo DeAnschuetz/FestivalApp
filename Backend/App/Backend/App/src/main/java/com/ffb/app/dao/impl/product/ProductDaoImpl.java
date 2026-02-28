@@ -61,13 +61,6 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public MainProduct getMainProductByProductId(UUID id) throws DaoException {
-        return mainProductRepo.getMainProductByProductId(id)
-                .orElseThrow(() -> new DaoException("No main product found for product id: " + id))
-        ;
-    }
-
-    @Override
     public void persistLink(MainSubProductLink link)  {
         productRepo.persistLink(link);
     }
@@ -75,16 +68,6 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public boolean linkExists(UUID mainId, UUID subId) {
         return mainSubProductLinkRepo.linkExists(mainId, subId);
-    }
-
-    @Override
-    public List<MainSubProductLink> listLinks() {
-        return mainSubProductLinkRepo.listLinks();
-    }
-
-    @Override
-    public List<MainSubProductLink> listLinksByMain(UUID mainId) {
-        return mainSubProductLinkRepo.listLinksByMain(mainId);
     }
 
     @Override

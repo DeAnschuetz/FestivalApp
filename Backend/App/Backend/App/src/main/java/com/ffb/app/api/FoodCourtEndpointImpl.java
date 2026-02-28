@@ -35,17 +35,17 @@ import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 @Path("food_court")
-public class FoodCourtApi {
+public class FoodCourtEndpointImpl {
 
 	// TODO Logging
-	private final Logger LOG = LoggerFactory.getLogger(FoodCourtApi.class);
+	private final Logger LOG = LoggerFactory.getLogger(FoodCourtEndpointImpl.class);
 
 	@Inject
 	JsonWebToken webToken;
 	private final FoodCourtService foodCourtService;
 
 	@Inject
-	public FoodCourtApi(FoodCourtService foodCourtService) {
+	public FoodCourtEndpointImpl(FoodCourtService foodCourtService) {
 		this.foodCourtService = foodCourtService;
 	}
 
@@ -117,49 +117,6 @@ public class FoodCourtApi {
 		LOG.info("got foodCourt {" + foodCourtId + "}");
 		return Response.status(Response.Status.OK).entity(data).build();
     }
-
-	@GET
-	@Path("by_id/{foodCourtId}/with-relations")
-	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("GUEST")
-	@Operation(summary = "Get a Food Court by ID with optional Relations")
-	@APIResponses({
-			@APIResponse(
-					responseCode = "200",
-					description = "The Food Court with Relations based on Query Parameters",
-					content = @Content(schema = @Schema(implementation = FoodCourtResponse.class, type = SchemaType.OBJECT))
-			),
-			@APIResponse(
-					responseCode = "400",
-					description = "Invalid Request",
-					content = @Content(schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
-			),
-			@APIResponse(
-					responseCode = "404",
-					description = "Food Court not found",
-					content = @Content(schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
-			),
-			@APIResponse(responseCode = "401", description = "Not Authorized"),
-			@APIResponse(responseCode = "403", description = "Not Allowed")
-	})
-	public Response getWithRelationsById(FoodCourtWithRelationsRequest request) throws ApiException {
-		LOG.info("getting with relations {{}}", request.foodCourtId());
-		if (request.foodCourtId() == null) {
-			LOG.error("foodCourtId is null");
-			throw new ApiException("The foodCourtId must not be null.", Response.Status.BAD_REQUEST);
-		}
-
-        FoodCourtResponse data;
-        try {
-			data = foodCourtService.get(request);
-        } catch (ServiceException e) {
-			LOG.error("could not get foodCourt {{}}; Exception:", request.foodCourtId(), e);
-            throw new ApiException(e);
-        }
-
-		LOG.info("got with relations for {{}}", request.foodCourtId());
-		return Response.status(Response.Status.OK).entity(data).build();
-	}
 
 	@GET
 	@Produces("image/png")

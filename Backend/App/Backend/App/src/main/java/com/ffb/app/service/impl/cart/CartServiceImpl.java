@@ -2,23 +2,23 @@ package com.ffb.app.service.impl.cart;
 
 import com.ffb.app.dao.api.cart.CartDao;
 import com.ffb.app.dao.api.product.ProductDao;
+import com.ffb.app.mapper.api.ResponseMapper;
 import com.ffb.app.service.api.cart.CartService;
 import com.ffb.model.api.request.cart.CartItemCreationRequest;
 import com.ffb.model.api.request.cart.CartItemUpdateRequest;
-import com.ffb.model.api.response.account.AccountResponse;
-import com.ffb.model.api.response.cart.CartItemResponse;
 import com.ffb.model.api.response.cart.CartResponseFull;
 import com.ffb.model.api.response.cart.CartResponseSimple;
-import com.ffb.model.db.object.account.Account;
 import com.ffb.model.db.object.cart.Cart;
 import com.ffb.model.db.object.cart.CartItem;
 import com.ffb.model.db.object.product.Product;
 import com.ffb.model.exception.DaoException;
 import com.ffb.model.exception.ServiceException;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
@@ -36,11 +36,13 @@ public class CartServiceImpl implements CartService {
     double EXTRA_PRICE;
     private final CartDao cartDao;
     private final ProductDao productDao;
+    private final ResponseMapper mapper;
 
     @Inject
-    public CartServiceImpl(CartDao cartDao, ProductDao productDao) {
+    public CartServiceImpl(CartDao cartDao, ProductDao productDao, ResponseMapper mapper) {
         this.cartDao = cartDao;
         this.productDao = productDao;
+        this.mapper = mapper;
     }
 
     @Override
@@ -52,12 +54,12 @@ public class CartServiceImpl implements CartService {
 
         Cart cart;
         try {
-            cart = cartDao.findByLoginNrWithItems(loginNr);
+            cart = cartDao.findByLoginNr(loginNr);
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
 
-        return getCartResponse(cart);
+        return mapper.getCartResponseSimple(cart);
     }
 
     @Transactional
@@ -70,16 +72,15 @@ public class CartServiceImpl implements CartService {
 
         Cart cart;
         try {
-            cart = cartDao.findByLoginNrWithItems(loginNr);
+            cart = cartDao.findByLoginNr(loginNr);
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
 
         cart.setHasPrio(newPrio);
         calculateCartTotal(cart);
-        cartDao.persist(cart);
 
-        return getCartResponse(cart);
+        return mapper.getCartResponseSimple(cart);
     }
 
     @Transactional
@@ -106,7 +107,7 @@ public class CartServiceImpl implements CartService {
 
         Cart cart;
         try {
-            cart = cartDao.findByLoginNrWithItems(loginNr);
+            cart = cartDao.findByLoginNr(loginNr);
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
@@ -130,7 +131,7 @@ public class CartServiceImpl implements CartService {
             existing.setItemCount(existing.getItemCount() + itemCount);
         } else {
             // create a new cart item with the given product, item count, and extra
-            CartItem item = new CartItem(UUID.randomUUID(),  0, itemCount, extra, cart, product);
+            CartItem item = new CartItem(0, itemCount, extra, cart, product);
             item.setPrice(calculateCartItemPrice(product, extra));
 
             // add the new cart item to the cart, if the cart does not have any items yet, initialize the list first
@@ -139,14 +140,12 @@ public class CartServiceImpl implements CartService {
             }
 
             // persist the new cart item and add it to the cart
-            cartDao.persistCartItem(item);
             cart.getCartItems().add(item);
         }
 
         // recalculate the cart total and persist the cart
         calculateCartTotal(cart);
-        cartDao.persist(cart);
-        return getCartResponse(cart);
+        return mapper.getCartResponseSimple(cart);
     }
 
     @Transactional
@@ -163,7 +162,7 @@ public class CartServiceImpl implements CartService {
 
         Cart cart;
         try {
-            cart = cartDao.findByLoginNrWithItems(loginNr);
+            cart = cartDao.findByLoginNr(loginNr);
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
@@ -176,8 +175,7 @@ public class CartServiceImpl implements CartService {
         }
 
         calculateCartTotal(cart);
-        cartDao.persist(cart);
-        return getCartResponse(cart);
+        return mapper.getCartResponseSimple(cart);
     }
 
     @Transactional
@@ -202,7 +200,7 @@ public class CartServiceImpl implements CartService {
 
         Cart cart;
         try {
-            cart = cartDao.findByLoginNrWithItems(loginNr);
+            cart = cartDao.findByLoginNr(loginNr);
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
@@ -223,16 +221,14 @@ public class CartServiceImpl implements CartService {
             itemToUpdate.setPrice(calculateCartItemPrice(itemToUpdate.getProduct(), newExtra));
         }
 
-        cartDao.persistCartItem(itemToUpdate);
         calculateCartTotal(cart);
-        cartDao.persist(cart);
-        return getCartResponse(cart);
+        return mapper.getCartResponseSimple(cart);
     }
 
     @Override
     public List<CartResponseFull> listAll() {
         return cartDao.listAll().stream()//
-                .map(this::getCartResponseFull)//
+                .map(mapper::getCartResponseFull)//
                 .toList()//
         ;
     }
@@ -256,68 +252,5 @@ public class CartServiceImpl implements CartService {
         double basePrice = product.getPrice();
         double extraCost = (extra != null && !extra.isEmpty()) ?  EXTRA_PRICE :  0;
         return basePrice + extraCost ;
-    }
-
-    	/*
-		Private Helper Functions
-	*/
-
-
-    private CartResponseSimple getCartResponse(Cart cart) {
-        List<CartItemResponse> items = new ArrayList<>();
-
-        if (cart.getCartItems() != null) {
-            for (CartItem i : cart.getCartItems()) {
-                items.add(getCartItemResponse(i));
-            }
-        }
-
-        return new CartResponseSimple(cart.isHasPrio(), cart.getTotal(), items);
-    }
-
-    private CartResponseFull getCartResponseFull(Cart cart) {
-        List<CartItemResponse> items = new ArrayList<>();
-        if (cart.getCartItems() != null) {
-            for (CartItem i : cart.getCartItems()) {
-                items.add(getCartItemResponse(i));
-            }
-        }
-
-
-        return new CartResponseFull(getAccountResponse(cart.getAccount()), cart.isHasPrio(), cart.getTotal(), items);
-    }
-
-    private AccountResponse getAccountResponse(Account account) {
-        return new AccountResponse(
-                account.getId(),
-                account.getLoginNr(),
-                account.getType()
-        );
-    }
-
-    private CartItemResponse getCartItemResponse(CartItem cartItem) {
-        Product product = cartItem.getProduct();
-        List<CartItemResponse> subItems = product.getSubProducts().stream().map(subProduct -> getCartItemResponse(subProduct, cartItem.getItemCount())).toList();
-        return new CartItemResponse(
-                cartItem.getId(),
-                product.getDisplayName(),
-                product.getSymbolIdentifier(),
-                cartItem.getPrice(),
-                cartItem.getItemCount(),
-                cartItem.getExtra(),
-                subItems
-        );
-    }
-
-    private CartItemResponse getCartItemResponse(Product product, int count) {
-        return new CartItemResponse(
-                product.getId(),
-                product.getDisplayName(),
-                product.getSymbolIdentifier(),
-                0,
-                count,
-                null,
-                null
-        );
     }
 }

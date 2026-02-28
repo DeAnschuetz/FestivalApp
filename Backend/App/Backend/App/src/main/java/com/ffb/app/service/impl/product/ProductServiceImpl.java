@@ -12,11 +12,15 @@ import com.ffb.model.db.object.product.MainSubProductLink;
 import com.ffb.model.db.object.product.Product;
 import com.ffb.model.exception.DaoException;
 import com.ffb.model.exception.ServiceException;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +30,7 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     // TODO Logging
+    private final Logger LOG = LoggerFactory.getLogger(ProductService.class);
 
     private final ProductDao productDao;
 
@@ -180,7 +185,7 @@ public class ProductServiceImpl implements ProductService {
                     try {
                         return createProductWithId(id, request);
                     } catch (ServiceException e) {
-//                        LOG.error("could not create")
+                        LOG.error("could not create ",e);
                         return null;
                     }
                 })
@@ -197,7 +202,7 @@ public class ProductServiceImpl implements ProductService {
                     try {
                         return createAssignment(request);
                     } catch (ServiceException e) {
-//                        LOG.error("");
+                        LOG.error("could not create ",e);
                         return null;
                     }
                 })

@@ -32,16 +32,16 @@ import jakarta.ws.rs.core.MediaType;
 
 @ApplicationScoped
 @Path("account")
-public class AccountApi {
+public class AccountEndpointImpl {
 
-	private final Logger LOG = LoggerFactory.getLogger(AccountApi.class);
+	private final Logger LOG = LoggerFactory.getLogger(AccountEndpointImpl.class);
 
 	@Inject
 	JsonWebToken jwt;
 	private final AccountService accountService;
 
 	@Inject
-	public AccountApi(AccountService accountService) {
+	public AccountEndpointImpl(AccountService accountService) {
 		this.accountService = accountService;
     }
 

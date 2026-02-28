@@ -8,11 +8,7 @@ import java.util.UUID;
 
 public interface MainProductRepository extends PanacheRepositoryBase<MainProduct, UUID> {
 
-    void flush(MainProduct entity);
-
     void update(MainProduct entity);
-
-    void persist(MainProduct entity);
 
     Optional<MainProduct> getMainProductByProductId(UUID id);
 }

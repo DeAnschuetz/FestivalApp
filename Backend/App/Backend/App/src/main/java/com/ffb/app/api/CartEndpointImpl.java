@@ -28,17 +28,17 @@ import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 @Path("cart")
-public class CartApi {
+public class CartEndpointImpl {
 
 	// TODO Logging
-	private final Logger LOG = LoggerFactory.getLogger(CartApi.class);
+	private final Logger LOG = LoggerFactory.getLogger(CartEndpointImpl.class);
 
 	@Inject
 	JsonWebToken jwt;
 	private final CartService cartService;
 
 	@Inject
-	public CartApi(CartService cartService) {
+	public CartEndpointImpl(CartService cartService) {
 		this.cartService = cartService;
 	}
 

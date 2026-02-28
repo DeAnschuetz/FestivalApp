@@ -33,16 +33,16 @@ import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 @Path("food_order")
-public class FoodOrderApi {
+public class FoodOrderEndpointImpl {
 
-	private final Logger LOG = LoggerFactory.getLogger(FoodOrderApi.class);
+	private final Logger LOG = LoggerFactory.getLogger(FoodOrderEndpointImpl.class);
 
 	@Inject
 	JsonWebToken jwt;
 	private final FoodOrderService foodOrderService;
 
 	@Inject
-	public FoodOrderApi(FoodOrderService foodOrderService) {
+	public FoodOrderEndpointImpl(FoodOrderService foodOrderService) {
 		this.foodOrderService = foodOrderService;
 	}
 
@@ -176,7 +176,7 @@ public class FoodOrderApi {
 		AccountType accountType = getAccountType();
 		List<FoodOrderResponse> data;
 		try {
-			data = foodOrderService.listByLoginNrAndAccountType(loginNr, accountType, false);
+			data = foodOrderService.listByLoginNrAndAccountType(loginNr, accountType);
 		} catch (ServiceException e) {
 			LOG.error("could not list orders for loginNr={{}}; Exception: ", loginNr, e);
 			throw new ApiException(e);
@@ -220,7 +220,7 @@ public class FoodOrderApi {
 		AccountType accountType = getAccountType();
 		List<FoodOrderResponse> data;
 		try {
-			data = foodOrderService.listByLoginNrAndAccountTypeAndStatus(loginNr, accountType, status, false);
+			data = foodOrderService.listByLoginNrAndAccountTypeAndStatus(loginNr, accountType, status);
 		} catch (ServiceException e) {
 			LOG.error("could not list orders for loginNr={{}} and status='{}'; Exception: ", loginNr, status, e);
 			throw new ApiException(e);
@@ -265,7 +265,7 @@ public class FoodOrderApi {
 		AccountType accountType = getAccountType();
 		List<FoodOrderResponse> data;
 		try {
-			data = foodOrderService.listByLoginNrAndAccountType(loginNr, accountType, false);
+			data = foodOrderService.listByLoginNrAndAccountType(loginNr, accountType);
 		} catch (ServiceException e) {
 			LOG.error("could not list orders with history for loginNr={{}}; Exception: ", loginNr, e);
 			throw new ApiException(e);
@@ -309,7 +309,7 @@ public class FoodOrderApi {
 		AccountType accountType = getAccountType();
 		List<FoodOrderResponse> data;
 		try {
-			data = foodOrderService.listByLoginNrAndAccountTypeAndStatus(loginNr, accountType, status, false);
+			data = foodOrderService.listByLoginNrAndAccountTypeAndStatus(loginNr, accountType, status);
 		} catch (ServiceException e) {
 			LOG.error("could not list orders with history for loginNr={{}} and status='{}'; Exception: ", loginNr, status, e);
 			throw new ApiException(e);

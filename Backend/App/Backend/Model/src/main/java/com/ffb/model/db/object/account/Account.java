@@ -9,6 +9,7 @@ import com.ffb.model.db.object.credit.Credit;
 import com.ffb.model.db.object.food_court.FoodCourt;
 import com.ffb.model.db.object.foodorder.FoodOrder;
 
+import com.ffb.model.db.object.notification.FoodOrderNotification;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -58,6 +59,10 @@ public class Account extends PanacheEntityBase {
 	@OneToMany(mappedBy = "sharedAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<FoodOrder> sharedOrders;
 
+	@JsonIgnore
+	@OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<FoodOrderNotification> notifications;
+
 	protected Account() {
 	}
 
@@ -66,28 +71,6 @@ public class Account extends PanacheEntityBase {
 		this.ticket = ticket;
 		this.password = password;
 		this.type = type;
-	}
-
-	public Account(UUID id, Ticket ticket, String password, AccountType type, Cart cart, Credit credit, FoodCourt foodCourt) {
-		this.id = id;
-		this.ticket = ticket;
-		this.password = password;
-		this.type = type;
-		this.cart = cart;
-		this.credit = credit;
-		this.foodCourt = foodCourt;
-	}
-
-	public Account(UUID id, Ticket ticket, String password, AccountType type, Cart cart, Credit credit, FoodCourt foodCourt, List<FoodOrder> foodOrders, List<FoodOrder> sharedOrders) {
-		this.id = id;
-		this.ticket = ticket;
-		this.password = password;
-		this.type = type;
-		this.cart = cart;
-		this.credit = credit;
-		this.foodCourt = foodCourt;
-		this.foodOrders = foodOrders;
-		this.sharedOrders = sharedOrders;
 	}
 
 	public UUID getId() {
@@ -164,5 +147,13 @@ public class Account extends PanacheEntityBase {
 
 	public void setSharedOrders(List<FoodOrder> sharedOrders) {
 		this.sharedOrders = sharedOrders;
+	}
+
+	public List<FoodOrderNotification> getNotifications() {
+		return notifications;
+	}
+
+	public void setNotifications(List<FoodOrderNotification> notifications) {
+		this.notifications = notifications;
 	}
 }

@@ -71,7 +71,7 @@ public class AccountServiceImpl implements AccountService {
 
         Account account;
         try {
-            account = accountDao.findByLoginNr(loginNr);
+            account = accountDao.getByLoginNr(loginNr);
         } catch (DaoException e) {
 			LOG.error("could not find account for {{}}; Exception:", loginNr, e);
             throw new ServiceException(e, Response.Status.NOT_FOUND);
@@ -95,7 +95,7 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public List<AccountResponse> getAllAccounts() {
 		LOG.trace("ENTER: getAllAccounts");
-		List<AccountResponse> accounts = accountDao.getAll()//
+		List<AccountResponse> accounts = accountDao.listAll()//
 				.stream()//
 				.map(responseMapper::getAccountResponse)//
 				.toList()//
@@ -116,9 +116,9 @@ public class AccountServiceImpl implements AccountService {
 								LOG.warn("loginNr {{}} already exists", loginNr);
                                 return null;
                             }
-                            Ticket ticket = new Ticket(UUID.randomUUID(), loginNr);
-                            accountDao.persistTicket(ticket);
-                            return ticket;
+							Ticket ticket = new Ticket(UUID.randomUUID(), loginNr);
+							accountDao.persistTicket(ticket);
+							return ticket;
                         }
                 )//
 				.filter(Objects::nonNull)
@@ -176,7 +176,7 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public DatabaseResponse getDatabaseResponse() {
-		List<AccountResponseFull> accounts = accountDao.getAll().stream()//
+		List<AccountResponseFull> accounts = accountDao.listAll().stream()//
 				.map(account -> {
 					return new AccountResponseFull(
 							responseMapper.getAccountResponse(account),
@@ -216,16 +216,15 @@ public class AccountServiceImpl implements AccountService {
 		AccountType type = getAccountTypeFromLoginNr(loginNr);
 		String hashedPassword = BCrypt.withDefaults().hashToString(12, rawPassword.trim().toCharArray());
 		Account account = new Account(id, ticket, hashedPassword, type);
-		accountDao.persist(account);
 
 		if(type == AccountType.GUEST) {
 			LOG.info("account type is GUEST, creating cart and credit");
-			Credit credit = new Credit(UUID.randomUUID(), INITIAL_CREDIT, account);
+			Credit credit = new Credit(INITIAL_CREDIT, account);
 			account.setCredit(credit);
-			Cart cart = new Cart(UUID.randomUUID(), false,  0, account);
+			Cart cart = new Cart(false,  0, account);
 			account.setCart(cart);
 		}
-		accountDao.flush();
+		accountDao.persist(account);
 		AccountResponse response = responseMapper.getAccountResponse(account);
 		LOG.trace("EXIT: createAccount; account={{}}", response);
 		return response;

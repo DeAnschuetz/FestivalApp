@@ -17,25 +17,14 @@ public interface FoodOrderRepository extends PanacheRepositoryBase<FoodOrder, UU
 
     List<FoodOrder> listAll();
 
-    List<FoodOrder> listAllWithItems();
-
     List<FoodOrder> listAllByStatus(FoodOrderStatus status);
-
-    List<FoodOrder> listAllByStatusWithItems(FoodOrderStatus status);
 
     List<FoodOrder> listByLoginNr(String loginNr);
 
-    List<FoodOrder> listByLoginNrWithItems(String loginNr);
-
     List<FoodOrder> listByLoginNrAndStatus(String loginNr, FoodOrderStatus status);
-
-    List<FoodOrder> listByLoginNrAndStatusWithItems(String loginNr, FoodOrderStatus status);
 
     List<FoodOrder> listByFoodCourtId(UUID foodCourtId);
 
-    List<FoodOrder> listByFoodCourtIdWithItems(UUID foodCourtId);
-
     List<FoodOrder> listByFoodCourtIdAndStatus(UUID foodCourtId, FoodOrderStatus status);
 
-    List<FoodOrder> listByFoodCourtIdAndStatusWithItems(UUID foodCourtId, FoodOrderStatus status);
 }

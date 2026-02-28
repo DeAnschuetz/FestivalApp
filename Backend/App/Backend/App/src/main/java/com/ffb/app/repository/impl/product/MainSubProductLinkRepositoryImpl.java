@@ -2,6 +2,7 @@ package com.ffb.app.repository.impl.product;
 
 import com.ffb.app.repository.api.product.MainSubProductLinkRepository;
 import com.ffb.model.db.object.product.MainSubProductLink;
+
 import io.quarkus.panache.common.Parameters;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.PersistenceException;
@@ -16,13 +17,6 @@ import java.util.UUID;
 public class MainSubProductLinkRepositoryImpl implements MainSubProductLinkRepository {
 
     // TODO Logging
-
-    @Override
-    public Optional<MainSubProductLink> findLinkById(UUID linkId) throws IllegalArgumentException {
-        return find("id", linkId)
-                .firstResultOptional()
-        ;
-    }
 
     @Override
     public boolean linkExists(UUID mainId, UUID subId) throws IllegalArgumentException, NoSuchElementException, IllegalStateException, PersistenceException {

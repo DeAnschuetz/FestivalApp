@@ -21,18 +21,10 @@ public class FoodOrderDaoImpl implements FoodOrderDao {
     // TODO Logging
 
     private final FoodOrderRepository foodOrderRepo;
-    private final FoodOrderItemRepository foodOrderItemRepo;
-    private final FoodOrderHistoryRepository foodOrderHistoryRepo;
 
     @Inject
-    public FoodOrderDaoImpl(
-            FoodOrderRepository foodOrderRepo,
-            FoodOrderItemRepository foodOrderItemRepo,
-            FoodOrderHistoryRepository foodOrderHistoryRepo
-    ) {
+    public FoodOrderDaoImpl(FoodOrderRepository foodOrderRepo) {
         this.foodOrderRepo = foodOrderRepo;
-        this.foodOrderItemRepo = foodOrderItemRepo;
-        this.foodOrderHistoryRepo = foodOrderHistoryRepo;
     }
 
     @Override
@@ -63,18 +55,8 @@ public class FoodOrderDaoImpl implements FoodOrderDao {
     }
 
     @Override
-    public List<FoodOrder> listAllWithItems() {
-        return foodOrderRepo.listAllWithItems();
-    }
-
-    @Override
     public List<FoodOrder> listAllByStatus(FoodOrderStatus status) {
         return foodOrderRepo.listAllByStatus(status);
-    }
-
-    @Override
-    public List<FoodOrder> listAllWithItemsByStatus(FoodOrderStatus status) {
-        return foodOrderRepo.listAllByStatusWithItems(status);
     }
 
     @Override
@@ -83,18 +65,8 @@ public class FoodOrderDaoImpl implements FoodOrderDao {
     }
 
     @Override
-    public List<FoodOrder> listByLoginNrWithItems(String loginNr) {
-        return foodOrderRepo.listByLoginNrWithItems(loginNr);
-    }
-
-    @Override
     public List<FoodOrder> listByLoginNrAndStatus(String loginNr, FoodOrderStatus status) {
         return foodOrderRepo.listByLoginNrAndStatus(loginNr, status);
-    }
-
-    @Override
-    public List<FoodOrder> listByLoginNrAndStatusWithItems(String loginNr, FoodOrderStatus status) {
-        return foodOrderRepo.listByLoginNrAndStatusWithItems(loginNr, status);
     }
 
     @Override
@@ -103,43 +75,13 @@ public class FoodOrderDaoImpl implements FoodOrderDao {
     }
 
     @Override
-    public List<FoodOrder> listByFoodCourtIdWithItems(UUID foodCourtId) {
-        return foodOrderRepo.listByFoodCourtIdWithItems(foodCourtId);
-    }
-
-    @Override
     public List<FoodOrder> listByFoodCourtIdAndStatus(UUID foodCourtId, FoodOrderStatus status) {
         return foodOrderRepo.listByFoodCourtIdAndStatus(foodCourtId, status);
     }
 
     @Override
-    public List<FoodOrder> listByFoodCourtIdAndStatusWithItems(UUID foodCourtId, FoodOrderStatus status) {
-        return foodOrderRepo.listByFoodCourtIdAndStatusWithItems(foodCourtId, status);
-    }
-
-    @Override
-    public List<FoodOrderItem> listItemsByFoodOrderId(UUID foodOrderId) {
-        return foodOrderItemRepo.listByFoodOrderId(foodOrderId);
-    }
-
-    @Override
-    public List<FoodOrderHistory> listHistoryByFoodOrderId(UUID foodOrderId) {
-        return foodOrderHistoryRepo.listByFoodOrderId(foodOrderId);
-    }
-
-    @Override
     public void persist(FoodOrder foodOrder) {
         foodOrderRepo.persist(foodOrder);
-    }
-
-    @Override
-    public void persistHistory(FoodOrderHistory history) {
-        foodOrderHistoryRepo.persist(history);
-    }
-
-    @Override
-    public void persistItem(FoodOrderItem foodOrderItem) {
-        foodOrderItemRepo.persist(foodOrderItem);
     }
 
     @Override

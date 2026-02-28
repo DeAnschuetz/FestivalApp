@@ -3,6 +3,7 @@ package com.ffb.app.repository.impl.food.order;
 import com.ffb.app.repository.api.food.order.FoodOrderRepository;
 import com.ffb.model.db.object.foodorder.FoodOrder;
 import com.ffb.model.db.object.foodorder.FoodOrderStatus;
+
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
@@ -25,34 +26,10 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
     }
 
     @Override
-    public List<FoodOrder> listAllWithItems() {
-        return find(
-                    "SELECT DISTINCT fo " +
-                    "FROM FoodOrder fo " +
-                    "LEFT JOIN FETCH fo.foodOrderItems"
-                )//
-                .list()//
-        ;
-    }
-
-    @Override
     public List<FoodOrder> listAllByStatus(FoodOrderStatus status) {
         return find(
                     "SELECT DISTINCT fo " +
                     "FROM FoodOrder fo " +
-                    "WHERE fo.status = ?1",
-                    status
-                )//
-                .list()//
-        ;
-    }
-
-    @Override
-    public List<FoodOrder> listAllByStatusWithItems(FoodOrderStatus status) {
-        return find(
-                    "SELECT DISTINCT fo " +
-                    "FROM FoodOrder fo " +
-                    "LEFT JOIN FETCH fo.foodOrderItems"+
                     "WHERE fo.status = ?1",
                     status
                 )//
@@ -112,37 +89,10 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
     }
 
     @Override
-    public List<FoodOrder> listByLoginNrWithItems(String loginNr) {
-        return find(
-                    "SELECT DISTINCT fo " +
-                    "FROM FoodOrder fo " +
-                    "LEFT JOIN FETCH fo.foodOrderItems " +
-                    "WHERE fo.account.ticket.loginNr = ?1 OR fo.sharedAccount.ticket.loginNr = ?1",
-                    loginNr
-                )//
-                .list()//
-        ;
-    }
-
-    @Override
     public List<FoodOrder> listByLoginNrAndStatus(String loginNr, FoodOrderStatus status) {
         return find(
                     "SELECT DISTINCT fo " +
                     "FROM FoodOrder fo " +
-                    "WHERE fo.account.ticket.loginNr = ?1 OR fo.sharedAccount.ticket.loginNr = ?1 AND fo.status = ?2",
-                    loginNr,
-                    status
-                )//
-                .list()//
-        ;
-    }
-
-    @Override
-    public List<FoodOrder> listByLoginNrAndStatusWithItems(String loginNr, FoodOrderStatus status) {
-        return find(
-                    "SELECT DISTINCT fo " +
-                    "FROM FoodOrder fo " +
-                    "LEFT JOIN FETCH fo.foodOrderItems " +
                     "WHERE fo.account.ticket.loginNr = ?1 OR fo.sharedAccount.ticket.loginNr = ?1 AND fo.status = ?2",
                     loginNr,
                     status
@@ -164,19 +114,6 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
     }
 
     @Override
-    public List<FoodOrder> listByFoodCourtIdWithItems(UUID foodCourtId) {
-        return find(
-                    "SELECT DISTINCT fo " +
-                    "FROM FoodOrder fo " +
-                    "LEFT JOIN FETCH fo.foodOrderItems " +
-                    "WHERE fo.foodCourt.id = ?1",
-                    foodCourtId
-                )//
-                .list()//
-        ;
-    }
-
-    @Override
     public List<FoodOrder> listByFoodCourtIdAndStatus(UUID foodCourtId, FoodOrderStatus status) {
         return find(
                     "SELECT DISTINCT fo " +
@@ -188,19 +125,4 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
                 .list()//
         ;
     }
-
-    @Override
-    public List<FoodOrder> listByFoodCourtIdAndStatusWithItems(UUID foodCourtId, FoodOrderStatus status) {
-        return find(
-                    "SELECT DISTINCT fo " +
-                    "FROM FoodOrder fo " +
-                    "LEFT JOIN FETCH fo.foodOrderItems " +
-                    "WHERE fo.foodCourt.id = ?1 AND fo.status = ?2",
-                    foodCourtId,
-                    status
-                )//
-                .list()//
-        ;
-    }
-
 }

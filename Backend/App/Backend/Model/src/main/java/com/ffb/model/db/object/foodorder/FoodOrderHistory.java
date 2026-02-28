@@ -43,14 +43,14 @@ public class FoodOrderHistory extends PanacheEntityBase {
 	@JdbcTypeCode(SqlTypes.UUID)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "food_order_id", referencedColumnName = "id")
-    private FoodOrder foodOrder;
+    private FoodOrder order;
 
     protected FoodOrderHistory() {} 
     
-	public FoodOrderHistory(UUID id, LocalDateTime statusChangeTime, FoodOrderStatus oldStatus, FoodOrderStatus newStatus, FoodOrder foodOrder) {
+	public FoodOrderHistory(LocalDateTime statusChangeTime, FoodOrderStatus oldStatus, FoodOrderStatus newStatus, FoodOrder order) {
 		super();
-		this.id = id;
-		this.foodOrder = foodOrder;
+		this.id = UUID.randomUUID();
+		this.order = order;
 		this.statusChangeTime = statusChangeTime;
 		this.oldStatus = oldStatus;
 		this.newStatus = newStatus;
@@ -88,11 +88,11 @@ public class FoodOrderHistory extends PanacheEntityBase {
 		this.newStatus = newStatus;
 	}
 
-	public FoodOrder getFoodOrder() {
-		return foodOrder;
+	public FoodOrder getOrder() {
+		return order;
 	}
 
-	public void setFoodOrder(FoodOrder foodOrder) {
-		this.foodOrder = foodOrder;
+	public void setOrder(FoodOrder foodOrder) {
+		this.order = foodOrder;
 	}
 }

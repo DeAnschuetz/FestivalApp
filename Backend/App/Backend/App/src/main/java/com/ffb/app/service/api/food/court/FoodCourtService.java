@@ -6,6 +6,7 @@ import com.ffb.model.api.request.food.court.FoodCourtRequestSimple;
 import com.ffb.model.api.request.food.court.FoodCourtWithRelationsRequest;
 import com.ffb.model.api.response.food.court.FoodCourtResponse;
 import com.ffb.model.exception.ServiceException;
+
 import jakarta.transaction.Transactional;
 
 import java.io.PushbackInputStream;
@@ -17,8 +18,6 @@ public interface FoodCourtService {
     FoodCourtResponse get(UUID id) throws ServiceException;
 
     FoodCourtResponse get(String loginNr) throws ServiceException;
-
-    FoodCourtResponse get(FoodCourtWithRelationsRequest request) throws ServiceException;
 
     @Transactional
     byte[] getImage(UUID foodCourtId) throws ServiceException;

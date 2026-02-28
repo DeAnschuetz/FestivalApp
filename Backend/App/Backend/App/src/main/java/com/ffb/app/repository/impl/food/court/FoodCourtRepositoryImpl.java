@@ -2,7 +2,9 @@ package com.ffb.app.repository.impl.food.court;
 
 import com.ffb.app.repository.api.food.court.FoodCourtRepository;
 import com.ffb.model.db.object.food_court.FoodCourt;
+
 import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,45 +32,4 @@ public class FoodCourtRepositoryImpl implements FoodCourtRepository {
                 .firstResultOptional()//
         ;
     }
-
-    @Override
-    public Optional<FoodCourt> getByIdWithWaitingTimeAndFoodOrders(UUID id) {
-        return find(
-                    "SELECT fc " +
-                    "FROM FoodCourt fc " +
-                    "LEFT JOIN FETCH fc.waitingTime " +
-                    "LEFT JOIN FETCH  fc.foodOrders" +
-                    "WHERE fc.id = ?id",
-                    id
-                )//
-                .firstResultOptional()//
-        ;
-    }
-
-    @Override
-    public Optional<FoodCourt> getByIdWithWaitingTime(UUID id) {
-        return find(
-                "SELECT fc " +
-                    "FROM FoodCourt fc " +
-                    "LEFT JOIN FETCH fc.waitingTime " +
-                    "WHERE fc.id = ?id",
-                    id
-                )//
-                .firstResultOptional()//
-        ;
-    }
-
-    @Override
-    public Optional<FoodCourt> getByIdWithFoodOrders(UUID id) {
-        return find(
-                "SELECT fc " +
-                    "FROM FoodCourt fc " +
-                    "LEFT JOIN FETCH  fc.foodOrders" +
-                    "WHERE fc.id = ?id",
-                    id
-                )//
-                .firstResultOptional()//
-        ;
-    }
-
 }

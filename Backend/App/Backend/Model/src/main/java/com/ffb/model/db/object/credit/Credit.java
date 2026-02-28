@@ -46,9 +46,9 @@ public class Credit extends PanacheEntityBase {
     
     protected Credit() {}
 
-	public Credit(UUID id, double amount, Account account) {
+	public Credit(double amount, Account account) {
 		super();
-		this.id = id;
+		this.id = UUID.randomUUID();
 		this.amount = amount;
 		this.account = account;
 		this.creditHistory = new ArrayList<>();

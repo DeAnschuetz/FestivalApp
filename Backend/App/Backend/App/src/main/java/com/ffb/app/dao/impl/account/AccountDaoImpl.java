@@ -27,7 +27,7 @@ public class AccountDaoImpl implements AccountDao {
     }
 
     @Override
-    public Account findByLoginNr(String loginNr) throws DaoException {
+    public Account getByLoginNr(String loginNr) throws DaoException {
         LOG.trace("ENTER: findByLoginNr; loginNr={{}}", loginNr);
         Account account = accountRepo.getByLoginNr(loginNr)//
                 .orElseThrow(() -> {
@@ -48,7 +48,7 @@ public class AccountDaoImpl implements AccountDao {
     }
 
     @Override
-    public List<Account> getAll() {
+    public List<Account> listAll() {
         LOG.trace("ENTER: getAll;");
         List<Account> result =  accountRepo.listAll();
         LOG.trace("EXIT: getAll found {}", result.size());
@@ -57,33 +57,13 @@ public class AccountDaoImpl implements AccountDao {
 
     @Override
     public void persist(Account account) {
-        LOG.trace("ENTER: persist;");
         accountRepo.persist(account);
-    }
-
-    @Override
-    public Account getByLoginNr(String loginNr) throws DaoException {
-        LOG.trace("ENTER: getByLoginNr; loginNr={{}}", loginNr);
-        Account account = accountRepo.getByLoginNr(loginNr)//
-                .orElseThrow(() -> {
-                    LOG.error("account not found for loginNr: {{}}", loginNr);
-                    return new DaoException("Account not found for loginNr={" + loginNr + "}");
-                })//
-        ;
-        LOG.trace("EXIT: getByLoginNr; account={{}}", account);
-        return account;
-    }
-
-    @Override
-    public void flush() {
-        LOG.trace("ENTER: flush;");
-        accountRepo.flush();
     }
 
     @Override
     public Ticket getTicketByLoginNr(String loginNr) throws DaoException {
         LOG.trace("ENTER: getTicketByLoginNr; loginNr={{}}", loginNr);
-        Ticket ticket = ticketRepo.getByTicketNr(loginNr)//
+        Ticket ticket = ticketRepo.getByLoginNr(loginNr)//
                 .orElseThrow(() -> {
                     LOG.error("could not find ticket for loginNr={{}}", loginNr);
                     return new DaoException("Ticket not found for loginNr={" + loginNr + "}");
@@ -91,12 +71,6 @@ public class AccountDaoImpl implements AccountDao {
         ;
         LOG.trace("EXIT: getTicketByLoginNr; ticket={{}}", ticket);
         return ticket;
-    }
-
-    @Override
-    public void persistTicket(Ticket ticket) {
-        LOG.trace("ENTER: persistTicket;");
-        ticketRepo.persist(ticket);
     }
 
     @Override
@@ -113,5 +87,10 @@ public class AccountDaoImpl implements AccountDao {
         boolean exists  = ticketRepo.existsByLoginNr(loginNr);
         LOG.trace("EXIT: existsTicketByLoginNr; exists={{}}", exists);
         return exists;
+    }
+
+    @Override
+    public void persistTicket(Ticket ticket) {
+        ticketRepo.persist(ticket);
     }
 }

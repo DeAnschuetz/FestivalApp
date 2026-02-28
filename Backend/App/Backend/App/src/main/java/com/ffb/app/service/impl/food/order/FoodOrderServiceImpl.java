@@ -6,10 +6,8 @@ import com.ffb.app.dao.api.credit.CreditDao;
 import com.ffb.app.dao.api.food.court.FoodCourtDao;
 import com.ffb.app.dao.api.food.order.FoodOrderDao;
 import com.ffb.app.mapper.api.ResponseMapper;
-import com.ffb.app.mapper.impl.ResponseMapperImpl;
 import com.ffb.app.service.api.food.order.FoodOrderService;
 import com.ffb.model.api.request.food.order.ShareOrderRequest;
-import com.ffb.model.api.response.food.order.FoodOrderItemResponse;
 import com.ffb.model.api.response.food.order.FoodOrderResponse;
 import com.ffb.model.api.response.food.order.FoodOrderResponseFull;
 import com.ffb.model.db.object.account.Account;
@@ -72,8 +70,8 @@ public class FoodOrderServiceImpl implements FoodOrderService {
     @Override
     public List<FoodOrderResponse> create(String loginNr) throws ServiceException {
         try {
-            Account account = accountDao.findByLoginNr(loginNr);
-            Cart cart = cartDao.findByLoginNrWithItems(loginNr);
+            Account account = accountDao.getByLoginNr(loginNr);
+            Cart cart = cartDao.findByLoginNr(loginNr);
             List<CartItem> cartItems = cart.getCartItems();
             return cartItems.stream()//
                     .collect(
@@ -113,17 +111,14 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                                     throw new CustomRuntimeException(e, Response.Status.NOT_FOUND);
                                 }
                                 FoodOrder foodOrder = new FoodOrder(
-                                        UUID.randomUUID(),
-                                        FoodOrderStatus.ORDERED,
                                         cart.isHasPrio(),
                                         total,
-                                        foodCourt.getWaitingTimeObject().getWaitingTime(),
                                         foodOrderItems,
                                         foodCourt,
                                         account
                                 );
                                 foodOrderItems.forEach(foodOrderItem -> {
-                                    foodOrderItem.setFoodOrder(foodOrder);
+                                    foodOrderItem.setOrder(foodOrder);
                                 });
 
                                 Credit currentCredit;
@@ -137,9 +132,6 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                                     throw new RuntimeException("Insufficient credit");
                                 }
                                 currentCredit.setAmount(currentCreditAmount - total);
-
-                                foodCourtDao.persist(foodCourt);
-                                creditDao.persist(currentCredit);
                                 foodOrderDao.persist(foodOrder);
                                 cartDao.empty(cart);
                                 return foodOrder;
@@ -206,7 +198,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
         }
         Account sharedAccount;
         try {
-            sharedAccount = accountDao.findByLoginNr(sharedLoginNr);
+            sharedAccount = accountDao.getByLoginNr(sharedLoginNr);
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
@@ -215,26 +207,12 @@ public class FoodOrderServiceImpl implements FoodOrderService {
     }
 
     @Override
-    public FoodOrderResponseFull getById(UUID id, boolean withItems, boolean withHistory) throws ServiceException {
+    public FoodOrderResponseFull getById(UUID id) throws ServiceException {
         FoodOrder foodOrder;
-        if (withItems && withHistory) {
-            try {
-                foodOrder = foodOrderDao.getByIdWithItemsAndHistory(id);
-            } catch (DaoException e) {
-                throw new ServiceException(e, Response.Status.NOT_FOUND);
-            }
-        } else if (withItems) {
-            try {
-                foodOrder = foodOrderDao.getByIdWithItems(id);
-            } catch (DaoException e) {
-                throw new ServiceException(e, Response.Status.NOT_FOUND);
-            }
-        } else {
-            try {
-                foodOrder = foodOrderDao.getById(id);
-            } catch (DaoException e) {
-                throw new ServiceException(e, Response.Status.NOT_FOUND);
-            }
+        try {
+            foodOrder = foodOrderDao.getById(id);
+        } catch (DaoException e) {
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
 
         if (foodOrder == null) {
@@ -244,24 +222,19 @@ public class FoodOrderServiceImpl implements FoodOrderService {
     }
 
     @Override
-    public List<FoodOrderResponse> listAll(boolean withItems) {
-        List<FoodOrder> foodOrders = withItems ? foodOrderDao.listAllWithItems() : foodOrderDao.listAll();
-        return foodOrders.stream()//
+    public List<FoodOrderResponse> listAll() {
+        return foodOrderDao.listAll() .stream()//
                 .map(responseMapper::getFoodOrderResponse)//
                 .toList()//
         ;
     }
 
     @Override
-    public List<FoodOrderResponse> listByLoginNrAndAccountType(String loginNr, AccountType accountType, boolean withItems) throws ServiceException {
+    public List<FoodOrderResponse> listByLoginNrAndAccountType(String loginNr, AccountType accountType) throws ServiceException {
         List<FoodOrder> foodOrders;
         if (accountType == AccountType.ADMIN) {
             LOG.info("Listing all Food Orders (ADMIN)");
-            if (withItems) {
-                foodOrders = foodOrderDao.listAllWithItems();
-            } else {
-                foodOrders = foodOrderDao.listAll();
-            }
+            foodOrders = foodOrderDao.listAll();
         } else if (accountType == AccountType.FOOD_COURT_WORKER) {
             LOG.info("Listing all Food Orders (FOOD_COURT_WORKER)");
             FoodCourt foodCourt;
@@ -271,18 +244,10 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                 throw new ServiceException(e, Response.Status.NOT_FOUND);
             }
             UUID foodCourtId = foodCourt.getId();
-            if (withItems) {
-                foodOrders = foodOrderDao.listByFoodCourtIdWithItems(foodCourtId);
-            } else {
-                foodOrders = foodOrderDao.listByFoodCourtId(foodCourtId);
-            }
+            foodOrders = foodOrderDao.listByFoodCourtId(foodCourtId);
         } else if (accountType == AccountType.GUEST) {
             LOG.info("Listing all Food Orders (GUEST)");
-            if (withItems) {
-                foodOrders = foodOrderDao.listByLoginNrWithItems(loginNr);
-            } else {
-                foodOrders = foodOrderDao.listByLoginNr(loginNr);
-            }
+            foodOrders = foodOrderDao.listByLoginNr(loginNr);
         } else {
             throw new ServiceException("Unknown Account type: " + accountType.toString(), Response.Status.INTERNAL_SERVER_ERROR);
         }
@@ -290,14 +255,11 @@ public class FoodOrderServiceImpl implements FoodOrderService {
     }
 
     @Override
-    public List<FoodOrderResponse> listByLoginNrAndAccountTypeAndStatus(String loginNr, AccountType accountType, FoodOrderStatus status, boolean withItems) throws ServiceException {
+    public List<FoodOrderResponse> listByLoginNrAndAccountTypeAndStatus(String loginNr, AccountType accountType, FoodOrderStatus status) throws ServiceException {
         List<FoodOrder> foodOrders;
         if (accountType == AccountType.ADMIN) {
-            if (withItems) {
-                foodOrders = foodOrderDao.listAllByStatus(status);
-            } else {
-                foodOrders = foodOrderDao.listAllWithItemsByStatus(status);
-            }
+            foodOrders = foodOrderDao.listAllByStatus(status);
+
         } else if (accountType == AccountType.FOOD_COURT_WORKER) {
             FoodCourt foodCourt;
             try {
@@ -306,17 +268,9 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                 throw new ServiceException(e, Response.Status.NOT_FOUND);
             }
             UUID foodCourtId = foodCourt.getId();
-            if (withItems) {
-                foodOrders = foodOrderDao.listByFoodCourtIdAndStatusWithItems(foodCourtId, status);
-            } else {
-                foodOrders = foodOrderDao.listByFoodCourtIdAndStatus(foodCourtId, status);
-            }
+            foodOrders = foodOrderDao.listByFoodCourtIdAndStatus(foodCourtId, status);
         } else if (accountType == AccountType.GUEST) {
-            if (withItems) {
-                foodOrders = foodOrderDao.listByLoginNrAndStatusWithItems(loginNr, status);
-            } else {
-                foodOrders = foodOrderDao.listByLoginNrAndStatus(loginNr, status);
-            }
+            foodOrders = foodOrderDao.listByLoginNrAndStatus(loginNr, status);
         } else {
             throw new ServiceException("Unknown Account type: " + accountType.toString(), Response.Status.INTERNAL_SERVER_ERROR);
         }

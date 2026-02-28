@@ -42,7 +42,7 @@ public class FoodOrderItem extends PanacheEntityBase {
     @JdbcTypeCode(SqlTypes.UUID)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "food_order_id", referencedColumnName = "id")
-	private FoodOrder foodOrder;
+	private FoodOrder order;
     
     @JsonIgnore
     @JdbcTypeCode(SqlTypes.UUID)
@@ -52,12 +52,12 @@ public class FoodOrderItem extends PanacheEntityBase {
     
     protected FoodOrderItem() {}
 
-    public FoodOrderItem(UUID id, double price, int itemCount, String extra, FoodOrder foodOrder, Product product) {
+    public FoodOrderItem(UUID id, double price, int itemCount, String extra, FoodOrder order, Product product) {
         this.id = id;
         this.price = price;
         this.itemCount = itemCount;
         this.extra = extra;
-        this.foodOrder = foodOrder;
+        this.order = order;
         this.product = product;
     }
 
@@ -109,12 +109,12 @@ public class FoodOrderItem extends PanacheEntityBase {
         this.extra = extra;
     }
 
-    public FoodOrder getFoodOrder() {
-        return foodOrder;
+    public FoodOrder getOrder() {
+        return order;
     }
 
-    public void setFoodOrder(FoodOrder foodOrder) {
-        this.foodOrder = foodOrder;
+    public void setOrder(FoodOrder foodOrder) {
+        this.order = foodOrder;
     }
 
     public Product getProduct() {

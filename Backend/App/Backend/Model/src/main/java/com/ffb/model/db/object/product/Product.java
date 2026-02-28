@@ -50,10 +50,6 @@ public class Product extends PanacheEntityBase {
 	private ProductCount productCount;
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private List<FoodOrderItem> foodOrderItems;
-
-	@JsonIgnore
 	@OneToMany(mappedBy = "mainProduct", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<MainSubProductLink> subLinks;
 
@@ -63,6 +59,18 @@ public class Product extends PanacheEntityBase {
 
 	protected Product() {}
 
+	public Product(double price, String displayName, String symbolIdentifier, int minimalWarning, FoodCourt foodCourt) {
+		this.id = UUID.randomUUID();
+		this.price = price;
+		this.displayName = displayName;
+		this.symbolIdentifier = symbolIdentifier;
+		this.minimalWarning = minimalWarning;
+		this.foodCourt = foodCourt;
+		this.productCount = new ProductCount(
+				this
+		);
+	}
+
 	public Product(UUID id, double price, String displayName, String symbolIdentifier, int minimalWarning, FoodCourt foodCourt) {
 		this.id = id;
 		this.price = price;
@@ -71,8 +79,6 @@ public class Product extends PanacheEntityBase {
 		this.minimalWarning = minimalWarning;
 		this.foodCourt = foodCourt;
 		this.productCount = new ProductCount(
-				UUID.randomUUID(),
-				0,
 				this
 		);
 	}
@@ -92,8 +98,6 @@ public class Product extends PanacheEntityBase {
 	public int getCount() {
 		if(this.productCount == null) {
 			this.productCount = new ProductCount(
-					UUID.randomUUID(),
-					0,
 					this
 			);
 		}
@@ -154,14 +158,6 @@ public class Product extends PanacheEntityBase {
 
 	public void setProductCount(ProductCount productCount) {
 		this.productCount = productCount;
-	}
-
-	public List<FoodOrderItem> getFoodOrderItems() {
-		return foodOrderItems;
-	}
-
-	public void setFoodOrderItems(List<FoodOrderItem> foodOrderItems) {
-		this.foodOrderItems = foodOrderItems;
 	}
 
 	public List<MainSubProductLink> getSubLinks() {

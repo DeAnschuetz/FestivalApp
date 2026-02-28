@@ -29,17 +29,17 @@ import java.util.UUID;
 
 @ApplicationScoped
 @Path("product")
-public class ProductApi {
+public class ProductEndpointImpl {
 
     // TODO Logging
-    private final Logger LOG = LoggerFactory.getLogger(ProductApi.class);
+    private final Logger LOG = LoggerFactory.getLogger(ProductEndpointImpl.class);
 
     @Inject
     JsonWebToken webToken;
     private final ProductService productService;
 
     @Inject
-    public ProductApi(ProductService productService) {
+    public ProductEndpointImpl(ProductService productService) {
         this.productService = productService;
     }
 

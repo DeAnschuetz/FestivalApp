@@ -13,6 +13,7 @@ import com.ffb.model.api.response.food.order.FoodOrderHistoryResponse;
 import com.ffb.model.api.response.food.order.FoodOrderItemResponse;
 import com.ffb.model.api.response.food.order.FoodOrderResponse;
 import com.ffb.model.api.response.food.order.FoodOrderResponseFull;
+import com.ffb.model.api.response.notification.FoodOrderNotificationResponse;
 import com.ffb.model.api.response.product.ProductResponse;
 import com.ffb.model.api.response.ticket.TicketResponse;
 import com.ffb.model.db.object.account.Account;
@@ -25,9 +26,11 @@ import com.ffb.model.db.object.food_court.FoodCourt;
 import com.ffb.model.db.object.foodorder.FoodOrder;
 import com.ffb.model.db.object.foodorder.FoodOrderHistory;
 import com.ffb.model.db.object.foodorder.FoodOrderItem;
+import com.ffb.model.db.object.notification.FoodOrderNotification;
 import com.ffb.model.db.object.product.Product;
 
 public interface ResponseMapper {
+
     AccountResponse getAccountResponse(Account account);
 
     TicketResponse getTicketResponse(Ticket ticket);
@@ -61,6 +64,8 @@ public interface ResponseMapper {
     CreditResponseFull getCreditResponseFull(Credit credit);
 
     FoodOrderResponseFull getFoodOrderResponseFull(FoodOrder foodOrder);
+
+    FoodOrderNotificationResponse getFoodOrderNotificationResponse(FoodOrderNotification notification);
 
     FoodOrderHistoryResponse getFoodOrderHistoryResponse(FoodOrderHistory foodOrderHistory);
 }

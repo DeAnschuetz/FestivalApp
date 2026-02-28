@@ -19,17 +19,4 @@ public class CartRepositoryImpl implements CartRepository {
                 .firstResultOptional()//
         ;
     }
-
-    @Override
-    public Optional<Cart> findByLoginNrWithItems(String loginNr) {
-        return find(
-                "SELECT DISTINCT c " +
-                        "FROM Cart c " +
-                        "LEFT JOIN FETCH c.cartItems " +
-                        "WHERE c.account.ticket.loginNr = ?1",
-                    loginNr
-                 )//
-                .firstResultOptional()//
-        ;
-    }
 }

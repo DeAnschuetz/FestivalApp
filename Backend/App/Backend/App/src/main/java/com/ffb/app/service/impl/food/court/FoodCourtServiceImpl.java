@@ -2,11 +2,11 @@ package com.ffb.app.service.impl.food.court;
 
 import com.ffb.app.dao.api.account.AccountDao;
 import com.ffb.app.dao.api.food.court.FoodCourtDao;
+import com.ffb.app.mapper.api.ResponseMapper;
 import com.ffb.app.service.api.food.court.FoodCourtService;
 import com.ffb.model.api.request.food.court.FoodCourtRequest;
 import com.ffb.model.api.request.food.court.FoodCourtRequestFull;
 import com.ffb.model.api.request.food.court.FoodCourtRequestSimple;
-import com.ffb.model.api.request.food.court.FoodCourtWithRelationsRequest;
 import com.ffb.model.api.response.food.court.FoodCourtResponse;
 import com.ffb.model.db.object.account.Account;
 import com.ffb.model.db.object.food_court.FoodCourt;
@@ -31,11 +31,13 @@ public class FoodCourtServiceImpl implements FoodCourtService {
 
     private final AccountDao accountDao;
     private final FoodCourtDao foodCourtDao;
+    private final ResponseMapper mapper;
 
     @Inject
-    public FoodCourtServiceImpl(FoodCourtDao foodCourtDao, AccountDao accountDao) {
+    public FoodCourtServiceImpl(FoodCourtDao foodCourtDao, AccountDao accountDao, ResponseMapper mapper) {
         this.foodCourtDao = foodCourtDao;
         this.accountDao = accountDao;
+        this.mapper = mapper;
     }
 
     @Override
@@ -46,7 +48,7 @@ public class FoodCourtServiceImpl implements FoodCourtService {
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
-        return getFoodCourtResponse(foodCourt);
+        return mapper.getFoodCourtResponse(foodCourt);
     }
 
     @Override
@@ -57,41 +59,7 @@ public class FoodCourtServiceImpl implements FoodCourtService {
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
-        return getFoodCourtResponse(foodCourt);
-    }
-
-    @Override
-    public FoodCourtResponse get(FoodCourtWithRelationsRequest request) throws ServiceException  {
-        UUID foodCourtId = request.foodCourtId();
-        boolean foodOrders = request.foodOrders();
-        boolean waitingTime = request.waitingTime();
-        FoodCourt foodCourt;
-        if (waitingTime && foodOrders) {
-            try {
-                foodCourt = foodCourtDao.getByIdWithWaitingTimeAndFoodOrders(foodCourtId);
-            } catch (DaoException e) {
-                throw new ServiceException(e, Response.Status.NOT_FOUND);
-            }
-        } else if(waitingTime) {
-            try {
-                foodCourt = foodCourtDao.getByIdWithWaitingTime(foodCourtId);
-            } catch (DaoException e) {
-                throw new ServiceException(e, Response.Status.NOT_FOUND);
-            }
-        } else if(foodOrders) {
-            try {
-                foodCourt = foodCourtDao.getByIdWithFoodOrders(foodCourtId);
-            } catch (DaoException e) {
-                throw new ServiceException(e, Response.Status.NOT_FOUND);
-            }
-        } else {
-            try {
-                foodCourt = foodCourtDao.getById(foodCourtId);
-            } catch (DaoException e) {
-                throw new ServiceException(e, Response.Status.NOT_FOUND);
-            }
-        }
-        return getFoodCourtResponse(foodCourt);
+        return mapper.getFoodCourtResponse(foodCourt);
     }
 
     @Override
@@ -108,7 +76,7 @@ public class FoodCourtServiceImpl implements FoodCourtService {
     public List<FoodCourtResponse> listAll() {
         return foodCourtDao.listAll()//
                 .stream()//
-                .map(this::getFoodCourtResponse)//
+                .map(mapper::getFoodCourtResponse)//
                 .toList()//
         ;
     }
@@ -140,8 +108,7 @@ public class FoodCourtServiceImpl implements FoodCourtService {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
         foodCourt.setDisplayName(name);
-        foodCourtDao.persist(foodCourt);
-        return getFoodCourtResponse(foodCourt);
+        return mapper.getFoodCourtResponse(foodCourt);
     }
 
     @Override
@@ -155,8 +122,7 @@ public class FoodCourtServiceImpl implements FoodCourtService {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
         foodCourt.setDisplayName(name);
-        foodCourtDao.persist(foodCourt);
-        return getFoodCourtResponse(foodCourt);
+        return mapper.getFoodCourtResponse(foodCourt);
     }
 
     @Override
@@ -227,7 +193,7 @@ public class FoodCourtServiceImpl implements FoodCourtService {
     private FoodCourtResponse createFoodCourt(UUID id, String loginNr, String name) throws ServiceException {
         Account account;
         try {
-            account = accountDao.findByLoginNr(loginNr);
+            account = accountDao.getByLoginNr(loginNr);
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
@@ -242,17 +208,18 @@ public class FoodCourtServiceImpl implements FoodCourtService {
         }
         foodCourt = new FoodCourt(
                 id,
-                name
+                name,
+                account
         );
         foodCourt.setAccount(account);
         foodCourtDao.persist(foodCourt);
-        return getFoodCourtResponse(foodCourt);
+        return mapper.getFoodCourtResponse(foodCourt);
     }
 
     private FoodCourtResponse createFoodCourt(String name, String loginNr) throws ServiceException {
         Account account;
         try {
-            account = accountDao.findByLoginNr(loginNr);
+            account = accountDao.getByLoginNr(loginNr);
         } catch (DaoException e) {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
@@ -266,14 +233,11 @@ public class FoodCourtServiceImpl implements FoodCourtService {
             throw new ServiceException("The FoodCourt already Exists", Response.Status.CONFLICT);
         }
         foodCourt = new FoodCourt(
-                name
+                name,
+                account
         );
         foodCourt.setAccount(account);
         foodCourtDao.persist(foodCourt);
-        return getFoodCourtResponse(foodCourt);
-    }
-
-    private FoodCourtResponse getFoodCourtResponse(FoodCourt foodCourt) {
-        return new FoodCourtResponse(foodCourt.getId(), foodCourt.getDisplayName(), foodCourt.getWaitingTime());
+        return mapper.getFoodCourtResponse(foodCourt);
     }
 }

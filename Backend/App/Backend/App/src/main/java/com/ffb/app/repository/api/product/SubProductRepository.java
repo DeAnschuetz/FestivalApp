@@ -6,10 +6,6 @@ import java.util.UUID;
 
 public interface SubProductRepository extends  PanacheRepositoryBase<SubProduct, UUID> {
 
-    void flush(SubProduct entity);
-
     void update(SubProduct entity);
-
-    void persist(SubProduct entity);
 
 }

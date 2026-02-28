@@ -52,22 +52,14 @@ public class CartItem extends PanacheEntityBase {
 	
 	protected CartItem() {}
 
-    public CartItem(UUID id, double price, int itemCount, String extra, Cart cart, Product product) {
-        this.id = id;
+    public CartItem(double price, int itemCount, String extra, Cart cart, Product product) {
+        this.id = UUID.randomUUID();
         this.price = price;
         this.itemCount = itemCount;
         this.extra = extra;
         this.cart = cart;
         this.product = product;
     }
-
-    public CartItem(UUID id, double price, int itemCount, String extra) {
-		super();
-		this.id = id;
-		this.price = price;
-		this.itemCount = itemCount;
-		this.extra = extra;
-	}
 
     public UUID getId() {
         return id;

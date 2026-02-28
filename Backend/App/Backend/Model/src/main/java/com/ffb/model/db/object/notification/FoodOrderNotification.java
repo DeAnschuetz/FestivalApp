@@ -5,18 +5,11 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ffb.model.db.object.account.Account;
+import com.ffb.model.db.object.foodorder.FoodOrder;
 import com.ffb.model.db.object.foodorder.FoodOrderStatus;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -42,26 +35,36 @@ public class FoodOrderNotification extends PanacheEntityBase {
 	private String message;
 
 	@JdbcTypeCode(SqlTypes.LOCAL_DATE_TIME)
-    @Column(name = "order_time")
-	private LocalDateTime orderTime;
+    @Column(name = "creation_time")
+	private LocalDateTime creationTime;
 
 	@JdbcTypeCode(SqlTypes.LOCAL_DATE_TIME)
     @Column(name = "pickup_time")
 	private LocalDateTime pickupTime;
 
+	@JsonIgnore
+	@JdbcTypeCode(SqlTypes.UUID)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "order_id", referencedColumnName = "id")
+	private FoodOrder order;
+
     @JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
     
     protected FoodOrderNotification() {}
 
-	public FoodOrderNotification(UUID id, NotificationStatus status, String message) {
-		super();
-		this.id = id;
+	public FoodOrderNotification(FoodOrderStatus type, NotificationStatus status, String message, LocalDateTime creationTime, LocalDateTime pickupTime, FoodOrder order, Account account) {
+		this.id = UUID.randomUUID();
+		this.type = type;
 		this.status = status;
 		this.message = message;
+		this.creationTime = creationTime;
+		this.pickupTime = pickupTime;
+		this.account = account;
+		this.order = order;
 	}
 
 	public UUID getId() {
@@ -96,12 +99,12 @@ public class FoodOrderNotification extends PanacheEntityBase {
 		this.message = message;
 	}
 
-	public LocalDateTime getOrderTime() {
-		return orderTime;
+	public LocalDateTime getCreationTime() {
+		return creationTime;
 	}
 
-	public void setOrderTime(LocalDateTime orderTime) {
-		this.orderTime = orderTime;
+	public void setCreationTime(LocalDateTime orderTime) {
+		this.creationTime = orderTime;
 	}
 
 	public LocalDateTime getPickupTime() {
@@ -118,5 +121,13 @@ public class FoodOrderNotification extends PanacheEntityBase {
 
 	public void setAccount(Account account) {
 		this.account = account;
+	}
+
+	public FoodOrder getOrder() {
+		return order;
+	}
+
+	public void setOrder(FoodOrder order) {
+		this.order = order;
 	}
 }
