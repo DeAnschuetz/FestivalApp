@@ -129,15 +129,6 @@ components:
         waitingTime:
           type: integer
           format: int32
-    FoodCourtWithRelationsRequest:
-      type: object
-      properties:
-        foodCourtId:
-          $ref: "#/components/schemas/UUID"
-        waitingTime:
-          type: boolean
-        foodOrders:
-          type: boolean
     FoodOrderHistoryResponse:
       type: object
       properties:
@@ -165,6 +156,21 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FoodOrderItemResponse"
+    FoodOrderNotificationResponse:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        type:
+          $ref: "#/components/schemas/FoodOrderStatus"
+        status:
+          $ref: "#/components/schemas/NotificationStatus"
+        message:
+          type: string
+        creationTime:
+          $ref: "#/components/schemas/LocalDateTime"
+        pickupTime:
+          $ref: "#/components/schemas/LocalDateTime"
     FoodOrderResponse:
       type: object
       properties:
@@ -201,6 +207,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FoodOrderHistoryResponse"
+        notifications:
+          type: array
+          items:
+            $ref: "#/components/schemas/FoodOrderNotificationResponse"
     FoodOrderStatus:
       type: string
       enum:
@@ -221,6 +231,12 @@ components:
           type: string
         password:
           type: string
+    NotificationStatus:
+      type: string
+      enum:
+      - NEW
+      - READ
+      - REMOVED
     ProductLinkRequest:
       type: object
       properties:
@@ -345,7 +361,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Account Api
+      - Account Endpoint Impl
       security:
       - SecurityScheme:
         - ADMIN
@@ -375,7 +391,7 @@ paths:
                   message:
                     type: string
       tags:
-      - Account Api
+      - Account Endpoint Impl
   /account/logout:
     post:
       summary: Logout
@@ -398,7 +414,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Account Api
+      - Account Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -439,7 +455,7 @@ paths:
                   message:
                     type: string
       tags:
-      - Account Api
+      - Account Endpoint Impl
   /cart:
     get:
       summary: Get the Cart for the currently logged-in Guest Account
@@ -471,7 +487,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Cart Api
+      - Cart Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -512,7 +528,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Cart Api
+      - Cart Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -533,7 +549,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Cart Api
+      - Cart Endpoint Impl
       security:
       - SecurityScheme:
         - ADMIN
@@ -575,7 +591,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Cart Api
+      - Cart Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -616,7 +632,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Cart Api
+      - Cart Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -657,7 +673,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Cart Api
+      - Cart Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -691,7 +707,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Credit Api
+      - Credit Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -726,7 +742,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Credit Api
+      - Credit Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -753,7 +769,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Credit Api
+      - Credit Endpoint Impl
       security:
       - SecurityScheme:
         - ADMIN
@@ -798,7 +814,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Court Api
+      - Food Court Endpoint Impl
       security:
       - SecurityScheme:
         - FOOD_COURT_WORKER
@@ -825,7 +841,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Court Api
+      - Food Court Endpoint Impl
       security:
       - SecurityScheme:
         - FOOD_COURT_WORKER
@@ -879,7 +895,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Court Api
+      - Food Court Endpoint Impl
       security:
       - SecurityScheme:
         - FOOD_COURT_WORKER
@@ -925,66 +941,11 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Court Api
+      - Food Court Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
         - ADMIN
-  /food_court/by_id/{foodCourtId}/with-relations:
-    get:
-      summary: Get a Food Court by ID with optional Relations
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/FoodCourtWithRelationsRequest"
-        required: true
-      responses:
-        "200":
-          description: The Food Court with Relations based on Query Parameters
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    $ref: "#/components/schemas/UUID"
-                  name:
-                    type: string
-                  waitingTime:
-                    type: integer
-                    format: int32
-        "400":
-          description: Invalid Request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  message:
-                    type: string
-        "404":
-          description: Food Court not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  message:
-                    type: string
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
-      tags:
-      - Food Court Api
-      security:
-      - SecurityScheme:
-        - GUEST
   /food_court/by_id/{id}:
     put:
       summary: Update a Food Court by ID
@@ -1042,7 +1003,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Court Api
+      - Food Court Endpoint Impl
       security:
       - SecurityScheme:
         - ADMIN
@@ -1086,7 +1047,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Court Api
+      - Food Court Endpoint Impl
       security:
       - SecurityScheme:
         - ADMIN
@@ -1146,7 +1107,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Court Api
+      - Food Court Endpoint Impl
       security:
       - SecurityScheme:
         - ADMIN
@@ -1201,7 +1162,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Court Api
+      - Food Court Endpoint Impl
       security:
       - SecurityScheme:
         - FOOD_COURT_WORKER
@@ -1262,7 +1223,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Court Api
+      - Food Court Endpoint Impl
       security:
       - SecurityScheme:
         - ADMIN
@@ -1310,7 +1271,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Court Api
+      - Food Court Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -1344,7 +1305,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Court Api
+      - Food Court Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -1388,7 +1349,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Order Api
+      - Food Order Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -1440,7 +1401,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Order Api
+      - Food Order Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -1492,7 +1453,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Order Api
+      - Food Order Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -1538,7 +1499,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Order Api
+      - Food Order Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -1583,7 +1544,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Order Api
+      - Food Order Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -1629,7 +1590,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Order Api
+      - Food Order Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -1672,6 +1633,10 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/FoodOrderHistoryResponse"
+                  notifications:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/FoodOrderNotificationResponse"
         "400":
           description: Invalid Request
           content:
@@ -1699,7 +1664,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Food Order Api
+      - Food Order Endpoint Impl
       security:
       - SecurityScheme:
         - FOOD_COURT_WORKER
@@ -1713,7 +1678,7 @@ paths:
             application/json:
               schema: {}
       tags:
-      - Master Api
+      - Master Endpoint Impl
     post:
       summary: create initial data
       responses:
@@ -1723,7 +1688,118 @@ paths:
             application/json:
               schema: {}
       tags:
-      - Master Api
+      - Master Endpoint Impl
+  /master/simmulation/pause:
+    post:
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+      summary: Pause
+      tags:
+      - Master Endpoint Impl
+  /master/simmulation/resume:
+    post:
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+      summary: Resume
+      tags:
+      - Master Endpoint Impl
+  /notification/list_all:
+    get:
+      summary: List all Notifications visible to the currently logged-in Account (Role-Based)
+      responses:
+        "200":
+          description: Notifications returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FoodOrderResponse"
+        "400":
+          description: Unknown Account Type / Role mapping failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        "404":
+          description: Some required Resource was not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      tags:
+      - Notification Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+        - ADMIN
+  /notification/update/{notificationId}/{newStatus}:
+    put:
+      summary: Update the Status of the Notification for the given ID
+      parameters:
+      - name: newStatus
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/NotificationStatus"
+      - name: notificationId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Notifications returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FoodOrderResponse"
+        "404":
+          description: Some required Resource was not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      tags:
+      - Notification Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
   /product:
     post:
       summary: Create a Product for the currently logged-in Food Court Worker Account
@@ -1776,7 +1852,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Product Api
+      - Product Endpoint Impl
       security:
       - SecurityScheme:
         - FOOD_COURT_WORKER
@@ -1822,7 +1898,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Product Api
+      - Product Endpoint Impl
       security:
       - SecurityScheme:
         - ADMIN
@@ -1884,7 +1960,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Product Api
+      - Product Endpoint Impl
       security:
       - SecurityScheme:
         - ADMIN
@@ -1918,7 +1994,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Product Api
+      - Product Endpoint Impl
       security:
       - SecurityScheme:
         - FOOD_COURT_WORKER
@@ -1940,7 +2016,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Product Api
+      - Product Endpoint Impl
       security:
       - SecurityScheme:
         - FOOD_COURT_WORKER
@@ -1978,7 +2054,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Product Api
+      - Product Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -1999,7 +2075,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Product Api
+      - Product Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -2057,7 +2133,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Product Api
+      - Product Endpoint Impl
       security:
       - SecurityScheme:
         - GUEST
@@ -2218,7 +2294,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Ticket Api
+      - Ticket Endpoint Impl
       security:
       - SecurityScheme:
         - ADMIN
@@ -2256,7 +2332,7 @@ paths:
         "403":
           description: Not Allowed
       tags:
-      - Ticket Api
+      - Ticket Endpoint Impl
       security:
       - SecurityScheme:
         - ADMIN
