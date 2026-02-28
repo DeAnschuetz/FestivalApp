@@ -1,9 +1,8 @@
 package com.ffb.app.dao.api.account;
 
-import com.ffb.model.db.objects.account.Account;
-import com.ffb.model.db.objects.account.Ticket;
+import com.ffb.model.db.object.account.Account;
+import com.ffb.model.db.object.account.Ticket;
 import com.ffb.model.exception.DaoException;
-
 import java.util.List;
 
 public interface AccountDao {

@@ -1,5 +1,7 @@
 package com.ffb.model.exception;
 
+import jakarta.ws.rs.core.Response;
+
 import java.io.IOException;
 
 public class DaoException extends FestivalFoodException{

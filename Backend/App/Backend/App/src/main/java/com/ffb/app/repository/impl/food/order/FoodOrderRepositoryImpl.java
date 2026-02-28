@@ -1,8 +1,8 @@
 package com.ffb.app.repository.impl.food.order;
 
 import com.ffb.app.repository.api.food.order.FoodOrderRepository;
-import com.ffb.model.db.objects.foodorder.FoodOrder;
-import com.ffb.model.db.objects.foodorder.FoodOrderStatus;
+import com.ffb.model.db.object.foodorder.FoodOrder;
+import com.ffb.model.db.object.foodorder.FoodOrderStatus;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
@@ -12,24 +12,60 @@ import java.util.UUID;
 @ApplicationScoped
 public class FoodOrderRepositoryImpl implements FoodOrderRepository {
 
+    // TODO Logging
+
     @Override
-    public List<FoodOrder> listAllWithItems() {
+    public List<FoodOrder> listAll() {
         return find(
-                "SELECT DISTINCT fo" +
-                        "FROM FoodOrder fo" +
-                        "LEFT JOIN FETCH fo.foodOrderItems"
+                    "SELECT DISTINCT fo " +
+                    "FROM FoodOrder fo"
                 )//
                 .list()//
         ;
     }
 
     @Override
-    public Optional<FoodOrder> findByIdWithItems(UUID id) {
+    public List<FoodOrder> listAllWithItems() {
         return find(
-                "SELECT DISTINCT fo" +
-                        "FROM FoodOrder fo" +
-                        "LEFT JOIN FETCH fo.foodOrderItems" +
-                        "WHERE fo.id = ?1",
+                    "SELECT DISTINCT fo " +
+                    "FROM FoodOrder fo " +
+                    "LEFT JOIN FETCH fo.foodOrderItems"
+                )//
+                .list()//
+        ;
+    }
+
+    @Override
+    public List<FoodOrder> listAllByStatus(FoodOrderStatus status) {
+        return find(
+                    "SELECT DISTINCT fo " +
+                    "FROM FoodOrder fo " +
+                    "WHERE fo.status = ?1",
+                    status
+                )//
+                .list()//
+        ;
+    }
+
+    @Override
+    public List<FoodOrder> listAllByStatusWithItems(FoodOrderStatus status) {
+        return find(
+                    "SELECT DISTINCT fo " +
+                    "FROM FoodOrder fo " +
+                    "LEFT JOIN FETCH fo.foodOrderItems"+
+                    "WHERE fo.status = ?1",
+                    status
+                )//
+                .list()//
+        ;
+    }
+
+    @Override
+    public Optional<FoodOrder> getById(UUID id) {
+        return find(
+                    "SELECT DISTINCT fo " +
+                    "FROM FoodOrder fo " +
+                    "WHERE fo.id = ?1",
                     id
                 )//
                 .firstResultOptional()//
@@ -37,26 +73,134 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
     }
 
     @Override
-    public Optional<FoodOrder> findByIdWithItemsAndHistory(UUID id) {
-        return find("SELECT DISTINCT fo" +
-                        "FROM FoodOrder fo" +
-                        "LEFT JOIN FETCH fo.foodOrderItems" +
-                        "LEFT JOIN FETCH fo.foodOrderHistory" +
-                        "WHERE fo.id = ?1",
+    public Optional<FoodOrder> getByIdWithItems(UUID id) {
+        return find(
+                    "SELECT DISTINCT fo " +
+                    "FROM FoodOrder fo " +
+                    "LEFT JOIN FETCH fo.foodOrderItems " +
+                    "WHERE fo.id = ?1",
                     id
                 )//
                 .firstResultOptional()//
-                ;
+        ;
+    }
+
+    @Override
+    public Optional<FoodOrder> getByIdWithItemsAndHistory(UUID id) {
+        return find(
+                    "SELECT DISTINCT fo " +
+                    "FROM FoodOrder fo " +
+                    "LEFT JOIN FETCH fo.foodOrderItems " +
+                    "LEFT JOIN FETCH fo.foodOrderHistory " +
+                    "WHERE fo.id = ?1",
+                    id
+                )//
+                .firstResultOptional()//
+        ;
     }
 
     @Override
     public List<FoodOrder> listByLoginNr(String loginNr) {
-        return List.of();
+        return find(
+                    "SELECT DISTINCT fo " +
+                    "FROM FoodOrder fo " +
+                    "WHERE fo.account.ticket.loginNr = ?1 OR fo.sharedAccount.ticket.loginNr = ?1",
+                    loginNr
+                 )//
+                .list()//
+        ;
+    }
+
+    @Override
+    public List<FoodOrder> listByLoginNrWithItems(String loginNr) {
+        return find(
+                    "SELECT DISTINCT fo " +
+                    "FROM FoodOrder fo " +
+                    "LEFT JOIN FETCH fo.foodOrderItems " +
+                    "WHERE fo.account.ticket.loginNr = ?1 OR fo.sharedAccount.ticket.loginNr = ?1",
+                    loginNr
+                )//
+                .list()//
+        ;
     }
 
     @Override
     public List<FoodOrder> listByLoginNrAndStatus(String loginNr, FoodOrderStatus status) {
-        return List.of();
+        return find(
+                    "SELECT DISTINCT fo " +
+                    "FROM FoodOrder fo " +
+                    "WHERE fo.account.ticket.loginNr = ?1 OR fo.sharedAccount.ticket.loginNr = ?1 AND fo.status = ?2",
+                    loginNr,
+                    status
+                )//
+                .list()//
+        ;
+    }
+
+    @Override
+    public List<FoodOrder> listByLoginNrAndStatusWithItems(String loginNr, FoodOrderStatus status) {
+        return find(
+                    "SELECT DISTINCT fo " +
+                    "FROM FoodOrder fo " +
+                    "LEFT JOIN FETCH fo.foodOrderItems " +
+                    "WHERE fo.account.ticket.loginNr = ?1 OR fo.sharedAccount.ticket.loginNr = ?1 AND fo.status = ?2",
+                    loginNr,
+                    status
+                )//
+                .list()//
+        ;
+    }
+
+    @Override
+    public List<FoodOrder> listByFoodCourtId(UUID foodCourtId) {
+        return find(
+                    "SELECT DISTINCT fo " +
+                    "FROM FoodOrder fo " +
+                    "WHERE fo.foodCourt.id = ?1",
+                    foodCourtId
+                )//
+                .list()//
+        ;
+    }
+
+    @Override
+    public List<FoodOrder> listByFoodCourtIdWithItems(UUID foodCourtId) {
+        return find(
+                    "SELECT DISTINCT fo " +
+                    "FROM FoodOrder fo " +
+                    "LEFT JOIN FETCH fo.foodOrderItems " +
+                    "WHERE fo.foodCourt.id = ?1",
+                    foodCourtId
+                )//
+                .list()//
+        ;
+    }
+
+    @Override
+    public List<FoodOrder> listByFoodCourtIdAndStatus(UUID foodCourtId, FoodOrderStatus status) {
+        return find(
+                    "SELECT DISTINCT fo " +
+                    "FROM FoodOrder fo " +
+                    "WHERE fo.foodCourt.id = ?1 AND fo.status = ?2",
+                    foodCourtId,
+                    status
+                )//
+                .list()//
+        ;
+    }
+
+    @Override
+    public List<FoodOrder> listByFoodCourtIdAndStatusWithItems(UUID foodCourtId, FoodOrderStatus status) {
+        return find(
+                    "SELECT DISTINCT fo " +
+                    "FROM FoodOrder fo " +
+                    "LEFT JOIN FETCH fo.foodOrderItems " +
+                    "WHERE fo.foodCourt.id = ?1 AND fo.status = ?2",
+                    foodCourtId,
+                    status
+                )//
+                .list()//
+        ;
     }
 
 }

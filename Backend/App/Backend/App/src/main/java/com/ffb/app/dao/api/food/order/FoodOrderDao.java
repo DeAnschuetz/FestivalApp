@@ -1,9 +1,9 @@
 package com.ffb.app.dao.api.food.order;
 
-import com.ffb.model.db.objects.foodorder.FoodOrder;
-import com.ffb.model.db.objects.foodorder.FoodOrderHistory;
-import com.ffb.model.db.objects.foodorder.FoodOrderItem;
-import com.ffb.model.db.objects.foodorder.FoodOrderStatus;
+import com.ffb.model.db.object.foodorder.FoodOrder;
+import com.ffb.model.db.object.foodorder.FoodOrderHistory;
+import com.ffb.model.db.object.foodorder.FoodOrderItem;
+import com.ffb.model.db.object.foodorder.FoodOrderStatus;
 import com.ffb.model.exception.DaoException;
 
 import java.util.List;
@@ -11,29 +11,45 @@ import java.util.UUID;
 
 public interface FoodOrderDao {
 
-    List<FoodOrder> listAllWithItems();
+    FoodOrder getById(UUID id) throws DaoException;
 
-    FoodOrder findByIdWithItems(UUID id) throws DaoException;
+    FoodOrder getByIdWithItems(UUID id) throws DaoException;
 
-    FoodOrder findByIdWithItemsAndHistory(UUID id) throws DaoException;
-
-    List<FoodOrder> listByLoginNr(String loginNr);
-
-    List<FoodOrder> listByLoginNrAndStatus(String loginNr, FoodOrderStatus status);
-
-    List<FoodOrderHistory> listHistoryByFoodOrderId(UUID foodOrderId);
-
-    List<FoodOrderItem> listItemsByFoodOrderId(UUID foodOrderId);
+    FoodOrder getByIdWithItemsAndHistory(UUID id) throws DaoException;
 
     List<FoodOrder> listAll();
 
-    FoodOrder findById(UUID id);
+    List<FoodOrder> listAllWithItems();
 
-    void persistHistory(FoodOrderHistory history);
+    List<FoodOrder> listAllByStatus(FoodOrderStatus status);
+
+    List<FoodOrder> listAllWithItemsByStatus(FoodOrderStatus status);
+
+    List<FoodOrder> listByLoginNr(String loginNr);
+
+    List<FoodOrder> listByLoginNrWithItems(String loginNr);
+
+    List<FoodOrder> listByLoginNrAndStatus(String loginNr, FoodOrderStatus status);
+
+    List<FoodOrder> listByLoginNrAndStatusWithItems(String loginNr, FoodOrderStatus status);
+
+    List<FoodOrder> listByFoodCourtId(UUID foodCourtId);
+
+    List<FoodOrder> listByFoodCourtIdWithItems(UUID foodCourtId);
+
+    List<FoodOrder> listByFoodCourtIdAndStatus(UUID foodCourtId, FoodOrderStatus status);
+
+    List<FoodOrder> listByFoodCourtIdAndStatusWithItems(UUID foodCourtId, FoodOrderStatus status);
+
+    List<FoodOrderItem> listItemsByFoodOrderId(UUID foodOrderId);
+
+    List<FoodOrderHistory> listHistoryByFoodOrderId(UUID foodOrderId);
 
     void persist(FoodOrder foodOrder);
 
-    void delete(FoodOrder foodOrder);
+    void persistHistory(FoodOrderHistory history);
 
     void persistItem(FoodOrderItem foodOrderItem);
+
+    void delete(FoodOrder foodOrder);
 }

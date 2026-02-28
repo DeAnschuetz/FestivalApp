@@ -3,18 +3,18 @@ package com.ffb.app.dao.impl.cart;
 import com.ffb.app.dao.api.cart.CartDao;
 import com.ffb.app.repository.api.cart.CartItemRepository;
 import com.ffb.app.repository.api.cart.CartRepository;
-import com.ffb.model.db.objects.cart.Cart;
-import com.ffb.model.db.objects.cart.CartItem;
+import com.ffb.model.db.object.cart.Cart;
+import com.ffb.model.db.object.cart.CartItem;
 import com.ffb.model.exception.DaoException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @ApplicationScoped
 public class CartDaoImpl implements CartDao {
+
+    // TODO Logging
+
 
     private final CartRepository cartRepo;
     private final CartItemRepository cartItemRepo;
@@ -26,23 +26,9 @@ public class CartDaoImpl implements CartDao {
     }
 
     @Override
-    public Cart findByAccountId(UUID accountId) throws DaoException {
-        return cartRepo.findByAccountId(accountId)//
-                .orElseThrow(() -> new DaoException("Cart not found for account id: " + accountId))//
-        ;
-    }
-
-    @Override
     public Cart findByLoginNr(String loginNr) throws DaoException {
         return cartRepo.findByLoginNr(loginNr)
                 .orElseThrow(() -> new DaoException("Cart not found for login number: " + loginNr))//
-        ;
-    }
-
-    @Override
-    public Cart findByAccountIdWithItems(UUID accountId) throws DaoException {
-        return cartRepo.findByAccountIdWithItems(accountId)
-                .orElseThrow(() -> new DaoException("Cart not found for account id: " + accountId))//
         ;
     }
 
@@ -54,16 +40,6 @@ public class CartDaoImpl implements CartDao {
     }
 
     @Override
-    public List<Cart> listAllWithItems() {
-        return cartRepo.listAllWithItems();
-    }
-
-    @Override
-    public boolean existsByAccountId(UUID accountId) {
-        return cartRepo.existsByAccountId(accountId);
-    }
-
-    @Override
     public void persist(Cart cart) {
         cartRepo.persist(cart);
     }
@@ -71,5 +47,18 @@ public class CartDaoImpl implements CartDao {
     @Override
     public void persistCartItem(CartItem item) {
         cartItemRepo.persist(item);
+    }
+
+    @Override
+    public List<Cart> listAll() {
+        return cartRepo.listAll();
+    }
+
+    @Override
+    public void empty(Cart cart) {
+        cart.getCartItems().clear();
+        cart.setHasPrio(false);
+        cart.setTotal(0);
+        cartRepo.persist(cart);
     }
 }
