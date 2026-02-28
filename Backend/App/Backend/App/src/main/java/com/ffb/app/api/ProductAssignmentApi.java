@@ -20,7 +20,6 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.jboss.resteasy.reactive.PartType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.UUID;
 
 @ApplicationScoped
@@ -43,7 +42,7 @@ public class ProductAssignmentApi {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"FOOD_COURT_WORKER", "ADMIN"})
-    @Operation(summary = "Create a main/sub product assignment (by IDs)")
+    @Operation(summary = "Create a Main/Sub-Product Assignment (by IDs)")
     @APIResponses({
             @APIResponse(
                     responseCode = "201",
@@ -55,7 +54,7 @@ public class ProductAssignmentApi {
             ),
             @APIResponse(
                     responseCode = "400",
-                    description = "Invalid Request (mainProductId/subProductId is null)",
+                    description = "Invalid Request",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT)
@@ -63,7 +62,7 @@ public class ProductAssignmentApi {
             ),
             @APIResponse(
                     responseCode = "404",
-                    description = "Not Found",
+                    description = "Not found",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT)
@@ -93,7 +92,7 @@ public class ProductAssignmentApi {
     @Path("by_id/{id}")
     @Produces(MediaType.TEXT_PLAIN)
     @RolesAllowed({"FOOD_COURT_WORKER", "ADMIN"})
-    @Operation(summary = "Delete an assignment by its id")
+    @Operation(summary = "Delete an Assignment by its ID")
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
@@ -101,7 +100,7 @@ public class ProductAssignmentApi {
             ),
             @APIResponse(
                     responseCode = "400",
-                    description = "Invalid Request (id is null)",
+                    description = "Invalid Request",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT)
@@ -135,7 +134,7 @@ public class ProductAssignmentApi {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"FOOD_COURT_WORKER", "ADMIN"})
-    @Operation(summary = "Delete an assignment by main/sub productIds")
+    @Operation(summary = "Delete an assignment by Main/Sub-ProductIds")
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
@@ -143,7 +142,7 @@ public class ProductAssignmentApi {
             ),
             @APIResponse(
                     responseCode = "400",
-                    description = "Invalid Request (mainProductId/subProductId is null)",
+                    description = "Invalid Request",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT)

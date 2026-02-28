@@ -123,7 +123,7 @@ public class AccountApi {
 				.build()//
 		;
 
-		return Response.noContent().cookie(cleared).build();
+		return Response.status(Response.Status.NO_CONTENT).cookie(cleared).build();
 	}
 
 	@POST
@@ -174,7 +174,7 @@ public class AccountApi {
 	}
 
 	@GET
-	@Path("admin/list_all")
+	@Path("list_all")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@RolesAllowed("ADMIN")

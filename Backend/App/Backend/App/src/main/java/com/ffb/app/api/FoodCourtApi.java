@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.util.List;
 import java.util.UUID;
-
 import com.ffb.model.api.request.food.court.FoodCourtWithRelationsRequest;
 import com.ffb.model.api.response.credit.CreditResponse;
 import com.ffb.model.api.response.error.ErrorResponse;
@@ -63,7 +62,7 @@ public class FoodCourtApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(responseCode = "401", description = "Not Authorized"),
@@ -80,7 +79,7 @@ public class FoodCourtApi {
 	@Path("by_id/{foodCourtId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({"GUEST", "ADMIN"})
-	@Operation(summary = "Get a FoodCourt By its ID")
+	@Operation(summary = "Get a Food Court By its ID")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
@@ -89,7 +88,7 @@ public class FoodCourtApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class))
 			),
 			@APIResponse(
@@ -123,16 +122,16 @@ public class FoodCourtApi {
 	@Path("by_id/{foodCourtId}/with-relations")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("GUEST")
-	@Operation(summary = "Get a Food Court by ID with optional relations")
+	@Operation(summary = "Get a Food Court by ID with optional Relations")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
-					description = "The Food Court with relations based on query parameters",
+					description = "The Food Court with Relations based on Query Parameters",
 					content = @Content(schema = @Schema(implementation = FoodCourtResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
@@ -166,7 +165,7 @@ public class FoodCourtApi {
 	@Produces("image/png")
 	@Path("image/{foodCourtId}")
 	@RolesAllowed({"GUEST", "FOOD_COURT_WORKER", "ADMIN"})
-	@Operation(summary = "Get the Food Court image by Food Court ID (PNG)")
+	@Operation(summary = "Get the Food Court Image by Food Court ID (PNG)")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
@@ -175,7 +174,7 @@ public class FoodCourtApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
@@ -212,11 +211,11 @@ public class FoodCourtApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("FOOD_COURT_WORKER")
-	@Operation(summary = "Get the Food Court of the currently logged-in worker")
+	@Operation(summary = "Get the Food Court of the currently logged-in Food Court Worker Account")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
-					description = "The Food Court of the logged-in worker",
+					description = "The Food Court of the currently logged-in Food Court Worker Account",
 					content = @Content(schema = @Schema(implementation = FoodCourtResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(responseCode = "401", description = "Not Authorized"),
@@ -241,7 +240,7 @@ public class FoodCourtApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@RolesAllowed("FOOD_COURT_WORKER")
-	@Operation(summary = "Update the Food Court of the currently logged-in worker")
+	@Operation(summary = "Update the Food Court of the currently logged-in Food Court Worker Account")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
@@ -250,7 +249,7 @@ public class FoodCourtApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(responseCode = "401", description = "Not Authorized"),
@@ -280,7 +279,7 @@ public class FoodCourtApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@RolesAllowed("FOOD_COURT_WORKER")
-	@Operation(summary = "Create a Food Court for the currently logged-in worker")
+	@Operation(summary = "Create a Food Court for the currently logged-in Food Court Worker Account")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "201",
@@ -289,7 +288,7 @@ public class FoodCourtApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
@@ -325,17 +324,17 @@ public class FoodCourtApi {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@RolesAllowed("FOOD_COURT_WORKER")
-	@Operation(summary = "Upload/replace the Food Court image (PNG) for the logged-in worker")
+	@Operation(summary = "Upload/replace the Food Court Image (PNG) for the logged-in Food Court Worker Account")
 	@APIResponses({
 			@APIResponse(responseCode = "200", description = "Image uploaded"),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
 					responseCode = "500",
-					description = "Server error",
+					description = "Server Error",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(responseCode = "415", description = "Unsupported Media Type"),
@@ -371,7 +370,7 @@ public class FoodCourtApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@RolesAllowed("ADMIN")
-	@Operation(summary = "Admin: create a Food Court (path ID currently not used unless service supports it)")
+	@Operation(summary = "Create a Food Court")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
@@ -380,7 +379,7 @@ public class FoodCourtApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
@@ -423,7 +422,7 @@ public class FoodCourtApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@RolesAllowed("ADMIN")
-	@Operation(summary = "Admin: update a Food Court by ID")
+	@Operation(summary = "Update a Food Court by ID")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
@@ -432,7 +431,7 @@ public class FoodCourtApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
@@ -473,12 +472,12 @@ public class FoodCourtApi {
 	@Path("by_id/{id}")
 	@Produces(MediaType.TEXT_PLAIN)
 	@RolesAllowed("ADMIN")
-	@Operation(summary = "Admin: delete a Food Court by ID")
+	@Operation(summary = "Delete a Food Court by ID")
 	@APIResponses({
 			@APIResponse(responseCode = "200", description = "Deleted"),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
@@ -511,17 +510,17 @@ public class FoodCourtApi {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@RolesAllowed("ADMIN")
-	@Operation(summary = "Upload/replace the Food Court image (PNG) for the logged-in worker")
+	@Operation(summary = "Upload/replace the Food Court Image (PNG) for the Food Court based on its ID")
 	@APIResponses({
 			@APIResponse(responseCode = "200", description = "Image uploaded"),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
 					responseCode = "500",
-					description = "Server error",
+					description = "Server Error",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(responseCode = "415", description = "Unsupported Media Type"),

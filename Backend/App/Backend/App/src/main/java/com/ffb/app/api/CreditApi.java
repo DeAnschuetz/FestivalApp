@@ -24,9 +24,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.jboss.resteasy.reactive.PartType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
-
 
 @ApplicationScoped
 @Path("credit")
@@ -47,16 +45,16 @@ public class CreditApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.TEXT_PLAIN)
 	@RolesAllowed("GUEST")
-	@Operation(summary = "Get the current Credit")
+	@Operation(summary = "Get the Credit for the currently logged-in Guest Account")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
-					description = "The Current Credit",
+					description = "The Credit for the currently logged-in Guest Account",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CreditResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(responseCode = "401", description = "Not Authorized"),
@@ -79,16 +77,16 @@ public class CreditApi {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("add")
 	@RolesAllowed("GUEST")
-	@Operation(summary = "Add a amount to the current Credit")
+	@Operation(summary = "Add a Amount to the Credit for the currently logged-in Guest Account")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
-					description = "The Current Credit",
+					description = "The Credit for the currently logged-in Guest Account",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CreditResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class))
 			),
 			@APIResponse(responseCode = "401", description = "Not Authorized"),
@@ -114,11 +112,11 @@ public class CreditApi {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("history")
 	@RolesAllowed("ADMIN")
-	@Operation(summary = "Add a amount to the current Credit")
+	@Operation(summary = "Get the Credit History for the given LoginNr")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
-					description = "The Current Credit History for the given LoginNr",
+					description = "The Credit History for the given LoginNr",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CreditHistoryResponse.class, type = SchemaType.ARRAY))
 			),
 			@APIResponse(responseCode = "401", description = "Not Authorized"),

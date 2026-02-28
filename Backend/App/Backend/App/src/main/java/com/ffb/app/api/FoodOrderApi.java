@@ -50,7 +50,7 @@ public class FoodOrderApi {
 	@Path("order")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("GUEST")
-	@Operation(summary = "Create a new food order for the current guest")
+	@Operation(summary = "Create a new Food Order for the currently logged-in Guest Account")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
@@ -62,13 +62,13 @@ public class FoodOrderApi {
 			),
 			@APIResponse(
 					responseCode = "404",
-					description = "Some required resource was not found",
+					description = "Some required Resource was not found",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
 					responseCode = "500",
-					description = "Service error while creating the order",
+					description = "Service Error while creating the Order",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
@@ -97,7 +97,7 @@ public class FoodOrderApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@RolesAllowed("GUEST")
-	@Operation(summary = "Share an existing order with another guest (by loginNr)")
+	@Operation(summary = "Share an existing Food Order with another Guest Account (by loginNr)")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
@@ -105,13 +105,13 @@ public class FoodOrderApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request (orderId/loginNr missing)",
+					description = "Invalid Request",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
 					responseCode = "404",
-					description = "Some required resource was not found",
+					description = "Some required Resource was not found",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
@@ -145,7 +145,7 @@ public class FoodOrderApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({"GUEST", "FOOD_COURT_WORKER", "ADMIN"})
 	@Transactional
-	@Operation(summary = "List all orders visible to the current user (role-based)")
+	@Operation(summary = "List all Food Orders visible to the currently logged-in Account (Role-Based)")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
@@ -157,13 +157,13 @@ public class FoodOrderApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Unknown account type / role mapping failed",
+					description = "Unknown Account Type / Role mapping failed",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
 					responseCode = "404",
-					description = "Some required resource was not found",
+					description = "Some required Resource was not found",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
@@ -189,7 +189,7 @@ public class FoodOrderApi {
 	@Path("list_all/by_status/{status}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({"GUEST", "FOOD_COURT_WORKER", "ADMIN"})
-	@Operation(summary = "List all orders visible to the current user filtered by status")
+	@Operation(summary = "List all Food Orders visible to the currently logged-in Account (Role-Based) filtered by Status")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
@@ -201,13 +201,13 @@ public class FoodOrderApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Unknown account type / role mapping failed",
+					description = "Unknown Account Type / Role mapping failed",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
 					responseCode = "404",
-					description = "Some required resource was not found",
+					description = "Some required Resource was not found",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
@@ -234,7 +234,7 @@ public class FoodOrderApi {
 	@Path("list_all/history")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({"GUEST", "FOOD_COURT_WORKER", "ADMIN"})
-	@Operation(summary = "List all orders history included")
+	@Operation(summary = "List all Food Orders, History included visible to the currently logged-in Account (Role-Based)")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
@@ -246,13 +246,13 @@ public class FoodOrderApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Unknown account type / role mapping failed",
+					description = "Unknown account Type / Role mapping failed",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
 					responseCode = "404",
-					description = "Some required resource was not found",
+					description = "Some required Resource was not found",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
@@ -278,7 +278,7 @@ public class FoodOrderApi {
 	@Path("list_all/by_status/{status}/history")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({"GUEST", "FOOD_COURT_WORKER", "ADMIN"})
-	@Operation(summary = "List all orders visible to the current user filtered by status with history")
+	@Operation(summary = "List all Food Orders visible to the currently logged-in Account (Role-Based) filtered by Status with History")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
@@ -290,13 +290,13 @@ public class FoodOrderApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid status or unknown account type",
+					description = "Invalid Status or unknown Account Type",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
 					responseCode = "404",
-					description = "Some required resource was not found",
+					description = "Some required Resource was not found",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
@@ -322,11 +322,11 @@ public class FoodOrderApi {
 	@Path("update/{orderId}/{status}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("FOOD_COURT_WORKER")
-	@Operation(summary = "Update the status of an order (food court worker only)")
+	@Operation(summary = "Update the Status of an Food Order by its ID")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
-					description = "Order status updated",
+					description = "Order Status updated",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = FoodOrderResponseFull.class, type = SchemaType.OBJECT)
@@ -334,7 +334,7 @@ public class FoodOrderApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid status or unknown account type",
+					description = "Invalid Request",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
 			),
@@ -368,6 +368,10 @@ public class FoodOrderApi {
 		LOG.info("successfully updated order for orderId={{}} and newStatus='{}'", orderId, newStatus);
         return Response.status(Response.Status.OK).entity(data).build();
 	}
+
+	/*
+    	Private Helper Functions
+	*/
 
 	private AccountType getAccountType() throws ApiException {
 		Set<String> groups = jwt.getGroups();

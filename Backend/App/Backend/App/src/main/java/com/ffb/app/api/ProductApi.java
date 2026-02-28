@@ -23,7 +23,6 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.jboss.resteasy.reactive.PartType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -48,7 +47,7 @@ public class ProductApi {
     @Path("list/by_food_court_id/{foodCourtId}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GUEST")
-    @Operation(summary = "List products by food court id")
+    @Operation(summary = "List Products by Food Court ID")
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
@@ -60,7 +59,7 @@ public class ProductApi {
             ),
             @APIResponse(
                     responseCode = "400",
-                    description = "Invalid Request (foodCourtId is null)",
+                    description = "Invalid Request",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT)
@@ -85,7 +84,7 @@ public class ProductApi {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GUEST")
-    @Operation(summary = "Get a product by id")
+    @Operation(summary = "Get a Product by ID")
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
@@ -97,7 +96,7 @@ public class ProductApi {
             ),
             @APIResponse(
                     responseCode = "400",
-                    description = "Invalid Request (id is null)",
+                    description = "Invalid Request",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT)
@@ -122,7 +121,7 @@ public class ProductApi {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("list_all")
     @RolesAllowed({"GUEST", "FOOD_COURT_WORKER", "ADMIN"})
-    @Operation(summary = "List all products")
+    @Operation(summary = "List all Products")
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
@@ -146,7 +145,7 @@ public class ProductApi {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed("FOOD_COURT_WORKER")
-    @Operation(summary = "Create a product for the logged-in food court worker")
+    @Operation(summary = "Create a Product for the currently logged-in Food Court Worker Account")
     @APIResponses({
             @APIResponse(
                     responseCode = "201",
@@ -158,7 +157,7 @@ public class ProductApi {
             ),
             @APIResponse(
                     responseCode = "400",
-                    description = "Invalid Request (price/displayName/symbolIdentifier/minimalWarning invalid)",
+                    description = "Invalid Request",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT)
@@ -168,7 +167,7 @@ public class ProductApi {
             @APIResponse(responseCode = "403", description = "Not Allowed")
     })
     public Response createProduct(ProductRequestSimple request) throws ApiException {
-        LOG.info("creating product for logged in account" + webToken.getName());
+        LOG.info("creating product for logged-in account" + webToken.getName());
         String loginNr = webToken.getName();
         if (request.price() < 0) {
             LOG.error("price is <0");
@@ -194,7 +193,7 @@ public class ProductApi {
             LOG.error("could not create product", e);
             throw new ApiException(e);
         }
-        LOG.info("created product {" + created.id() + "} for logged in account" + webToken.getName());
+        LOG.info("created product {" + created.id() + "} for logged-in account" + webToken.getName());
         return Response.status(Response.Status.CREATED).entity(created).build();
     }
 
@@ -202,7 +201,7 @@ public class ProductApi {
     @Path("list")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("FOOD_COURT_WORKER")
-    @Operation(summary = "List products for the logged-in food court worker")
+    @Operation(summary = "List Products for the currently logged-in Food Court Worker Account")
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
@@ -216,7 +215,7 @@ public class ProductApi {
             @APIResponse(responseCode = "403", description = "Not Allowed")
     })
     public Response listProducts() {
-        LOG.info("listing products for logged in account" + webToken.getName());
+        LOG.info("listing products for logged-in account" + webToken.getName());
         String loginNr = webToken.getName();
         List<ProductResponse> data = productService.listProductsByLoginNr(loginNr);
         LOG.info("found " + data.size() + " products");
@@ -227,7 +226,7 @@ public class ProductApi {
     @Path("by_id/{id}")
     @Produces(MediaType.TEXT_PLAIN)
     @RolesAllowed({"FOOD_COURT_WORKER", "ADMIN"})
-    @Operation(summary = "Delete a product by id")
+    @Operation(summary = "Delete a Product by its ID")
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
@@ -236,7 +235,7 @@ public class ProductApi {
             ),
             @APIResponse(
                     responseCode = "400",
-                    description = "Invalid Request (id is null)",
+                    description = "Invalid Request",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT)
@@ -266,7 +265,7 @@ public class ProductApi {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("admin/by_food_court_id/{foodCourtId}")
     @RolesAllowed("ADMIN")
-    @Operation(summary = "Create a product for a given food court (admin)")
+    @Operation(summary = "Create a Product for a given Food Court")
     @APIResponses({
             @APIResponse(
                     responseCode = "201",
@@ -278,7 +277,7 @@ public class ProductApi {
             ),
             @APIResponse(
                     responseCode = "400",
-                    description = "Invalid Request (foodCourtId/id/price/displayName/symbolIdentifier/minimalWarning invalid)",
+                    description = "Invalid Request",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT)
@@ -330,7 +329,7 @@ public class ProductApi {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("admin/by_food_court_id/many/{foodCourtId}")
     @RolesAllowed("ADMIN")
-    @Operation(summary = "Create multiple products for a given food court (admin)")
+    @Operation(summary = "Create multiple Products for a given Food Court")
     @APIResponses({
             @APIResponse(
                     responseCode = "201",
@@ -342,7 +341,7 @@ public class ProductApi {
             ),
             @APIResponse(
                     responseCode = "400",
-                    description = "Invalid Request (foodCourtId is null)",
+                    description = "Invalid Request",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT)

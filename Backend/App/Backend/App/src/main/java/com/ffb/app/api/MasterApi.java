@@ -239,7 +239,7 @@ public class MasterApi {
                         }
                     })//
                 .filter(Objects::nonNull)//
-                .toList()//s
+                .toList()//
         ;
 
         SECOND_CART_ITEM_CREATION_REQUESTS.stream()//

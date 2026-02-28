@@ -45,12 +45,12 @@ public class CartApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.TEXT_PLAIN)
-	@RolesAllowed({"GUEST", "ADMIN"})
-	@Operation(summary = "Get the current Cart")
+	@RolesAllowed({"GUEST"})
+	@Operation(summary = "Get the Cart for the currently logged-in Guest Account")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
-					description = "The Current Cart",
+					description = "The Cart for the currently logged-in Guest Account",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = CartResponseSimple.class, type = SchemaType.OBJECT)
@@ -58,7 +58,7 @@ public class CartApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class)
@@ -84,11 +84,11 @@ public class CartApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@RolesAllowed("GUEST")
-	@Operation(summary = "Add a Item to the Cart Cart")
+	@Operation(summary = "Add a Item to the Cart of the currently logged-in Guest Account")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
-					description = "The Current Cart",
+					description = "The Cart for the currently logged-in Guest Account",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = CartResponseSimple.class, type = SchemaType.OBJECT)
@@ -96,7 +96,7 @@ public class CartApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class)
@@ -123,11 +123,11 @@ public class CartApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@RolesAllowed("GUEST")
-	@Operation(summary = "Update the Amount or Extra of a Cart Item")
+	@Operation(summary = "Update the Amount or Extra of a Cart Item for the currently logged-in Guest Account")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
-					description = "The Current Cart",
+					description = "The Cart for the currently logged-in Guest Account",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = CartResponseSimple.class, type = SchemaType.OBJECT)
@@ -135,7 +135,7 @@ public class CartApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class)
@@ -162,11 +162,11 @@ public class CartApi {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("GUEST")
-	@Operation(summary = "Remove a Item from the Cart")
+	@Operation(summary = "Remove a Item from the Cart for the currently logged-in Guest Account")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
-					description = "The Current Cart",
+					description = "The Cart for the currently logged-in Guest Account",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = CartResponseSimple.class, type = SchemaType.OBJECT)
@@ -174,7 +174,7 @@ public class CartApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class)
@@ -204,11 +204,11 @@ public class CartApi {
 	@Path("{newPrio}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("GUEST")
-	@Operation(summary = "Change the Priority of the Cart")
+	@Operation(summary = "Change the Priority of the Cart for the currently logged-in Guest Account")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
-					description = "The Current Cart",
+					description = "The Cart for the currently logged-in Guest Account",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = CartResponseSimple.class, type = SchemaType.OBJECT)
@@ -216,7 +216,7 @@ public class CartApi {
 			),
 			@APIResponse(
 					responseCode = "400",
-					description = "Invalid request",
+					description = "Invalid Request",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
 							schema = @Schema(implementation = ErrorResponse.class)

@@ -40,7 +40,7 @@ public class TicketApi {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed("ADMIN")
-    @Operation(summary = "Register tickets for a list of login numbers (ADMIN only)")
+    @Operation(summary = "Register Tickets which were sold")
     @APIResponses({
             @APIResponse(
                     responseCode = "201",
@@ -55,7 +55,7 @@ public class TicketApi {
             ),
             @APIResponse(
                     responseCode = "400",
-                    description = "Invalid Request (e.g. loginNrs empty)",
+                    description = "Invalid Request",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(
@@ -84,11 +84,11 @@ public class TicketApi {
     @Path("admin/list_all")
     @RolesAllowed("ADMIN")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "List all tickets (ADMIN only)")
+    @Operation(summary = "List all Tickets")
     @APIResponses({
             @APIResponse(
                     responseCode = "200",
-                    description = "List of tickets",
+                    description = "List of Tickets",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(
