@@ -1,12 +1,10 @@
 package com.ffb.app.dao.api.cart;
 
-import com.ffb.model.db.objects.cart.Cart;
-import com.ffb.model.db.objects.cart.CartItem;
+import com.ffb.model.db.object.cart.Cart;
+import com.ffb.model.db.object.cart.CartItem;
 import com.ffb.model.exception.DaoException;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 public interface CartDao {
 

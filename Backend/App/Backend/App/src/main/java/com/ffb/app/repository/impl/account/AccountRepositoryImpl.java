@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.Optional;
 
 import com.ffb.app.repository.api.account.AccountRepository;
-import com.ffb.model.db.objects.account.Account;
+import com.ffb.model.db.object.account.Account;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class AccountRepositoryImpl implements AccountRepository {
+
+    // TODO Logging
 
     @Override
     public Optional<Account> getByLoginNr(String loginNr) {

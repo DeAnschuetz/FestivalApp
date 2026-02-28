@@ -23,6 +23,11 @@ public class ApiException extends FestivalFoodException{
         this.status = status;
     }
 
+    public ApiException(CustomRuntimeException e) {
+        super(e.getMessage(), e);
+        this.status = e.getStatus();
+    }
+
     public Response.Status getStatus() {
         return status;
     }

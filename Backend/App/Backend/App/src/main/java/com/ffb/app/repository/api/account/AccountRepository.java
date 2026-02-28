@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.ffb.model.db.objects.account.Account;
+import com.ffb.model.db.object.account.Account;
 
-import com.ffb.model.db.objects.credit.CreditHistory;
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 
 public interface AccountRepository extends PanacheRepositoryBase<Account, UUID> {

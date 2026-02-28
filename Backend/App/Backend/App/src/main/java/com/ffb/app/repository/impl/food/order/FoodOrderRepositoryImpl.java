@@ -1,8 +1,8 @@
 package com.ffb.app.repository.impl.food.order;
 
 import com.ffb.app.repository.api.food.order.FoodOrderRepository;
-import com.ffb.model.db.objects.foodorder.FoodOrder;
-import com.ffb.model.db.objects.foodorder.FoodOrderStatus;
+import com.ffb.model.db.object.foodorder.FoodOrder;
+import com.ffb.model.db.object.foodorder.FoodOrderStatus;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
@@ -11,6 +11,8 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class FoodOrderRepositoryImpl implements FoodOrderRepository {
+
+    // TODO Logging
 
     @Override
     public List<FoodOrder> listAll() {
@@ -102,7 +104,7 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
         return find(
                     "SELECT DISTINCT fo " +
                     "FROM FoodOrder fo " +
-                    "WHERE fo.account.ticket.loginNr = ?1",
+                    "WHERE fo.account.ticket.loginNr = ?1 OR fo.sharedAccount.ticket.loginNr = ?1",
                     loginNr
                  )//
                 .list()//
@@ -115,7 +117,7 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
                     "SELECT DISTINCT fo " +
                     "FROM FoodOrder fo " +
                     "LEFT JOIN FETCH fo.foodOrderItems " +
-                    "WHERE fo.account.ticket.loginNr = ?1",
+                    "WHERE fo.account.ticket.loginNr = ?1 OR fo.sharedAccount.ticket.loginNr = ?1",
                     loginNr
                 )//
                 .list()//
@@ -127,7 +129,7 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
         return find(
                     "SELECT DISTINCT fo " +
                     "FROM FoodOrder fo " +
-                    "WHERE fo.account.ticket.loginNr = ?1 AND fo.status = ?2",
+                    "WHERE fo.account.ticket.loginNr = ?1 OR fo.sharedAccount.ticket.loginNr = ?1 AND fo.status = ?2",
                     loginNr,
                     status
                 )//
@@ -141,7 +143,7 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
                     "SELECT DISTINCT fo " +
                     "FROM FoodOrder fo " +
                     "LEFT JOIN FETCH fo.foodOrderItems " +
-                    "WHERE fo.account.ticket.loginNr = ?1 AND fo.status = ?2",
+                    "WHERE fo.account.ticket.loginNr = ?1 OR fo.sharedAccount.ticket.loginNr = ?1 AND fo.status = ?2",
                     loginNr,
                     status
                 )//

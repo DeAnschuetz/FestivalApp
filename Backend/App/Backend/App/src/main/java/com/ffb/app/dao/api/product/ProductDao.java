@@ -1,16 +1,11 @@
 package com.ffb.app.dao.api.product;
 
-import com.ffb.model.db.objects.product.MainProduct;
-import com.ffb.model.db.objects.product.MainSubProductLink;
-import com.ffb.model.db.objects.product.Product;
+import com.ffb.model.db.view.MainProduct;
+import com.ffb.model.db.object.product.MainSubProductLink;
+import com.ffb.model.db.object.product.Product;
 import com.ffb.model.exception.DaoException;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.TransactionRequiredException;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public interface ProductDao {

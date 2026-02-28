@@ -1,11 +1,11 @@
 package com.ffb.app.api;
 
-import com.ffb.app.service.api.api.credit.CreditService;
+import com.ffb.app.service.api.credit.CreditService;
+import com.ffb.model.api.request.credit.CreditAddRequest;
+import com.ffb.model.api.request.credit.CreditHistoryRequest;
 import com.ffb.model.api.response.credit.CreditHistoryResponse;
 import com.ffb.model.api.response.credit.CreditResponse;
 import com.ffb.model.api.response.error.ErrorResponse;
-import com.ffb.model.db.objects.credit.Credit;
-import com.ffb.model.db.objects.credit.CreditHistory;
 import com.ffb.model.exception.ApiException;
 import com.ffb.model.exception.ServiceException;
 import jakarta.annotation.security.RolesAllowed;
@@ -21,14 +21,19 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.jboss.resteasy.reactive.PartType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 
 @ApplicationScoped
 @Path("credit")
 public class CreditApi {
+
+	// TODO Logging
+	private final Logger LOG = LoggerFactory.getLogger(CreditApi.class);
 
 	@Inject
 	JsonWebToken webToken;
@@ -40,6 +45,7 @@ public class CreditApi {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
 	@RolesAllowed("GUEST")
 	@Operation(summary = "Get the current Credit")
 	@APIResponses({
@@ -70,7 +76,8 @@ public class CreditApi {
 
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("add/{amount}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("add")
 	@RolesAllowed("GUEST")
 	@Operation(summary = "Add a amount to the current Credit")
 	@APIResponses({
@@ -87,15 +94,15 @@ public class CreditApi {
 			@APIResponse(responseCode = "401", description = "Not Authorized"),
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
-	public Response addCredit(@PathParam(value = "amount") double amount) throws ApiException {// TODO Request?
+	public Response addCredit(@PartType(MediaType.APPLICATION_JSON) CreditAddRequest request) throws ApiException {
 		String loginNr = webToken.getName();
-		if (amount < 0) {
+		if (request.amount() < 0) {
 			throw new ApiException("The amount must not be 0.", Response.Status.BAD_REQUEST);
 		}
 
 		CreditResponse data;
 		try {
-			data =  creditService.changeAmount(loginNr, amount);
+			data =  creditService.changeAmount(loginNr, request);
 		} catch (ServiceException e) {
 			throw new ApiException(e);
 		}
@@ -104,7 +111,8 @@ public class CreditApi {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("{loginNr}/{pageIndex}/{pageSize}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("history")
 	@RolesAllowed("ADMIN")
 	@Operation(summary = "Add a amount to the current Credit")
 	@APIResponses({
@@ -116,27 +124,23 @@ public class CreditApi {
 			@APIResponse(responseCode = "401", description = "Not Authorized"),
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
-	public Response getHistoryByLoginNr(@PathParam("loginNr") String loginNr,@PathParam("pageIndex") int pageIndex,@PathParam("pageSize") int pageSize) throws ApiException {
+	public Response getHistoryByLoginNr(@PartType(MediaType.APPLICATION_JSON) CreditHistoryRequest request) throws ApiException {
+		if (request.loginNr() == null || request.loginNr().isBlank()) {
+			throw new ApiException("Login NR is required.", Response.Status.BAD_REQUEST);
+		}
+		if(request.pageIndex() < 0) {
+			throw new ApiException("Page index is required.", Response.Status.BAD_REQUEST);
+		}
+		if(request.pageSize() < 0) {
+			throw  new ApiException("Page size is required.", Response.Status.BAD_REQUEST);
+		}
+
 		List<CreditHistoryResponse> data;
 		try {
-			data =  creditService.getHistoryByLoginNr(loginNr, pageIndex, pageSize);
+			data =  creditService.getHistoryByLoginNr(request);
 		} catch (ServiceException e) {
 			throw new ApiException(e);
 		}
 		return Response.status(Response.Status.OK).entity(data).build();
 	}
-
-	/*
-		Private Helper Functions
-	*/
-
-
-	private CreditHistoryResponse getCreditHistoryResponse(CreditHistory creditHistory) {
-		return new CreditHistoryResponse(
-				creditHistory.getOldAmmount(),
-				creditHistory.getNewAmmount(),
-				creditHistory.getChangeTime()
-		);
-	}
-
 }

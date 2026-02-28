@@ -1,6 +1,6 @@
 package com.ffb.app.repository.api.food.court;
 
-import com.ffb.model.db.objects.food_court.FoodCourt;
+import com.ffb.model.db.object.food_court.FoodCourt;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import java.util.Optional;
 import java.util.UUID;

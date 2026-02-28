@@ -1,18 +1,13 @@
 package com.ffb.app.api;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import com.ffb.app.service.api.api.cart.CartService;
+import com.ffb.app.service.api.cart.CartService;
 import com.ffb.model.api.request.cart.CartItemCreationRequest;
 import com.ffb.model.api.request.cart.CartItemUpdateRequest;
-import com.ffb.model.api.response.cart.CartItemResponse;
-import com.ffb.model.api.response.cart.CartResponse;
+import com.ffb.model.api.response.cart.CartResponseFull;
+import com.ffb.model.api.response.cart.CartResponseSimple;
 import com.ffb.model.api.response.error.ErrorResponse;
-import com.ffb.model.db.objects.cart.Cart;
-import com.ffb.model.db.objects.cart.CartItem;
-import com.ffb.model.db.objects.product.Product;
 import com.ffb.model.exception.ApiException;
 import com.ffb.model.exception.ServiceException;
 import jakarta.annotation.security.RolesAllowed;
@@ -28,11 +23,15 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
-import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 @Path("cart")
 public class CartApi {
+
+	// TODO Logging
+	private final Logger LOG = LoggerFactory.getLogger(CartApi.class);
 
 	@Inject
 	JsonWebToken jwt;
@@ -54,7 +53,7 @@ public class CartApi {
 					description = "The Current Cart",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
-							schema = @Schema(implementation = CartResponse.class, type = SchemaType.OBJECT)
+							schema = @Schema(implementation = CartResponseSimple.class, type = SchemaType.OBJECT)
 					)
 			),
 			@APIResponse(
@@ -70,7 +69,7 @@ public class CartApi {
 	})
 	public Response getCart() throws ApiException {
 		String loginNr = jwt.getName();
-        CartResponse data;
+        CartResponseSimple data;
         try {
             data = cartService.getCartByLoginNr(loginNr);
         } catch (ServiceException e) {
@@ -92,7 +91,7 @@ public class CartApi {
 					description = "The Current Cart",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
-							schema = @Schema(implementation = CartResponse.class, type = SchemaType.OBJECT)
+							schema = @Schema(implementation = CartResponseSimple.class, type = SchemaType.OBJECT)
 					)
 			),
 			@APIResponse(
@@ -108,22 +107,11 @@ public class CartApi {
 	})
 	public Response addItemToCart( CartItemCreationRequest request ) throws ApiException {
 		String loginNr = jwt.getName();
-		UUID productId = request.productId();
-		if(productId == null) {
-			throw new ApiException("Product id must be provided.", Response.Status.BAD_REQUEST);
-		}
-		int itemCount = request.itemCount();
-		if (itemCount <= 0) {
-			throw new ApiException("Item count must be greater than 0.", Response.Status.BAD_REQUEST);
-		}
-		String extra = request.extra();
-		if (extra != null && extra.length() > 255) {
-			throw new ApiException("Extra must be less than 255 characters.", Response.Status.BAD_REQUEST);
-		}
+		validateItemCreationRequest(request);
 
-        CartResponse data;
+		CartResponseSimple data;
         try {
-            data = cartService.addItemToCart(loginNr, productId, itemCount, extra);
+            data = cartService.addItemToCart(loginNr, request);
         } catch (ServiceException e) {
             throw new ApiException(e);
         }
@@ -142,7 +130,7 @@ public class CartApi {
 					description = "The Current Cart",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
-							schema = @Schema(implementation = CartResponse.class, type = SchemaType.OBJECT)
+							schema = @Schema(implementation = CartResponseSimple.class, type = SchemaType.OBJECT)
 					)
 			),
 			@APIResponse(
@@ -159,22 +147,11 @@ public class CartApi {
 	public Response updateCartItem(CartItemUpdateRequest request ) throws ApiException {
 		String loginNr = jwt.getName();
 
-		UUID cartItemId = request.cartItemId();
-		if(cartItemId == null) {
-			throw new ApiException("Cart item id must be provided.", Response.Status.BAD_REQUEST);
-		}
-		int itemCount = request.itemCount();
-		if (itemCount <= 0) {
-			throw  new ApiException("Item count must be greater than 0.", Response.Status.BAD_REQUEST);
-		}
-		String extra = request.extra();
-		if (extra != null && extra.length() > 255) {
-			throw new ApiException("Extra must be less than 255 characters.", Response.Status.BAD_REQUEST);
-		}
+		validateUpdateRequest(request);
 
-		CartResponse data;
+		CartResponseSimple data;
         try {
-            data = cartService.updateCartItemById(loginNr, cartItemId, itemCount, extra);
+            data = cartService.updateCartItemById(loginNr, request);
         } catch (ServiceException e) {
             throw new ApiException(e);
         }
@@ -192,7 +169,7 @@ public class CartApi {
 					description = "The Current Cart",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
-							schema = @Schema(implementation = CartResponse.class, type = SchemaType.OBJECT)
+							schema = @Schema(implementation = CartResponseSimple.class, type = SchemaType.OBJECT)
 					)
 			),
 			@APIResponse(
@@ -214,7 +191,7 @@ public class CartApi {
 		if(id == null) {
 			throw new ApiException("Cart item id must be provided", Response.Status.BAD_REQUEST);
 		}
-		CartResponse data;
+		CartResponseSimple data;
 		try {
 			data = cartService.removeItemFromCart(loginNr, id);
 		} catch (ServiceException e) {
@@ -234,7 +211,7 @@ public class CartApi {
 					description = "The Current Cart",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
-							schema = @Schema(implementation = CartResponse.class, type = SchemaType.OBJECT)
+							schema = @Schema(implementation = CartResponseSimple.class, type = SchemaType.OBJECT)
 					)
 			),
 			@APIResponse(
@@ -251,7 +228,7 @@ public class CartApi {
 	public Response changePrio(@PathParam(value = "newPrio") boolean newPrio) throws ApiException {
 		String loginNr = jwt.getName();
 
-		CartResponse data;
+		CartResponseSimple data;
         try {
             data = cartService.changePrio(loginNr, newPrio);
         } catch (ServiceException e) {
@@ -271,58 +248,44 @@ public class CartApi {
 					description = "All the Carts",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
-							schema = @Schema(implementation = CartResponse.class, type = SchemaType.ARRAY)
+							schema = @Schema(implementation = CartResponseFull.class, type = SchemaType.ARRAY)
 					)
 			),
 			@APIResponse(responseCode = "401", description = "Not Authorized"),
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response listALl() {
-		List<CartResponse> data = cartService.listAll();
+		List<CartResponseFull> data = cartService.listAll();
 		return Response.ok().entity(data).build();
 	}
+
+
 
 	/*
 		Private Helper Functions
 	*/
 
-
-	private CartResponse getCartResponse(Cart cart) {
-		List<CartItemResponse> items = new ArrayList<>();
-
-		if (cart.getCartItems() != null) {
-			for (CartItem i : cart.getCartItems()) {
-				items.add(getCartItemResponse(i));
-			}
+	private static void validateUpdateRequest(CartItemUpdateRequest request) throws ApiException {
+		if (request.cartItemId() == null) {
+			throw new ApiException("Product id must be provided.", Response.Status.BAD_REQUEST);
 		}
-
-		return new CartResponse(cart.isHasPrio(), cart.getTotal(), items);
+		if (request.itemCount() <= 0) {
+			throw new ApiException("Item count must be greater than 0.", Response.Status.BAD_REQUEST);
+		}
+		if (request.extra() != null && request.extra().length() > 255) {
+			throw new ApiException("Extra must be less than 255 characters.", Response.Status.BAD_REQUEST);
+		}
 	}
 
-	private CartItemResponse getCartItemResponse(CartItem cartItem) {
-		Product product = cartItem.getProduct();
-		List<CartItemResponse> subItems = product.getSubProducts().stream().map(subProduct -> getCartItemResponse(subProduct, cartItem.getItemCount())).toList();
-		return new CartItemResponse(
-				cartItem.getId(),
-				product.getDisplayName(),
-				product.getSymbolIdentifier(),
-				cartItem.getPrice(),
-				cartItem.getItemCount(),
-				cartItem.getExtra(),
-				subItems
-		);
+	private static void validateItemCreationRequest(CartItemCreationRequest request) throws ApiException {
+		if (request.productId() == null) {
+			throw new ApiException("Product id must be provided.", Response.Status.BAD_REQUEST);
+		}
+		if (request.itemCount() <= 0) {
+			throw new ApiException("Item count must be greater than 0.", Response.Status.BAD_REQUEST);
+		}
+		if (request.extra() != null && request.extra().length() > 255) {
+			throw new ApiException("Extra must be less than 255 characters.", Response.Status.BAD_REQUEST);
+		}
 	}
-
-	private CartItemResponse getCartItemResponse(Product product, int count) {
-		return new CartItemResponse(
-				product.getId(),
-				product.getDisplayName(),
-				product.getSymbolIdentifier(),
-				0,
-				count,
-				null,
-				null
-		);
-	}
-
 }

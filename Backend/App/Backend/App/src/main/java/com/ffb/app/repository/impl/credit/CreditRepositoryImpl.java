@@ -2,11 +2,13 @@ package com.ffb.app.repository.impl.credit;
 
 import java.util.Optional;
 import com.ffb.app.repository.api.credit.CreditRepository;
-import com.ffb.model.db.objects.credit.Credit;
+import com.ffb.model.db.object.credit.Credit;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class CreditRepositoryImpl implements CreditRepository {
+
+    // TODO Logging
 
     @Override
     public Optional<Credit> findByLoginNr(String loginNr) {

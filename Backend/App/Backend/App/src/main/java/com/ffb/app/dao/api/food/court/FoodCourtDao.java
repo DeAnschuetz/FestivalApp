@@ -1,6 +1,6 @@
 package com.ffb.app.dao.api.food.court;
 
-import com.ffb.model.db.objects.food_court.FoodCourt;
+import com.ffb.model.db.object.food_court.FoodCourt;
 import com.ffb.model.exception.DaoException;
 
 import java.io.PushbackInputStream;

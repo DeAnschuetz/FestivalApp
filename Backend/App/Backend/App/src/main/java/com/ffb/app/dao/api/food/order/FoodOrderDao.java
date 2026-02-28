@@ -1,9 +1,9 @@
 package com.ffb.app.dao.api.food.order;
 
-import com.ffb.model.db.objects.foodorder.FoodOrder;
-import com.ffb.model.db.objects.foodorder.FoodOrderHistory;
-import com.ffb.model.db.objects.foodorder.FoodOrderItem;
-import com.ffb.model.db.objects.foodorder.FoodOrderStatus;
+import com.ffb.model.db.object.foodorder.FoodOrder;
+import com.ffb.model.db.object.foodorder.FoodOrderHistory;
+import com.ffb.model.db.object.foodorder.FoodOrderItem;
+import com.ffb.model.db.object.foodorder.FoodOrderStatus;
 import com.ffb.model.exception.DaoException;
 
 import java.util.List;

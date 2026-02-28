@@ -1,21 +1,27 @@
 package com.ffb.app.repository.impl.product;
 
 import com.ffb.app.repository.api.product.ProductRepository;
-import com.ffb.model.db.objects.product.MainSubProductLink;
-import com.ffb.model.db.objects.product.Product;
+import com.ffb.model.db.object.product.MainSubProductLink;
+import com.ffb.model.db.object.product.Product;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @ApplicationScoped
 public class ProductRepositoryImpl implements ProductRepository {
 
+    // TODO Logging
+
     @Override
     public List<Product> listByLoginNr(String loginNr) {
-        return list("foodCourt.account.ticket.login_nr", loginNr);
+        return list(
+                    "foodCourt.account.ticket.login_nr",
+                    loginNr
+                )
+        ;
+
     }
 
     @Override

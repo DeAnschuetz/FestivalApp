@@ -1,6 +1,6 @@
 package com.ffb.app.repository.api.account;
 
-import com.ffb.model.db.objects.account.Ticket;
+import com.ffb.model.db.object.account.Ticket;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 
 import java.util.Optional;

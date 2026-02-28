@@ -3,8 +3,8 @@ package com.ffb.app.dao.impl.cart;
 import com.ffb.app.dao.api.cart.CartDao;
 import com.ffb.app.repository.api.cart.CartItemRepository;
 import com.ffb.app.repository.api.cart.CartRepository;
-import com.ffb.model.db.objects.cart.Cart;
-import com.ffb.model.db.objects.cart.CartItem;
+import com.ffb.model.db.object.cart.Cart;
+import com.ffb.model.db.object.cart.CartItem;
 import com.ffb.model.exception.DaoException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -12,6 +12,9 @@ import java.util.List;
 
 @ApplicationScoped
 public class CartDaoImpl implements CartDao {
+
+    // TODO Logging
+
 
     private final CartRepository cartRepo;
     private final CartItemRepository cartItemRepo;

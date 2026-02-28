@@ -1,6 +1,6 @@
 package com.ffb.app.repository.api.food.order;
 
-import com.ffb.model.db.objects.foodorder.FoodOrderItem;
+import com.ffb.model.db.object.foodorder.FoodOrderItem;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 
 import java.util.List;

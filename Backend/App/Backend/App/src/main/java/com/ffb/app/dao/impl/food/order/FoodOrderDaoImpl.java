@@ -4,10 +4,10 @@ import com.ffb.app.dao.api.food.order.FoodOrderDao;
 import com.ffb.app.repository.api.food.order.FoodOrderHistoryRepository;
 import com.ffb.app.repository.api.food.order.FoodOrderItemRepository;
 import com.ffb.app.repository.api.food.order.FoodOrderRepository;
-import com.ffb.model.db.objects.foodorder.FoodOrder;
-import com.ffb.model.db.objects.foodorder.FoodOrderHistory;
-import com.ffb.model.db.objects.foodorder.FoodOrderItem;
-import com.ffb.model.db.objects.foodorder.FoodOrderStatus;
+import com.ffb.model.db.object.foodorder.FoodOrder;
+import com.ffb.model.db.object.foodorder.FoodOrderHistory;
+import com.ffb.model.db.object.foodorder.FoodOrderItem;
+import com.ffb.model.db.object.foodorder.FoodOrderStatus;
 import com.ffb.model.exception.DaoException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -17,6 +17,8 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class FoodOrderDaoImpl implements FoodOrderDao {
+
+    // TODO Logging
 
     private final FoodOrderRepository foodOrderRepo;
     private final FoodOrderItemRepository foodOrderItemRepo;

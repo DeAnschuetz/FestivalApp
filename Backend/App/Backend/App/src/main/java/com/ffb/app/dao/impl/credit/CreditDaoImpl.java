@@ -3,8 +3,8 @@ package com.ffb.app.dao.impl.credit;
 import com.ffb.app.dao.api.credit.CreditDao;
 import com.ffb.app.repository.api.credit.CreditHistoryRepository;
 import com.ffb.app.repository.api.credit.CreditRepository;
-import com.ffb.model.db.objects.credit.Credit;
-import com.ffb.model.db.objects.credit.CreditHistory;
+import com.ffb.model.db.object.credit.Credit;
+import com.ffb.model.db.object.credit.CreditHistory;
 import com.ffb.model.exception.DaoException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -15,6 +15,8 @@ import java.util.List;
 
 @ApplicationScoped
 public class CreditDaoImpl implements CreditDao {
+
+    // TODO Logging
 
     private final CreditRepository creditRepo;
     private  final CreditHistoryRepository creditHistoryRepo;

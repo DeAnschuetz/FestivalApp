@@ -1,15 +1,12 @@
 package com.ffb.app.api;
 
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import com.ffb.app.service.api.api.token.TokenService;
+
 import com.ffb.model.api.request.account.RegisterRequest;
 import com.ffb.model.api.response.account.AccountResponse;
-import com.ffb.model.api.response.account.LoginResponse;
 import com.ffb.model.api.response.error.ErrorResponse;
-import com.ffb.model.db.objects.account.AccountType;
 import com.ffb.model.exception.ApiException;
 import com.ffb.model.exception.ServiceException;
 import jakarta.annotation.security.PermitAll;
@@ -17,15 +14,17 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
-import org.jboss.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jboss.resteasy.reactive.PartType;
-import com.ffb.app.service.api.api.account.AccountService;
+import com.ffb.app.service.api.account.AccountService;
 import com.ffb.model.api.request.account.LoginRequest;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -35,19 +34,20 @@ import jakarta.ws.rs.core.MediaType;
 @Path("account")
 public class AccountApi {
 
-	private final Logger LOG = Logger.getLogger(AccountApi.class);
-	private final AccountService accountService;
-	private final TokenService tokenService;
+	private final Logger LOG = LoggerFactory.getLogger(AccountApi.class);
 
 	@Inject
-	public AccountApi(AccountService accountService, TokenService tokenService) {
+	JsonWebToken jwt;
+	private final AccountService accountService;
+
+	@Inject
+	public AccountApi(AccountService accountService) {
 		this.accountService = accountService;
-        this.tokenService = tokenService;
     }
 
 	@POST
 	@Path("login")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@PermitAll
 	@Operation(summary = "Login")
@@ -55,7 +55,7 @@ public class AccountApi {
 			@APIResponse(
 					responseCode = "200",
 					description = "Login succeeded; cookie set",
-					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = LoginResponse.class, type = SchemaType.OBJECT))
+					content = @Content(mediaType = MediaType.TEXT_PLAIN)
 			),
 			@APIResponse(
 					responseCode = "400",
@@ -65,31 +65,26 @@ public class AccountApi {
 	})
 	public Response login(@PartType(MediaType.APPLICATION_JSON) LoginRequest loginRequest) throws ApiException {
 		String loginNr = loginRequest.loginNr();
-		LOG.info("Login attempt for loginNr: " + loginNr);
+		LOG.info("Login attempt for loginNr={{}}", loginNr);
 		if (loginNr == null || loginNr.isBlank()) {
-			// TODO
-			LOG.error("Login attempt failed: login number is null or blank.");
+			LOG.error("login number is null or blank.");
 			throw new ApiException("The login number must not be null or blank.", Response.Status.BAD_REQUEST);
 		}
-		String password = loginRequest.password();
-		if (password == null || password.isBlank()) {
-			// TODO
-			LOG.error("Login attempt failed: password is null or blank.");
+		if (loginRequest.password() == null || loginRequest.password().isBlank()) {
+			LOG.error("password is null or blank.");
 			throw new ApiException("The password must not be null or blank.", Response.Status.BAD_REQUEST);
 		}
 
-        AccountType type;
+        String token;
         try {
-            type = accountService.verifyAccount(loginNr, password);
+            token = accountService.verifyAccount(loginRequest);
         } catch (ServiceException e) {
+			LOG.error("Could not verify account={{}}; Exception: ", loginNr, e);
             throw new ApiException(e);
         }
 
-		Set<String> roles = Set.of(type.toString());
-		String jwt = tokenService.createToken(loginNr, roles);
-
 		NewCookie cookie = new NewCookie.Builder("access_token")
-				.value(jwt)//
+				.value(token)//
 				.path("/")//
 				.httpOnly(true)//
 				.secure(false)//
@@ -98,8 +93,8 @@ public class AccountApi {
 				.build()//
 		;
 
-		LOG.info("Login successful for loginNr: " + loginNr);
-		return Response.status(Response.Status.OK).entity((new LoginResponse(type))).cookie(cookie).build();
+		LOG.info("login successful for loginNr={{}}", loginNr);
+		return Response.status(Response.Status.OK).entity("Successfully logged in: {" + loginNr +"}").cookie(cookie).build();
 	}
 
 	@POST
@@ -108,13 +103,17 @@ public class AccountApi {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@RolesAllowed({"GUEST", "FOOD_COURT_WORKER", "ADMIN"})
 	@Operation(summary = "Logout")
-	@APIResponse(responseCode = "204", description = "Logout succeeded; access token cleared")
-	@APIResponse(
-			responseCode = "400",
-			description = "Invalid request",
-			content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
-	)
+	@APIResponses({
+			@APIResponse(responseCode = "204", description = "Logout succeeded; access token cleared"),
+			@APIResponse(
+					responseCode = "400",
+					description = "Invalid request",
+					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
+			),
+			@APIResponse(responseCode = "401", description = "Not Authorized")
+	})
 	public Response logout() {
+		LOG.info("logging out loginNr={{}}", jwt.getName());
 		NewCookie cleared = new NewCookie.Builder("access_token")//
 				.value("")//
 				.path("/")//
@@ -147,34 +146,34 @@ public class AccountApi {
 	})
 	public Response register(@PartType(MediaType.APPLICATION_JSON) RegisterRequest registerRequest) throws ApiException {
 		String loginNr = registerRequest.loginNr();
-		LOG.trace("Register attempt for loginNr: " + loginNr);
+		LOG.trace("Register attempt for loginNr={{}}", loginNr);
 		if (loginNr == null || loginNr.isBlank()) {
 			LOG.error("Register attempt failed: login number is null or blank.");
 			throw new ApiException("The login number must not be null or blank.", Response.Status.BAD_REQUEST);
 		}
-		String password = registerRequest.password();
-		if (password == null || password.isBlank()) {
+		if (registerRequest.password() == null || registerRequest.password().isBlank()) {
 			LOG.error("Register attempt failed: password is null or blank.");
 			throw new ApiException("The password must not be null or blank.", Response.Status.BAD_REQUEST);
 		}
 		Pattern loginNrPattern = Pattern.compile("[AFV][-]\\d{3}[-]\\d{3}[-]\\d{3}");
 		Matcher matcher = loginNrPattern.matcher(loginNr);
 		if (!matcher.find()) {
+			LOG.error("loginNr={{}} has no valid format", loginNr);
 			throw new ApiException("loginNr has no Valid Format", Response.Status.BAD_REQUEST);
 		}
 
 		AccountResponse createdAccount;
 		try {
-			createdAccount = accountService.createAccount(loginNr, password);
+			createdAccount = accountService.createAccount(registerRequest);
 		} catch (ServiceException e) {
-			LOG.error("Register attempt failed: " + e.getMessage());
+			LOG.error("Register attempt failed for loginNr={{}}; Exception: ", loginNr, e);
 			throw new ApiException(e);
 		}
 		return Response.status(Response.Status.OK).entity(createdAccount).build();
 
 	}
 
-    @GET
+	@GET
 	@Path("admin/list_all")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.TEXT_PLAIN)
@@ -196,7 +195,9 @@ public class AccountApi {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response listAll() {
-    	List<AccountResponse> data = accountService.getAllAccounts();
+		LOG.info("listAll loginNr={{}}", jwt.getName());
+		List<AccountResponse> data = accountService.getAllAccounts();
+		LOG.info("found {} accounts", data.size());
 		return Response.status(Response.Status.OK).entity(data).build();
 	}
 }

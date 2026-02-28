@@ -2,7 +2,7 @@ package com.ffb.app.dao.impl.food.court;
 
 import com.ffb.app.dao.api.food.court.FoodCourtDao;
 import com.ffb.app.repository.api.food.court.FoodCourtRepository;
-import com.ffb.model.db.objects.food_court.FoodCourt;
+import com.ffb.model.db.object.food_court.FoodCourt;
 import com.ffb.model.exception.DaoException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -13,6 +13,8 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class FoodCourtDaoImpl implements FoodCourtDao {
+
+    // TODO Logging
 
     private final FoodCourtRepository foodCourtRepo;
 

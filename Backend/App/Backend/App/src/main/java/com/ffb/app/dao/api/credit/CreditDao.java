@@ -1,14 +1,13 @@
 package com.ffb.app.dao.api.credit;
 
-import com.ffb.model.db.objects.credit.Credit;
-import com.ffb.model.db.objects.credit.CreditHistory;
+import com.ffb.model.db.object.credit.Credit;
+import com.ffb.model.db.object.credit.CreditHistory;
 import com.ffb.model.exception.DaoException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TransactionRequiredException;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface CreditDao {
 
