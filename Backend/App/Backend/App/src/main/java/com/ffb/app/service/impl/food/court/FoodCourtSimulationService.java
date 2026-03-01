@@ -5,12 +5,17 @@ import com.ffb.app.dao.api.food.order.FoodOrderDao;
 import com.ffb.model.db.object.food_court.FoodCourt;
 import com.ffb.model.db.object.foodorder.FoodOrder;
 import com.ffb.model.db.object.foodorder.FoodOrderStatus;
+
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.scheduler.Scheduler;
+
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +29,7 @@ public class FoodCourtSimulationService {
     private final FoodCourtDao foodCourtDao;
     private final Scheduler scheduler;
 
-
+    @Inject
     public FoodCourtSimulationService(FoodOrderDao foodOrderDao, FoodCourtDao foodCourtDao, Scheduler scheduler) {
         this.foodOrderDao = foodOrderDao;
         this.foodCourtDao = foodCourtDao;

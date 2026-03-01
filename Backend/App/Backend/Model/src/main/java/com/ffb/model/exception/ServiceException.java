@@ -23,6 +23,11 @@ public class ServiceException extends FestivalFoodException {
         this.status = status;
     }
 
+    public ServiceException(CustomRuntimeException cause) {
+        super(cause.getMessage(), cause.getCause());
+        this.status = cause.getStatus();
+    }
+
     public Response.Status getStatus() {
         return status;
     }

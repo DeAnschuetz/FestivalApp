@@ -16,27 +16,34 @@ import com.ffb.model.db.object.account.AccountType;
 import com.ffb.model.db.object.account.Ticket;
 import com.ffb.model.exception.DaoException;
 import com.ffb.model.exception.ServiceException;
-import io.smallrye.jwt.build.Jwt;
-import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.ffb.model.db.object.cart.Cart;
 import com.ffb.model.db.object.credit.Credit;
+import com.ffb.model.db.object.cart.Cart;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import jakarta.transaction.Transactional;
+
+import io.smallrye.jwt.build.Jwt;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import at.favre.lib.crypto.bcrypt.BCrypt;
+
+import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import at.favre.lib.crypto.bcrypt.BCrypt;
 
 @ApplicationScoped
 public class AccountServiceImpl implements AccountService {
 
-	// TODO Logging
+	// TODO Logging fertig
 	private final Logger LOG = LoggerFactory.getLogger(AccountServiceImpl.class);
 
 	@ConfigProperty(name = "account.initial.credit")
@@ -53,7 +60,7 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	@Transactional
-	public AccountResponse createAccount(RegisterRequest request) throws ServiceException {
+	public AccountResponse createAccount(@NonNull RegisterRequest request) throws ServiceException {
 		LOG.trace("ENTER: createAccount; request={}", request);
 		String loginNr = request.loginNr();
 		String rawPassword = request.password();
@@ -64,7 +71,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public String verifyAccount(LoginRequest request) throws ServiceException {
+	public String verifyAccount(@NonNull LoginRequest request) throws ServiceException {
 		LOG.trace("ENTER: verifyAccount; request={{}}", request);
 		String loginNr = request.loginNr();
 		String rawPassword = request.password();
@@ -106,7 +113,7 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	@Transactional
-	public List<TicketResponse> createTickets(TicketRequest request) {
+	public List<TicketResponse> createTickets(@NonNull TicketRequest request) {
 		LOG.trace("ENTER: createTickets; request={{}}", request);
 		List<String> loginNrs = request.loginNrs();
 		List<TicketResponse> created = loginNrs.stream()//
@@ -137,13 +144,14 @@ public class AccountServiceImpl implements AccountService {
 				.map(responseMapper::getTicketResponse)//
 				.toList()//
 		;
+		LOG.info("found {} tickets", tickets.size());
 		LOG.trace("EXIT: getAllTickets found {} tickets", tickets.size());
 		return tickets;
 	}
 
 	@Override
 	@Transactional
-	public List<AccountResponse> createAccounts(List<AccountRequest> requests) {
+	public List<AccountResponse> createAccounts(@NonNull List<AccountRequest> requests) {
 		LOG.trace("ENTER: createAccounts; request={{}}", requests);
 		List<AccountResponse> created = requests.stream()//
 				.map(request -> {
@@ -162,7 +170,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public String createToken(String loginNr, Set<String> roles) {
+	public String createToken(@NonNull String loginNr,@NonNull Set<String> roles) {
 		LOG.trace("ENTER: createToken; loginNr={{}}, roles={{}}", loginNr, roles);
 		String token = Jwt.issuer("https://your-app.example")
 				.upn(loginNr)//
@@ -170,14 +178,17 @@ public class AccountServiceImpl implements AccountService {
 				.expiresIn(Duration.ofHours(2))//
 				.sign()//
 		;
+		LOG.info("token created for loginNr={{}}", loginNr);
 		LOG.trace("EXIT: createToken; token={{}}", token);
 		return token;
 	}
 
 	@Override
 	public DatabaseResponse getDatabaseResponse() {
+		LOG.info("ENTER: getDatabaseResponse");
 		List<AccountResponseFull> accounts = accountDao.listAll().stream()//
 				.map(account -> {
+					LOG.debug("creating response for loginNr={{}}", account.getLoginNr());
 					return new AccountResponseFull(
 							responseMapper.getAccountResponse(account),
 							responseMapper.getCreditResponseFull(account.getCredit()),
@@ -190,6 +201,7 @@ public class AccountServiceImpl implements AccountService {
 				})
 				.toList()//
 		;
+		LOG.info("EXIT: getDatabaseResponse found {} accounts", accounts.size());
 		return new DatabaseResponse(
 			accounts
 		);
@@ -198,6 +210,16 @@ public class AccountServiceImpl implements AccountService {
 	/*
 		Private Helper Functions
 	 */
+
+	private AccountResponse createAccount(AccountRequest request) throws ServiceException {
+		LOG.trace("ENTER: createAccount; request={{}}", request);
+		String loginNr = request.loginNr();
+		String rawPassword = request.password();
+		UUID id = request.id();
+		AccountResponse response = createAccount(loginNr, rawPassword, id);
+		LOG.trace("EXIT: createAccount; account={{}}", response);
+		return response;
+	}
 
 	private AccountResponse createAccount(String loginNr, String rawPassword, UUID id) throws ServiceException {
 		LOG.trace("ENTER: createAccount; loginNr={{}}, rawPassword={{}}, id={{}}", loginNr, rawPassword, id);
@@ -225,17 +247,8 @@ public class AccountServiceImpl implements AccountService {
 			account.setCart(cart);
 		}
 		accountDao.persist(account);
+		LOG.info("account created with loginNr={{}}", loginNr);
 		AccountResponse response = responseMapper.getAccountResponse(account);
-		LOG.trace("EXIT: createAccount; account={{}}", response);
-		return response;
-	}
-
-	private AccountResponse createAccount(AccountRequest request) throws ServiceException {
-		LOG.trace("ENTER: createAccount; request={{}}", request);
-		String loginNr = request.loginNr();
-		String rawPassword = request.password();
-		UUID id = request.id();
-		AccountResponse response = createAccount(loginNr, rawPassword, id);
 		LOG.trace("EXIT: createAccount; account={{}}", response);
 		return response;
 	}

@@ -1,21 +1,25 @@
 package com.ffb.app.api;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 import com.ffb.app.service.api.food.order.FoodOrderService;
+import com.ffb.app.validator.api.RequestValidator;
 import com.ffb.model.api.response.error.ErrorResponse;
 import com.ffb.model.api.response.food.order.FoodOrderResponse;
 import com.ffb.model.api.response.food.order.FoodOrderResponseFull;
+import com.ffb.model.api.request.food.order.ShareOrderRequest;
+import com.ffb.model.db.object.foodorder.FoodOrderStatus;
 import com.ffb.model.db.object.account.AccountType;
 import com.ffb.model.exception.ApiException;
 import com.ffb.model.exception.CustomRuntimeException;
 import com.ffb.model.exception.ServiceException;
+
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.MediaType;
+
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -23,28 +27,33 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+
 import org.jboss.resteasy.reactive.PartType;
-import com.ffb.model.api.request.food.order.ShareOrderRequest;
-import com.ffb.model.db.object.foodorder.FoodOrderStatus;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @ApplicationScoped
 @Path("food_order")
 public class FoodOrderEndpointImpl {
 
+	// TODO Logging done fürs erste
 	private final Logger LOG = LoggerFactory.getLogger(FoodOrderEndpointImpl.class);
 
 	@Inject
-	JsonWebToken jwt;
+	JsonWebToken webToken;
 	private final FoodOrderService foodOrderService;
+	private final RequestValidator validatorService;
 
 	@Inject
-	public FoodOrderEndpointImpl(FoodOrderService foodOrderService) {
+	public FoodOrderEndpointImpl(FoodOrderService foodOrderService, RequestValidator validatorService) {
 		this.foodOrderService = foodOrderService;
-	}
+        this.validatorService = validatorService;
+    }
 
 	@POST
 	@Path("order")
@@ -76,8 +85,14 @@ public class FoodOrderEndpointImpl {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response order() throws ApiException {
-		LOG.info("order request for loginNr={{}}", jwt.getName());
-		String loginNr = jwt.getName();
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("order request for loginNr={{}}", loginNr);
 		List<FoodOrderResponse> data;
 		try {
 			data = foodOrderService.create(loginNr);
@@ -119,8 +134,14 @@ public class FoodOrderEndpointImpl {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response shareOrder(@PartType(MediaType.APPLICATION_JSON) ShareOrderRequest request) throws ApiException {
-		LOG.info("share order request for loginNr={{}}", jwt.getName());
-		String loginNr = jwt.getName();
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("share order request for loginNr={{}}", loginNr);
 		if(request.orderId() == null) {
 			LOG.error("orderId is null");
 			throw new ApiException("Order ID is required.", Response.Status.BAD_REQUEST);
@@ -171,8 +192,14 @@ public class FoodOrderEndpointImpl {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response listAll() throws ApiException {
-		LOG.info("list all request for loginNr={{}}", jwt.getName());
-		String loginNr = jwt.getName();
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("list all request for loginNr={{}}", loginNr);
 		AccountType accountType = getAccountType();
 		List<FoodOrderResponse> data;
 		try {
@@ -215,8 +242,14 @@ public class FoodOrderEndpointImpl {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response listByStatus(@PathParam(value = "status") FoodOrderStatus status) throws ApiException {
-		LOG.info("list all request for loginNr={{}} and status='{}'", jwt.getName(), status);
-		String loginNr = jwt.getName();
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("list all request for loginNr={{}} and status='{}'", loginNr, status);
 		AccountType accountType = getAccountType();
 		List<FoodOrderResponse> data;
 		try {
@@ -260,8 +293,14 @@ public class FoodOrderEndpointImpl {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response listAllWithHistory() throws ApiException {
-		LOG.info("list all with history request for loginNr={{}}", jwt.getName());
-		String loginNr = jwt.getName();
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("list all with history request for loginNr={{}}", loginNr);
 		AccountType accountType = getAccountType();
 		List<FoodOrderResponse> data;
 		try {
@@ -304,8 +343,14 @@ public class FoodOrderEndpointImpl {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response listByStatusWithHistory(@PathParam(value = "status") FoodOrderStatus status) throws ApiException {
-		LOG.info("list all with history request for loginNr={{}} and status='{}'", jwt.getName(), status);
-		String loginNr = jwt.getName();
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("list all with history request for loginNr={{}} and status='{}'", loginNr, status);
 		AccountType accountType = getAccountType();
 		List<FoodOrderResponse> data;
 		try {
@@ -348,7 +393,14 @@ public class FoodOrderEndpointImpl {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response updateOrderStatus(@PathParam(value = "orderId") UUID orderId, @PathParam(value = "status") FoodOrderStatus newStatus) throws ApiException {
-		LOG.info("updating order status for orderId={{}} and newStatus='{}'", orderId, newStatus);
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("received update order status request for loginNr={{}} and orderId={{}} and newStatus='{}'", loginNr, orderId, newStatus);
 		if(orderId == null) {
 			LOG.error("orderId is null");
 			throw new ApiException("Order ID is required.", Response.Status.BAD_REQUEST);
@@ -374,7 +426,7 @@ public class FoodOrderEndpointImpl {
 	*/
 
 	private AccountType getAccountType() throws ApiException {
-		Set<String> groups = jwt.getGroups();
+		Set<String> groups = webToken.getGroups();
 		AccountType accountType;
 		if (groups.contains("ADMIN")) {
 			accountType = AccountType.ADMIN;

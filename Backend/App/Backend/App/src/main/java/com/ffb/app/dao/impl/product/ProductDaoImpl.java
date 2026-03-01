@@ -21,13 +21,11 @@ public class ProductDaoImpl implements ProductDao {
 
     private final ProductRepository productRepo;
     private final MainSubProductLinkRepository mainSubProductLinkRepo;
-    private final MainProductRepository mainProductRepo;
 
     @Inject
-    public ProductDaoImpl(ProductRepository productRepo, MainSubProductLinkRepository mainSubProductLinkRepo, MainProductRepository mainProductRepo) {
+    public ProductDaoImpl(ProductRepository productRepo, MainSubProductLinkRepository mainSubProductLinkRepo) {
         this.productRepo = productRepo;
         this.mainSubProductLinkRepo = mainSubProductLinkRepo;
-        this.mainProductRepo = mainProductRepo;
     }
 
     @Override

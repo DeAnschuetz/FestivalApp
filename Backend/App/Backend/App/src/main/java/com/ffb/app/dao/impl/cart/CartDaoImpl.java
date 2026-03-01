@@ -8,12 +8,16 @@ import com.ffb.model.exception.DaoException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 @ApplicationScoped
 public class CartDaoImpl implements CartDao {
 
     // TODO Logging
+    private final Logger LOG = LoggerFactory.getLogger(CartDao.class);
 
     private final CartRepository cartRepo;
 
@@ -25,7 +29,10 @@ public class CartDaoImpl implements CartDao {
     @Override
     public Cart findByLoginNr(String loginNr) throws DaoException {
         return cartRepo.findByLoginNr(loginNr)
-                .orElseThrow(() -> new DaoException("Cart not found for login number: " + loginNr))//
+                .orElseThrow(() -> {
+                    LOG.error("");
+                    return new DaoException("Cart not found for login number: " + loginNr);
+                })//
         ;
     }
 
