@@ -3,6 +3,7 @@ package com.ffb.app.repository.impl.product;
 import com.ffb.app.repository.api.product.ProductRepository;
 import com.ffb.model.db.object.product.MainSubProductLink;
 import com.ffb.model.db.object.product.Product;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.*;
 

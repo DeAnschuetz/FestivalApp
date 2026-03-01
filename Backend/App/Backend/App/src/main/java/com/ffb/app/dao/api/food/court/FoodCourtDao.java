@@ -13,12 +13,6 @@ public interface FoodCourtDao {
 
     FoodCourt getByLoginNr(String loginNr) throws DaoException;
 
-    FoodCourt getByIdWithWaitingTimeAndFoodOrders(UUID id) throws DaoException;
-
-    FoodCourt getByIdWithWaitingTime(UUID id) throws DaoException;
-
-    FoodCourt getByIdWithFoodOrders(UUID id) throws DaoException;
-
     byte[] getImageById(UUID id) throws DaoException;
 
     List<FoodCourt> listAll();

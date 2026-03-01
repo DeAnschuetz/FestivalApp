@@ -22,10 +22,17 @@ public class FoodCourt extends PanacheEntityBase {
     @Column(name = "id")
 	private UUID id;
 
-
 	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(name = "display_name", length =  100, nullable = false)
 	private String displayName;
+
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
+	@Column(name = "image")
+	byte[] image;
+
+	@OneToOne(mappedBy = "foodCourt", cascade = CascadeType.ALL)
+	private FoodCourtWaitingTime waitingTime;
 
 	@JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
@@ -33,36 +40,29 @@ public class FoodCourt extends PanacheEntityBase {
 	@JoinColumn(name = "account_id", referencedColumnName = "id")
 	private Account account;
 
-	@Lob
-	@Basic(fetch = FetchType.LAZY)
-	@Column(name = "image")
-	byte[] image;
-    
-    @OneToOne(mappedBy = "foodCourt", cascade = CascadeType.ALL)
-    private FoodCourtWaitingTime waitingTime;
-    
-    @JsonIgnore
-    @OneToMany(mappedBy = "foodCourt", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<FoodOrder> foodOrders;
-
 	@JsonIgnore
 	@OneToMany(mappedBy = "foodCourt", fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Product> products;
-    
+
+	@JsonIgnore
+    @OneToMany(mappedBy = "foodCourt", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<FoodOrder> foodOrders;
+
     protected FoodCourt() {}
     
-	public FoodCourt(String displayName) {
+	public FoodCourt(String displayName, Account account) {
 		super();
 		this.id = UUID.randomUUID();
 		this.displayName = displayName;
+		this.account = account;
 		this.waitingTime = new FoodCourtWaitingTime(this, 0);
 	}
 
-	public FoodCourt(UUID id, String name) {
+	public FoodCourt(UUID id, String displayName, Account account) {
 		super();
 		this.id = id;
-		this.displayName = name;
-
+		this.displayName = displayName;
+		this.account = account;
 		this.waitingTime = new FoodCourtWaitingTime(this, 0);
 	}
 

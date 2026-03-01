@@ -25,44 +25,23 @@ public class FoodCourtDaoImpl implements FoodCourtDao {
 
     @Override
     public FoodCourt getById(UUID id) throws DaoException {
-        return foodCourtRepo.getById(id)
-                .orElseThrow(() -> new DaoException("Food court with ID " + id + " not found."))
-                ;
+        return foodCourtRepo.getById(id)//
+                .orElseThrow(() -> new DaoException("Food court with ID " + id + " not found."))//
+        ;
     }
 
     @Override
     public FoodCourt getByLoginNr(String loginNr) throws DaoException {
-        return foodCourtRepo.getByLoginNr(loginNr)
-                .orElseThrow(() -> new DaoException("Food court with login number " + loginNr + " not found."))
-        ;
-    }
-
-    @Override
-    public FoodCourt getByIdWithWaitingTimeAndFoodOrders(UUID id) throws DaoException {
-        return foodCourtRepo.getByIdWithWaitingTimeAndFoodOrders(id)
-                .orElseThrow(() -> new DaoException("Food court with ID " + id + " not found."))
-        ;
-    }
-
-    @Override
-    public FoodCourt getByIdWithWaitingTime(UUID id) throws DaoException {
-        return foodCourtRepo.getByIdWithWaitingTime(id)
-                .orElseThrow(() -> new DaoException("Food court with ID " + id + " not found."))
-        ;
-    }
-
-    @Override
-    public FoodCourt getByIdWithFoodOrders(UUID id) throws DaoException {
-        return foodCourtRepo.getByIdWithFoodOrders(id)
-                .orElseThrow(() -> new DaoException("Food court with ID " + id + " not found."))
+        return foodCourtRepo.getByLoginNr(loginNr)//
+                .orElseThrow(() -> new DaoException("Food court with login number " + loginNr + " not found."))//
         ;
     }
 
     @Override
     public byte[] getImageById(UUID id) throws DaoException {
-        return foodCourtRepo.getById(id)
-                .orElseThrow(() -> new DaoException("Image with ID " + id + " not found."))
-                .getImage()
+        return foodCourtRepo.getById(id)//
+                .orElseThrow(() -> new DaoException("Image with ID " + id + " not found."))//
+                .getImage()//
         ;
     }
 

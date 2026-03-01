@@ -6,10 +6,8 @@ import com.ffb.app.dao.api.credit.CreditDao;
 import com.ffb.app.dao.api.food.court.FoodCourtDao;
 import com.ffb.app.dao.api.food.order.FoodOrderDao;
 import com.ffb.app.mapper.api.ResponseMapper;
-import com.ffb.app.mapper.impl.ResponseMapperImpl;
 import com.ffb.app.service.api.food.order.FoodOrderService;
 import com.ffb.model.api.request.food.order.ShareOrderRequest;
-import com.ffb.model.api.response.food.order.FoodOrderItemResponse;
 import com.ffb.model.api.response.food.order.FoodOrderResponse;
 import com.ffb.model.api.response.food.order.FoodOrderResponseFull;
 import com.ffb.model.db.object.account.Account;
@@ -25,12 +23,16 @@ import com.ffb.model.db.object.product.Product;
 import com.ffb.model.exception.CustomRuntimeException;
 import com.ffb.model.exception.DaoException;
 import com.ffb.model.exception.ServiceException;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.UUID;
@@ -39,8 +41,8 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class FoodOrderServiceImpl implements FoodOrderService {
 
-    // TODO Logging
-    private static final Logger LOG = Logger.getLogger(FoodOrderService.class);
+    // TODO Logging fertig
+    private static final Logger LOG = LoggerFactory.getLogger(FoodOrderService.class);
 
     @ConfigProperty(name = "order.extra.price")
     double EXTRA_PRICE;
@@ -71,11 +73,27 @@ public class FoodOrderServiceImpl implements FoodOrderService {
     @Transactional
     @Override
     public List<FoodOrderResponse> create(String loginNr) throws ServiceException {
+        LOG.trace("ENTER: create; loginNr={{}}", loginNr);
         try {
-            Account account = accountDao.findByLoginNr(loginNr);
-            Cart cart = cartDao.findByLoginNrWithItems(loginNr);
+            Account account;
+            try {
+                account = accountDao.getByLoginNr(loginNr);
+            } catch (DaoException e) {
+                LOG.error("could not find account for loginNr={{}}; Exception:", loginNr, e);
+                throw new ServiceException(e, Response.Status.NOT_FOUND);
+            }
+            Cart cart;
+            try {
+                cart = cartDao.findByLoginNr(loginNr);
+            } catch (DaoException e) {
+                LOG.error("could not find cart for loginNr={{}}; Exception:", loginNr, e);
+                throw new ServiceException(e, Response.Status.NOT_FOUND);
+            }
+
             List<CartItem> cartItems = cart.getCartItems();
-            return cartItems.stream()//
+            LOG.debug("creating food orders from cart; loginNr={{}}, cartItems=[{}], hasPrio={}", loginNr, cartItems, cart.isHasPrio());
+
+            List<FoodOrderResponse> created = cartItems.stream()//
                     .collect(
                             Collectors.groupingBy(
                                     item -> item.getProduct().getFoodCourt().getId(),
@@ -101,55 +119,62 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                     )//
                     .entrySet().stream()//
                     .map(entry -> {
-                                List<FoodOrderItem> foodOrderItems = entry.getValue();
-                                double total = foodOrderItems.stream()//
-                                        .mapToDouble(item -> item.getPrice() * item.getItemCount())//
-                                        .sum()//
-                                        ;
-                                FoodCourt foodCourt;
-                                try {
-                                    foodCourt = foodCourtDao.getById(entry.getKey());
-                                } catch (DaoException e) {
-                                    throw new CustomRuntimeException(e, Response.Status.NOT_FOUND);
-                                }
-                                FoodOrder foodOrder = new FoodOrder(
-                                        UUID.randomUUID(),
-                                        FoodOrderStatus.ORDERED,
-                                        cart.isHasPrio(),
-                                        total,
-                                        foodCourt.getWaitingTimeObject().getWaitingTime(),
-                                        foodOrderItems,
-                                        foodCourt,
-                                        account
-                                );
-                                foodOrderItems.forEach(foodOrderItem -> {
-                                    foodOrderItem.setFoodOrder(foodOrder);
-                                });
+                            UUID foodCourtId = entry.getKey();
+                            List<FoodOrderItem> foodOrderItems = entry.getValue();
+                            double total = foodOrderItems.stream()//
+                                    .mapToDouble(item -> item.getPrice() * item.getItemCount())//
+                                    .sum()//
+                            ;
+                            LOG.debug("creating FoodOrder; loginNr={{}}, foodCourtId={{}}, items=[{}], total={}", loginNr, foodCourtId, foodOrderItems, total);
 
-                                Credit currentCredit;
-                                try {
-                                    currentCredit = creditDao.getByLoginNr(loginNr);
-                                } catch (DaoException e) {
-                                    throw new CustomRuntimeException(e, Response.Status.NOT_FOUND);
-                                }
-                                double currentCreditAmount = currentCredit.getAmount();
-                                if (currentCreditAmount < total) {
-                                    throw new RuntimeException("Insufficient credit");
-                                }
-                                currentCredit.setAmount(currentCreditAmount - total);
+                            FoodCourt foodCourt;
+                            try {
+                                foodCourt = foodCourtDao.getById(foodCourtId);
+                            } catch (DaoException e) {
+                                LOG.error("could not find foodCourt for id={{}}; loginNr={{}} Exception:", foodCourtId, loginNr, e);
+                                throw new CustomRuntimeException(e, Response.Status.NOT_FOUND);
+                            }
+                            FoodOrder foodOrder = new FoodOrder(
+                                    cart.isHasPrio(),
+                                    total,
+                                    foodOrderItems,
+                                    foodCourt,
+                                    account
+                            );
+                            foodOrderItems.forEach(foodOrderItem -> {
+                                foodOrderItem.setOrder(foodOrder);
+                            });
 
-                                foodCourtDao.persist(foodCourt);
-                                creditDao.persist(currentCredit);
-                                foodOrderDao.persist(foodOrder);
-                                cartDao.empty(cart);
-                                return foodOrder;
-                            }//
+                            Credit currentCredit;
+                            try {
+                                currentCredit = creditDao.getByLoginNr(loginNr);
+                            } catch (DaoException e) {
+                                LOG.error("could not find foodCourt for id={{}}; loginNr={{}} Exception:", foodCourtId, loginNr, e);
+                                throw new CustomRuntimeException(e, Response.Status.NOT_FOUND);
+                            }
+                            double currentCreditAmount = currentCredit.getAmount();
+                            if (currentCreditAmount < total) {
+                                LOG.warn("insufficient credit; loginNr={{}}, currentCredit={}, requiredTotal={}", loginNr, currentCreditAmount, total);
+                                throw new CustomRuntimeException("Insufficient credit", Response.Status.BAD_REQUEST);
+                            }
+                            currentCredit.setAmount(currentCreditAmount - total);
+
+                            LOG.info("persisting foodOrder; loginNr={{}}, foodCourtId={{}}, total={}, prio={}", loginNr, foodCourtId, total, cart.isHasPrio());
+                            foodOrderDao.persist(foodOrder);
+
+                            LOG.debug("emptying cart; loginNr={{}}", loginNr);
+                            cartDao.empty(cart);
+                            return foodOrder;
+                        }//
                     )//
                     .map(responseMapper::getFoodOrderResponse)
                     .toList()//
             ;
-        } catch (DaoException e) {
-            throw new ServiceException(e, Response.Status.NOT_FOUND);
+            LOG.trace("EXIT: create; loginNr={{}} created {} orders", loginNr, created.size());
+            return created;
+        } catch (CustomRuntimeException e) {
+            LOG.error("unexpected error in create; loginNr={{}}; Exception:", loginNr, e);
+            throw new ServiceException(e);
         }
 
     }
@@ -157,172 +182,177 @@ public class FoodOrderServiceImpl implements FoodOrderService {
     @Transactional
     @Override
     public FoodOrderResponse updateStatus(UUID orderId, FoodOrderStatus newStatus) throws ServiceException {
+        LOG.trace("ENTER: updateStatus; orderId={{}}, newStatus={}", orderId, newStatus);
         FoodOrder foodOrder;
         try {
             foodOrder = foodOrderDao.getById(orderId);
         } catch (DaoException e) {
+            LOG.error("could not find foodOrder for orderId={{}}; Exception:", orderId, e);
             throw new ServiceException(e, Response.Status.NOT_FOUND);
-        }
-        if (foodOrder == null) {
-            throw new ServiceException("FoodOrder not found: " + orderId, Response.Status.NOT_FOUND);
         }
 
         FoodOrderStatus oldStatus = foodOrder.getStatus();
         if (oldStatus == newStatus) {
-            return responseMapper.getFoodOrderResponse(foodOrder);
+            LOG.debug("status unchanged; orderId={{}}, status={}", orderId, newStatus);
+            FoodOrderResponse response = responseMapper.getFoodOrderResponse(foodOrder);
+            LOG.trace("EXIT: updateStatus; orderId={{}} (unchanged)", orderId);
+            return response;
         }
 
         foodOrder.setStatus(newStatus);
         foodOrderDao.persist(foodOrder);
-        return responseMapper.getFoodOrderResponse(foodOrder);
+        LOG.info("updated order status; orderId={{}}, oldStatus={}, newStatus={}", orderId, oldStatus, newStatus);
+
+        FoodOrderResponse response = responseMapper.getFoodOrderResponse(foodOrder);
+        LOG.trace("EXIT: updateStatus; orderId={{}} response=[{}]", orderId, response);
+        return response;
     }
 
     @Transactional
     @Override
     public void delete(UUID id) throws ServiceException {
+        LOG.trace("ENTER: delete; id={{}}", id);
         FoodOrder foodOrder;
         try {
             foodOrder = foodOrderDao.getById(id);
         } catch (DaoException e) {
+            LOG.error("could not find foodOrder for id={{}}; Exception:", id, e);
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
-        if (foodOrder == null) {
-            throw new ServiceException("FoodOrder not found: " + id, Response.Status.NOT_FOUND);
-        }
 
+        LOG.info("deleted foodOrder; id={{}}", id);
+
+        LOG.trace("EXIT: delete; id={{}}", id);
         foodOrderDao.delete(foodOrder);
     }
 
     @Transactional
     @Override
     public void shareOrder(String loginNr, ShareOrderRequest request) throws ServiceException {
+        LOG.trace("ENTER: shareOrder; loginNr={{}}, request=[{}]", loginNr, request);
         UUID orderId = request.orderId();
         String sharedLoginNr = request.loginNr();
         FoodOrder foodOrder;
         try {
             foodOrder = foodOrderDao.getById(orderId);
         } catch (DaoException e) {
+            LOG.error("could not find foodOrder for orderId={{}}; loginNr={{}} Exception:", orderId, loginNr, e);
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
         Account sharedAccount;
         try {
-            sharedAccount = accountDao.findByLoginNr(sharedLoginNr);
+            sharedAccount = accountDao.getByLoginNr(sharedLoginNr);
         } catch (DaoException e) {
+            LOG.error("could not find shared account for sharedLoginNr={{}}; orderId={{}} Exception:", sharedLoginNr, orderId, e);
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
         foodOrder.setSharedAccount(sharedAccount);
         foodOrderDao.persist(foodOrder);
+        LOG.info("shared order; orderId={{}}, fromLoginNr={{}}, toLoginNr={{}}", orderId, loginNr, sharedLoginNr);
+        LOG.trace("EXIT: shareOrder; orderId={{}}", orderId);
     }
 
     @Override
-    public FoodOrderResponseFull getById(UUID id, boolean withItems, boolean withHistory) throws ServiceException {
+    public FoodOrderResponseFull getById(UUID id) throws ServiceException {
+        LOG.trace("ENTER: getById; id={{}}", id);
         FoodOrder foodOrder;
-        if (withItems && withHistory) {
-            try {
-                foodOrder = foodOrderDao.getByIdWithItemsAndHistory(id);
-            } catch (DaoException e) {
-                throw new ServiceException(e, Response.Status.NOT_FOUND);
-            }
-        } else if (withItems) {
-            try {
-                foodOrder = foodOrderDao.getByIdWithItems(id);
-            } catch (DaoException e) {
-                throw new ServiceException(e, Response.Status.NOT_FOUND);
-            }
-        } else {
-            try {
-                foodOrder = foodOrderDao.getById(id);
-            } catch (DaoException e) {
-                throw new ServiceException(e, Response.Status.NOT_FOUND);
-            }
+        try {
+            foodOrder = foodOrderDao.getById(id);
+        } catch (DaoException e) {
+            LOG.error("could not find foodOrder for id={{}}; Exception:", id, e);
+            throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
 
-        if (foodOrder == null) {
-            throw new ServiceException("FoodOrder not found: " + id, Response.Status.NOT_FOUND);
-        }
-        return responseMapper.getFoodOrderResponseFull(foodOrder);
+        FoodOrderResponseFull response = responseMapper.getFoodOrderResponseFull(foodOrder);
+        LOG.trace("EXIT: getById; id={{}} response=[{}]", id, response);
+        return response;
     }
 
     @Override
-    public List<FoodOrderResponse> listAll(boolean withItems) {
-        List<FoodOrder> foodOrders = withItems ? foodOrderDao.listAllWithItems() : foodOrderDao.listAll();
-        return foodOrders.stream()//
+    public List<FoodOrderResponse> listAll() {
+        LOG.trace("ENTER: listAll");
+
+        List<FoodOrderResponse> responses = foodOrderDao.listAll().stream()//
                 .map(responseMapper::getFoodOrderResponse)//
                 .toList()//
         ;
+
+        LOG.trace("EXIT: listAll found {} orders", responses.size());
+        return responses;
     }
 
     @Override
-    public List<FoodOrderResponse> listByLoginNrAndAccountType(String loginNr, AccountType accountType, boolean withItems) throws ServiceException {
+    public List<FoodOrderResponse> listByLoginNrAndAccountType(String loginNr, AccountType accountType) throws ServiceException {
+        LOG.trace("ENTER: listByLoginNrAndAccountType; loginNr={{}}, accountType={}", loginNr, accountType);
+
         List<FoodOrder> foodOrders;
         if (accountType == AccountType.ADMIN) {
-            LOG.info("Listing all Food Orders (ADMIN)");
-            if (withItems) {
-                foodOrders = foodOrderDao.listAllWithItems();
-            } else {
-                foodOrders = foodOrderDao.listAll();
-            }
+            LOG.info("Listing all Food Orders (ADMIN); loginNr={{}}", loginNr);
+            foodOrders = foodOrderDao.listAll();
         } else if (accountType == AccountType.FOOD_COURT_WORKER) {
-            LOG.info("Listing all Food Orders (FOOD_COURT_WORKER)");
+            LOG.info("Listing Food Orders by FoodCourt (FOOD_COURT_WORKER); loginNr={{}}", loginNr);
             FoodCourt foodCourt;
             try {
                 foodCourt = foodCourtDao.getByLoginNr(loginNr);
             } catch (DaoException e) {
+                LOG.error("could not find foodCourt for worker loginNr={{}}; Exception:", loginNr, e);
                 throw new ServiceException(e, Response.Status.NOT_FOUND);
             }
             UUID foodCourtId = foodCourt.getId();
-            if (withItems) {
-                foodOrders = foodOrderDao.listByFoodCourtIdWithItems(foodCourtId);
-            } else {
-                foodOrders = foodOrderDao.listByFoodCourtId(foodCourtId);
-            }
+            foodOrders = foodOrderDao.listByFoodCourtId(foodCourtId);
         } else if (accountType == AccountType.GUEST) {
-            LOG.info("Listing all Food Orders (GUEST)");
-            if (withItems) {
-                foodOrders = foodOrderDao.listByLoginNrWithItems(loginNr);
-            } else {
-                foodOrders = foodOrderDao.listByLoginNr(loginNr);
-            }
+            LOG.info("Listing Food Orders by loginNr (GUEST); loginNr={{}}", loginNr);
+            foodOrders = foodOrderDao.listByLoginNr(loginNr);
         } else {
+            LOG.error("unknown accountType={}; loginNr={{}}", accountType, loginNr);
             throw new ServiceException("Unknown Account type: " + accountType.toString(), Response.Status.INTERNAL_SERVER_ERROR);
         }
-        return foodOrders.stream().map(responseMapper::getFoodOrderResponse).collect(Collectors.toList());
+        List<FoodOrderResponse> responses = foodOrders.stream()//
+                .map(responseMapper::getFoodOrderResponse)//
+                .collect(Collectors.toList())//
+        ;
+
+        LOG.trace("EXIT: listByLoginNrAndAccountType; loginNr={{}} found {} orders", loginNr, responses.size());
+        return responses;
     }
 
     @Override
-    public List<FoodOrderResponse> listByLoginNrAndAccountTypeAndStatus(String loginNr, AccountType accountType, FoodOrderStatus status, boolean withItems) throws ServiceException {
+    public List<FoodOrderResponse> listByLoginNrAndAccountTypeAndStatus(String loginNr, AccountType accountType, FoodOrderStatus status) throws ServiceException {
+        LOG.trace("ENTER: listByLoginNrAndAccountTypeAndStatus; loginNr={{}}, accountType={}, status={}", loginNr, accountType, status);
         List<FoodOrder> foodOrders;
         if (accountType == AccountType.ADMIN) {
-            if (withItems) {
-                foodOrders = foodOrderDao.listAllByStatus(status);
-            } else {
-                foodOrders = foodOrderDao.listAllWithItemsByStatus(status);
-            }
+            LOG.info("Listing Food Orders by status (ADMIN); status={}", status);
+            foodOrders = foodOrderDao.listAllByStatus(status);
+
         } else if (accountType == AccountType.FOOD_COURT_WORKER) {
+            LOG.info("Listing Food Orders by FoodCourt + status (FOOD_COURT_WORKER); loginNr={{}}, status={}", loginNr, status);
             FoodCourt foodCourt;
             try {
                 foodCourt = foodCourtDao.getByLoginNr(loginNr);
             } catch (DaoException e) {
+                LOG.error("could not find foodCourt for worker loginNr={{}}; Exception:", loginNr, e);
                 throw new ServiceException(e, Response.Status.NOT_FOUND);
             }
             UUID foodCourtId = foodCourt.getId();
-            if (withItems) {
-                foodOrders = foodOrderDao.listByFoodCourtIdAndStatusWithItems(foodCourtId, status);
-            } else {
-                foodOrders = foodOrderDao.listByFoodCourtIdAndStatus(foodCourtId, status);
-            }
+            foodOrders = foodOrderDao.listByFoodCourtIdAndStatus(foodCourtId, status);
+
+            LOG.debug("found {} orders for foodCourtId={{}} with status={}", foodOrders.size(), foodCourtId, status);
         } else if (accountType == AccountType.GUEST) {
-            if (withItems) {
-                foodOrders = foodOrderDao.listByLoginNrAndStatusWithItems(loginNr, status);
-            } else {
-                foodOrders = foodOrderDao.listByLoginNrAndStatus(loginNr, status);
-            }
+            LOG.info("Listing Food Orders by loginNr + status (GUEST); loginNr={{}}, status={}", loginNr, status);
+            foodOrders = foodOrderDao.listByLoginNrAndStatus(loginNr, status);
+            LOG.debug("found {} orders for loginNr={{}} with status={}", foodOrders.size(), loginNr, status);
+
         } else {
+            LOG.error("unknown accountType={}; loginNr={{}}", accountType, loginNr);
             throw new ServiceException("Unknown Account type: " + accountType.toString(), Response.Status.INTERNAL_SERVER_ERROR);
         }
-        return foodOrders.stream()//
+
+        List<FoodOrderResponse> responses = foodOrders.stream()//
                 .map(responseMapper::getFoodOrderResponse)//
                 .toList()//
-        ;
+                ;
+
+        LOG.trace("EXIT: listByLoginNrAndAccountTypeAndStatus; loginNr={{}} found {} orders", loginNr, responses.size());
+        return responses;
     }
 }

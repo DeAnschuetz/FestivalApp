@@ -14,6 +14,7 @@ import com.ffb.model.api.response.food.order.FoodOrderHistoryResponse;
 import com.ffb.model.api.response.food.order.FoodOrderItemResponse;
 import com.ffb.model.api.response.food.order.FoodOrderResponse;
 import com.ffb.model.api.response.food.order.FoodOrderResponseFull;
+import com.ffb.model.api.response.notification.FoodOrderNotificationResponse;
 import com.ffb.model.api.response.product.ProductResponse;
 import com.ffb.model.api.response.ticket.TicketResponse;
 import com.ffb.model.db.object.account.Account;
@@ -26,6 +27,7 @@ import com.ffb.model.db.object.food_court.FoodCourt;
 import com.ffb.model.db.object.foodorder.FoodOrder;
 import com.ffb.model.db.object.foodorder.FoodOrderHistory;
 import com.ffb.model.db.object.foodorder.FoodOrderItem;
+import com.ffb.model.db.object.notification.FoodOrderNotification;
 import com.ffb.model.db.object.product.Product;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.slf4j.Logger;
@@ -85,14 +87,10 @@ public class ResponseMapperImpl implements ResponseMapper {
         if(cart == null) {
             return null;
         }
-        List<CartItemResponse> items = new ArrayList<>();
-
-        if (cart.getCartItems() != null) {
-            for (CartItem i : cart.getCartItems()) {
-                items.add(getCartItemResponse(i));
-            }
-        }
-
+        List<CartItemResponse> items = cart.getCartItems().stream()//
+                .map(this::getCartItemResponse)//
+                .toList()//
+        ;
         return new CartResponseSimple(cart.isHasPrio(), cart.getTotal(), items);
     }
 
@@ -159,7 +157,7 @@ public class ResponseMapperImpl implements ResponseMapper {
         if(foodOrder == null) {
             return null;
         }
-        List<FoodOrderItemResponse> foodOrderItems = foodOrder.getFoodOrderItems().stream().map(this::getFoodOrderItemResponse).toList();
+        List<FoodOrderItemResponse> foodOrderItems = foodOrder.getItems().stream().map(this::getFoodOrderItemResponse).toList();
         return new FoodOrderResponse(
                 foodOrder.getId(),
                 foodOrder.getStatus(),
@@ -283,16 +281,31 @@ public class ResponseMapperImpl implements ResponseMapper {
         if(foodOrder == null) {
             return null;
         }
-        List<FoodOrderItemResponse> foodOrderItems = foodOrder.getFoodOrderItems().stream().map(this::getFoodOrderItemResponse).toList();
+        List<FoodOrderItemResponse> foodOrderItems = foodOrder.getItems().stream().map(this::getFoodOrderItemResponse).toList();
         return new FoodOrderResponseFull(
                 foodOrder.getId(),
                 foodOrder.getStatus(),
                 foodOrder.getFoodCourt().getDisplayName(),
                 foodOrder.getWaitingTime(),
                 foodOrderItems,
-                foodOrder.getFoodOrderHistory().stream()//
+                foodOrder.getHistory().stream()//
                         .map(this::getFoodOrderHistoryResponse)
+                        .toList(),
+                foodOrder.getNotifications().stream()//
+                        .map(this::getFoodOrderNotificationResponse)
                         .toList()
+        );
+    }
+
+    @Override
+    public FoodOrderNotificationResponse getFoodOrderNotificationResponse(FoodOrderNotification notification) {
+        return new FoodOrderNotificationResponse(
+                notification.getId(),
+                notification.getType(),
+                notification.getStatus(),
+                notification.getMessage(),
+                notification.getCreationTime(),
+                notification.getPickupTime()
         );
     }
 

@@ -36,17 +36,11 @@ public class ProductCount extends PanacheEntityBase {
     
     protected ProductCount() {}
 
-    public ProductCount(UUID id, int productCount, Product product) {
-        this.id = id;
-        this.productCount = productCount;
+    public ProductCount(Product product) {
+        this.id = UUID.randomUUID();
+        this.productCount = 0;
         this.product = product;
     }
-
-    public ProductCount(UUID id, int productCount) {
-		super();
-		this.id = id;
-		this.productCount = productCount;
-	}
 
     public UUID getId() {
         return id;

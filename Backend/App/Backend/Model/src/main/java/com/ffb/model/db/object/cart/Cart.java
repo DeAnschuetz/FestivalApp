@@ -28,12 +28,6 @@ public class Cart extends PanacheEntityBase {
 	@JdbcTypeCode(SqlTypes.UUID)
     @Column(name = "id")
 	private UUID id;
-    
-    @JsonIgnore
-	@JdbcTypeCode(SqlTypes.UUID)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
-	private Account account;
 
 	@JdbcTypeCode(SqlTypes.BOOLEAN)
     @Column(name = "has_prio")
@@ -42,15 +36,21 @@ public class Cart extends PanacheEntityBase {
 	@JdbcTypeCode(SqlTypes.DECIMAL)
     @Column(name = "total")
 	private double total;
-	
-    @OneToMany(mappedBy = "cart", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
+
+	@OneToMany(mappedBy = "cart", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
 	private List<CartItem> cartItems = new ArrayList<>();;
-    
+
+	@JsonIgnore
+	@JdbcTypeCode(SqlTypes.UUID)
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "account_id", referencedColumnName = "id")
+	private Account account;
+
     protected Cart() {}
 
-	public Cart(UUID id, boolean hasPrio, double total, Account account) {
+	public Cart(boolean hasPrio, double total, Account account) {
 		super();
-		this.id = id;
+		this.id = UUID.randomUUID();
 		this.hasPrio = hasPrio;
 		this.total = total;
 		this.account = account;

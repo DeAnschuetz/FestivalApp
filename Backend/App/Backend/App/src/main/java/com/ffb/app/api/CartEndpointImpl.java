@@ -1,8 +1,7 @@
 package com.ffb.app.api;
 
-import java.util.List;
-import java.util.UUID;
 import com.ffb.app.service.api.cart.CartService;
+import com.ffb.app.validator.api.RequestValidator;
 import com.ffb.model.api.request.cart.CartItemCreationRequest;
 import com.ffb.model.api.request.cart.CartItemUpdateRequest;
 import com.ffb.model.api.response.cart.CartResponseFull;
@@ -10,12 +9,14 @@ import com.ffb.model.api.response.cart.CartResponseSimple;
 import com.ffb.model.api.response.error.ErrorResponse;
 import com.ffb.model.exception.ApiException;
 import com.ffb.model.exception.ServiceException;
+
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -23,24 +24,30 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.UUID;
+
 @ApplicationScoped
 @Path("cart")
-public class CartApi {
+public class CartEndpointImpl {
 
-	// TODO Logging
-	private final Logger LOG = LoggerFactory.getLogger(CartApi.class);
+	// TODO Logging done fürs erste
+	private static final Logger LOG = LoggerFactory.getLogger(CartEndpointImpl.class);
 
 	@Inject
-	JsonWebToken jwt;
+	JsonWebToken webToken;
 	private final CartService cartService;
+	private final RequestValidator validator;
 
 	@Inject
-	public CartApi(CartService cartService) {
+	public CartEndpointImpl(CartService cartService, RequestValidator validator) {
 		this.cartService = cartService;
-	}
+        this.validator = validator;
+    }
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -68,13 +75,23 @@ public class CartApi {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response getCart() throws ApiException {
-		String loginNr = jwt.getName();
+		String loginNr;
+		try {
+			loginNr = validator.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("get cart request for loginNr={{}}", webToken.getName());
+
         CartResponseSimple data;
         try {
             data = cartService.getCartByLoginNr(loginNr);
         } catch (ServiceException e) {
+			LOG.error("could not get cart for loginNr={{}}; Exception: ", loginNr, e);
             throw new ApiException(e);
         }
+		LOG.info("successfully got cart for loginNr={{}}", loginNr);
         return Response.ok().entity(data).build();
 
 	}
@@ -106,16 +123,31 @@ public class CartApi {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response addItemToCart( CartItemCreationRequest request ) throws ApiException {
-		String loginNr = jwt.getName();
-		validateItemCreationRequest(request);
+		String loginNr;
+		try {
+			loginNr = validator.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("add cart item request for loginNr={{}}", webToken.getName());
+
+		try {
+			validator.validateItemCreationRequest(request);
+		} catch (ApiException e) {
+			LOG.error("invalid add cart item request for loginNr={{}}; Exception: ", loginNr, e);
+			throw e;
+		}
 
 		CartResponseSimple data;
         try {
             data = cartService.addItemToCart(loginNr, request);
         } catch (ServiceException e) {
-            throw new ApiException(e);
+			LOG.error("could not add cart item for loginNr={{}} and productId={{}}; Exception: ", loginNr, request.productId(), e);
+			throw new ApiException(e);
         }
-        return Response.ok().entity(data).build();
+		LOG.info("successfully added cart item for loginNr={{}} and productId={{}}", loginNr, request.productId());
+		return Response.ok().entity(data).build();
 	}
 
 	@PUT
@@ -145,16 +177,31 @@ public class CartApi {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response updateCartItem(CartItemUpdateRequest request ) throws ApiException {
-		String loginNr = jwt.getName();
+		String loginNr;
+		try {
+			loginNr = validator.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("update cart item request for loginNr={{}}", webToken.getName());
 
-		validateUpdateRequest(request);
+		try {
+			validator.validateUpdateRequest(request);
+		} catch (ApiException e) {
+			LOG.error("invalid update cart item request for loginNr={{}}; Exception: ", loginNr, e);
+			throw e;
+		}
 
 		CartResponseSimple data;
         try {
             data = cartService.updateCartItemById(loginNr, request);
         } catch (ServiceException e) {
-            throw new ApiException(e);
+			LOG.error("could not update cart item for loginNr={{}} and cartItemId={{}}; Exception: ", loginNr, request.cartItemId(), e);
+
+			throw new ApiException(e);
         }
+		LOG.info("successfully updated cart item for loginNr={{}} and cartItemId={{}}", loginNr, request.cartItemId());
         return Response.ok().entity(data).build();
 	}
 
@@ -184,24 +231,32 @@ public class CartApi {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response removeItemFromCart(@PathParam(value = "id")  UUID id) throws ApiException {
-		String loginNr = jwt.getName();
-		if(loginNr == null || loginNr.isEmpty()) {
-			throw new ApiException("LoginNr must be provided", Response.Status.BAD_REQUEST);
+		String loginNr;
+		try {
+			loginNr = validator.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
 		}
 		if(id == null) {
+			LOG.error("cartItemId is null");
 			throw new ApiException("Cart item id must be provided", Response.Status.BAD_REQUEST);
 		}
+		LOG.info("remove cart item request for loginNr={{}} and cartItemId={{}}", webToken.getName(), id);
+
 		CartResponseSimple data;
 		try {
 			data = cartService.removeItemFromCart(loginNr, id);
 		} catch (ServiceException e) {
+			LOG.error("could not remove cart item for loginNr={{}} and cartItemId={{}}; Exception: ", loginNr, id, e);
 			throw new ApiException(e);
 		}
+		LOG.info("successfully removed cart item for loginNr={{}} and cartItemId={{}}", loginNr, id);
 		return Response.ok().entity(data).build();
 	}
 
 	@PUT
-	@Path("{newPrio}")
+	@Path("{newPriority}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("GUEST")
 	@Operation(summary = "Change the Priority of the Cart for the currently logged-in Guest Account")
@@ -225,16 +280,25 @@ public class CartApi {
 			@APIResponse(responseCode = "401", description = "Not Authorized"),
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
-	public Response changePrio(@PathParam(value = "newPrio") boolean newPrio) throws ApiException {
-		String loginNr = jwt.getName();
+	public Response changePriority(@PathParam(value = "newPriority") boolean newPriority) throws ApiException {
+		String loginNr;
+		try {
+			loginNr = validator.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("change cart priority request for loginNr={{}} and newPriority={}", webToken.getName(), newPriority);
 
 		CartResponseSimple data;
         try {
-            data = cartService.changePrio(loginNr, newPrio);
+            data = cartService.changePrio(loginNr, newPriority);
         } catch (ServiceException e) {
-            throw new ApiException(e);
+			LOG.error("could not change cart priority for loginNr={{}} and newPriority={}; Exception: ", loginNr, newPriority, e);
+			throw new ApiException(e);
         }
-        return Response.ok().entity(data).build();
+		LOG.info("successfully changed cart priority for loginNr={{}} and newPriority={}", loginNr, newPriority);
+		return Response.ok().entity(data).build();
 	}
 
 	@GET
@@ -254,38 +318,18 @@ public class CartApi {
 			@APIResponse(responseCode = "401", description = "Not Authorized"),
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
-	public Response listALl() {
+	public Response listALl() throws ApiException {
+		String loginNr;
+		try {
+			loginNr = validator.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("list all carts request for loginNr={{}}", loginNr);
 		List<CartResponseFull> data = cartService.listAll();
+		LOG.info("successfully listed all carts (count={})", data.size());
 		return Response.ok().entity(data).build();
 	}
 
-
-
-	/*
-		Private Helper Functions
-	*/
-
-	private static void validateUpdateRequest(CartItemUpdateRequest request) throws ApiException {
-		if (request.cartItemId() == null) {
-			throw new ApiException("Product id must be provided.", Response.Status.BAD_REQUEST);
-		}
-		if (request.itemCount() <= 0) {
-			throw new ApiException("Item count must be greater than 0.", Response.Status.BAD_REQUEST);
-		}
-		if (request.extra() != null && request.extra().length() > 255) {
-			throw new ApiException("Extra must be less than 255 characters.", Response.Status.BAD_REQUEST);
-		}
-	}
-
-	private static void validateItemCreationRequest(CartItemCreationRequest request) throws ApiException {
-		if (request.productId() == null) {
-			throw new ApiException("Product id must be provided.", Response.Status.BAD_REQUEST);
-		}
-		if (request.itemCount() <= 0) {
-			throw new ApiException("Item count must be greater than 0.", Response.Status.BAD_REQUEST);
-		}
-		if (request.extra() != null && request.extra().length() > 255) {
-			throw new ApiException("Extra must be less than 255 characters.", Response.Status.BAD_REQUEST);
-		}
-	}
 }

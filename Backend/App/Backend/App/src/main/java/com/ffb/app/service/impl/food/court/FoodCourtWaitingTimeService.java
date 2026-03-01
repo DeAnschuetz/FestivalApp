@@ -22,7 +22,7 @@ public class FoodCourtWaitingTimeService {
 
 
     @ConfigProperty(name = "foodcourt.preparation.speed")
-    int FOOD_PREPARATION_speed;
+    int FOOD_PREPARATION_SPEED;
 
     private final FoodOrderDao foodOrderDao;
     private final FoodCourtDao foodCourtDao;
@@ -38,7 +38,6 @@ public class FoodCourtWaitingTimeService {
     @Transactional
     void updateWaitTimes() {
         LOG.info("Updating Waiting Times");
-
         List<FoodCourt> foodCourts = foodCourtDao.listAll();
         foodCourts.forEach(this::updateWaitingTime);
     }
@@ -51,7 +50,7 @@ public class FoodCourtWaitingTimeService {
                 .filter(foodOrder -> foodOrder.getStatus() == FoodOrderStatus.ORDERED || foodOrder.getStatus() == FoodOrderStatus.IN_PROGRESS)//
                 .toList()//
         ;
-        int newWaitingTime = foodOrders.size() * FOOD_PREPARATION_speed;
+        int newWaitingTime = foodOrders.size() * FOOD_PREPARATION_SPEED;
         LOG.debug("New Waiting Time: {}", newWaitingTime);
         foodCourt.updateWaitingTime(newWaitingTime);
     }

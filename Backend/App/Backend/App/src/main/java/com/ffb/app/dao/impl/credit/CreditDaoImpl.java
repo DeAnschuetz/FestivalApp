@@ -40,17 +40,7 @@ public class CreditDaoImpl implements CreditDao {
     }
 
     @Override
-    public void persistHistory(CreditHistory history) throws EntityExistsException, IllegalArgumentException, TransactionRequiredException {
-        creditHistoryRepo.persist(history);
-    }
-
-    @Override
-    public List<CreditHistory> findHistoryByAccountId(String loginNr, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException {
+    public List<CreditHistory> findHistoryByAccountId(String loginNr, int pageIndex, int pageSize) {
         return creditHistoryRepo.findHistoryByLoginNr(loginNr, pageIndex, pageSize);
-    }
-
-    @Override
-    public void persist(Credit credit) {
-        creditRepo.persist(credit);
     }
 }

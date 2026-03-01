@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ffb.model.db.object.account.Account;
 import com.ffb.model.db.object.food_court.FoodCourt;
 
+import com.ffb.model.db.object.notification.FoodOrderNotification;
+import com.ffb.model.db.object.notification.NotificationStatus;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -52,13 +54,21 @@ public class FoodOrder extends PanacheEntityBase {
 	@JdbcTypeCode(SqlTypes.BOOLEAN)
     @Column(name = "is_hidden")
 	private boolean isHidden;
-    
-    @OneToMany(mappedBy = "foodOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private List<FoodOrderItem> foodOrderItems;
+
+	@JdbcTypeCode(SqlTypes.LOCAL_DATE_TIME)
+	@Column(name = "order_time")
+	private LocalDateTime orderTime;
+
+	@OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<FoodOrderItem> items;
     
     @JsonIgnore
-    @OneToMany(mappedBy = "foodOrder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private List<FoodOrderHistory> foodOrderHistory;
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<FoodOrderHistory> history;
+
+	@JsonIgnore
+	@OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<FoodOrderNotification> notifications;
     
     @JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
@@ -80,20 +90,32 @@ public class FoodOrder extends PanacheEntityBase {
 
     protected FoodOrder() {}
 
-	public FoodOrder(UUID id, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime, List<FoodOrderItem> foodOrderItems, FoodCourt foodCourt, Account account) {
-		this.id = id;
-		this.status = status;
+	public FoodOrder(boolean hasPrio, double total, List<FoodOrderItem> items, FoodCourt foodCourt, Account account) {
+		this.id = UUID.randomUUID();
+		this.status = FoodOrderStatus.ORDERED;
 		this.hasPrio = hasPrio;
 		this.total = total;
-		this.waitingTime = waitingTime;
+		this.waitingTime = foodCourt.getWaitingTime();
 		this.isHidden = false;
-		this.foodOrderItems = foodOrderItems;
+		this.items = items;
+		this.orderTime = LocalDateTime.now();
 		this.account = account;
 		this.foodCourt = foodCourt;
-		this.foodOrderHistory = new ArrayList<>();
-		this.foodOrderHistory.add(
+		this.notifications = new ArrayList<>();
+		this.notifications.add(
+				new FoodOrderNotification(
+					status,
+					NotificationStatus.NEW,
+					"Order {" + id + "} was placed",
+					orderTime,
+					orderTime.plusMinutes(foodCourt.getWaitingTime()),
+					this,
+					account
+				)
+		);
+		this.history = new ArrayList<>();
+		this.history.add(
 				new FoodOrderHistory(
-					UUID.randomUUID(),
 					LocalDateTime.now(),
 					null,
 					FoodOrderStatus.ORDERED,
@@ -102,18 +124,18 @@ public class FoodOrder extends PanacheEntityBase {
 		);
 	}
 
-	public FoodOrder(UUID id, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime, List<FoodOrderItem> foodOrderItems, FoodCourt foodCourt) {
+	public FoodOrder(UUID id, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime, LocalDateTime orderTime, List<FoodOrderItem> items, FoodCourt foodCourt) {
 		this.id = id;
 		this.status = status;
 		this.hasPrio = hasPrio;
 		this.total = total;
 		this.waitingTime = waitingTime;
 		this.isHidden = false;
-		this.foodOrderItems = foodOrderItems;
+		this.items = items;
 		this.foodCourt = foodCourt;
 	}
 
-	public FoodOrder(UUID id, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime, List<FoodOrderItem> foodOrderItems) {
+	public FoodOrder(UUID id, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime, LocalDateTime orderTime, List<FoodOrderItem> items) {
 		super();
 		this.id = id;
 		this.status = status;
@@ -121,7 +143,7 @@ public class FoodOrder extends PanacheEntityBase {
 		this.total = total;
 		this.waitingTime = waitingTime;
 		this.isHidden = false;
-		this.foodOrderItems = foodOrderItems;
+		this.items = items;
 	}
 
 	public UUID getId() {
@@ -137,13 +159,30 @@ public class FoodOrder extends PanacheEntityBase {
 	}
 
 	public void setStatus(FoodOrderStatus status) {
-		this.foodOrderHistory.add(new FoodOrderHistory(
-				UUID.randomUUID(),
-				LocalDateTime.now(),
-				this.getStatus(),
-				status,
-				this
-		));
+		this.history.add(
+				new FoodOrderHistory(
+						LocalDateTime.now(),
+						this.getStatus(),
+						status,
+						this
+				)
+		);
+
+		LocalDateTime estimatedPickupTime = orderTime.plusMinutes(foodCourt.getWaitingTime());
+		if(status == FoodOrderStatus.READY_FOR_PICKUP) {
+			estimatedPickupTime = LocalDateTime.now();
+		}
+		this.notifications.add(
+				new FoodOrderNotification(
+						status,
+						NotificationStatus.NEW,
+						"Order {" + id + "} was updated to " + status.toString(),
+						LocalDateTime.now(),
+						estimatedPickupTime,
+						this,
+						account
+				)
+		);
 		this.status = status;
 	}
 
@@ -179,20 +218,20 @@ public class FoodOrder extends PanacheEntityBase {
 		isHidden = hidden;
 	}
 
-	public List<FoodOrderItem> getFoodOrderItems() {
-		return foodOrderItems;
+	public List<FoodOrderItem> getItems() {
+		return items;
 	}
 
-	public void setFoodOrderItems(List<FoodOrderItem> foodOrderItems) {
-		this.foodOrderItems = foodOrderItems;
+	public void setItems(List<FoodOrderItem> foodOrderItems) {
+		this.items = foodOrderItems;
 	}
 
-	public List<FoodOrderHistory> getFoodOrderHistory() {
-		return foodOrderHistory;
+	public List<FoodOrderHistory> getHistory() {
+		return history;
 	}
 
-	public void setFoodOrderHistory(List<FoodOrderHistory> foodOrderHistory) {
-		this.foodOrderHistory = foodOrderHistory;
+	public void setHistory(List<FoodOrderHistory> foodOrderHistory) {
+		this.history = foodOrderHistory;
 	}
 
 	public Account getAccount() {
@@ -217,5 +256,21 @@ public class FoodOrder extends PanacheEntityBase {
 
 	public void setFoodCourt(FoodCourt foodCourt) {
 		this.foodCourt = foodCourt;
+	}
+
+	public LocalDateTime getOrderTime() {
+		return orderTime;
+	}
+
+	public void setOrderTime(LocalDateTime orderTime) {
+		this.orderTime = orderTime;
+	}
+
+	public List<FoodOrderNotification> getNotifications() {
+		return notifications;
+	}
+
+	public void setNotifications(List<FoodOrderNotification> notifications) {
+		this.notifications = notifications;
 	}
 }

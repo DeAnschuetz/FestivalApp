@@ -26,7 +26,6 @@ public class MainSubProductLink {
 
 	protected MainSubProductLink() {}
 
-
 	public MainSubProductLink(Product mainProduct, Product subProduct) {
 		this.mainProduct = mainProduct;
 		this.subProduct = subProduct;

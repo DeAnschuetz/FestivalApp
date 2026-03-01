@@ -15,9 +15,6 @@ public interface CreditDao {
 
     boolean existsByLoginNr(String loginNr);
 
-    void persistHistory(CreditHistory history) throws EntityExistsException, IllegalArgumentException, TransactionRequiredException;
+    List<CreditHistory> findHistoryByAccountId(String loginNr, int pageIndex, int pageSize);
 
-    List<CreditHistory> findHistoryByAccountId(String loginNr, int pageIndex, int pageSize) throws IllegalArgumentException, IllegalStateException, PersistenceException;
-
-    void persist(Credit credit);
 }

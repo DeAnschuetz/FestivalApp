@@ -16,15 +16,9 @@ public interface ProductDao {
 
     List<Product> listByFoodCourtId(UUID foodCourtId);
 
-    MainProduct getMainProductByProductId(UUID id) throws DaoException;
-
     void persistLink(MainSubProductLink link);
 
     boolean linkExists(UUID mainId, UUID subId);
-
-    List<MainSubProductLink> listLinks();
-
-    List<MainSubProductLink> listLinksByMain(UUID mainId) ;
 
     long deleteLinkByPair(UUID mainId, UUID subId);
 

@@ -11,6 +11,11 @@ public class CustomRuntimeException extends RuntimeException{
         this.status = status;
     }
 
+    public CustomRuntimeException(String message, Response.Status status) {
+        super(message);
+        this.status = status;
+    }
+
     public Response.Status getStatus() {
         return status;
     }

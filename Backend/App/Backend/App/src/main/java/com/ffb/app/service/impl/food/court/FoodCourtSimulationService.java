@@ -5,9 +5,14 @@ import com.ffb.app.dao.api.food.order.FoodOrderDao;
 import com.ffb.model.db.object.food_court.FoodCourt;
 import com.ffb.model.db.object.foodorder.FoodOrder;
 import com.ffb.model.db.object.foodorder.FoodOrderStatus;
+
 import io.quarkus.scheduler.Scheduled;
+import io.quarkus.scheduler.Scheduler;
+
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,13 +27,17 @@ public class FoodCourtSimulationService {
 
     private final FoodOrderDao foodOrderDao;
     private final FoodCourtDao foodCourtDao;
+    private final Scheduler scheduler;
 
-    public FoodCourtSimulationService(FoodOrderDao foodOrderDao, FoodCourtDao foodCourtDao) {
+    @Inject
+    public FoodCourtSimulationService(FoodOrderDao foodOrderDao, FoodCourtDao foodCourtDao, Scheduler scheduler) {
         this.foodOrderDao = foodOrderDao;
         this.foodCourtDao = foodCourtDao;
+        this.scheduler = scheduler;
     }
 
     @Scheduled(
+            identity = "foodCourt-OrderProcessing-Simulation",
             every = "{foodcourt.preparation.time}",
             concurrentExecution = Scheduled.ConcurrentExecution.SKIP
     )
@@ -68,5 +77,15 @@ public class FoodCourtSimulationService {
             return 1;
         }
         return 0;
+    }
+
+    public void pauseSimulation() {
+        scheduler.pause("foodCourt-OrderProcessing-Simulation");
+        LOG.info("FoodCourt simulation paused");
+    }
+
+    public void resumeSimulation() {
+        scheduler.resume("foodCourt-OrderProcessing-Simulation");
+        LOG.info("FoodCourt simulation resumed");
     }
 }

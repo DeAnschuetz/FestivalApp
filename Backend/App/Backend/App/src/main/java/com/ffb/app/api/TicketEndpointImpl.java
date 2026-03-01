@@ -23,15 +23,15 @@ import java.util.List;
 
 @ApplicationScoped
 @Path("ticket")
-public class TicketApi {
+public class TicketEndpointImpl {
 
     // TODO Logging
-    private final Logger LOG = LoggerFactory.getLogger(TicketApi.class);
+    private final Logger LOG = LoggerFactory.getLogger(TicketEndpointImpl.class);
 
     private final AccountService accountService;
 
     @Inject
-    public TicketApi(AccountService accountService) {
+    public TicketEndpointImpl(AccountService accountService) {
         this.accountService = accountService;
     }
 

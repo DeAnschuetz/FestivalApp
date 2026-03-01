@@ -1,9 +1,11 @@
 package com.ffb.app.repository.impl.credit;
 
-import java.util.Optional;
 import com.ffb.app.repository.api.credit.CreditRepository;
 import com.ffb.model.db.object.credit.Credit;
+
 import jakarta.enterprise.context.ApplicationScoped;
+
+import java.util.Optional;
 
 @ApplicationScoped
 public class CreditRepositoryImpl implements CreditRepository {

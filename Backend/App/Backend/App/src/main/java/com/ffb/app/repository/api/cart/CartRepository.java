@@ -9,6 +9,4 @@ import java.util.UUID;
 public interface CartRepository extends PanacheRepositoryBase<Cart, UUID> {
 
     Optional<Cart> findByLoginNr(String loginNr);
-
-    Optional<Cart> findByLoginNrWithItems(String loginNr);
 }

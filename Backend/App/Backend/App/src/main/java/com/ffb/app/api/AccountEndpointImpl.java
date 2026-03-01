@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ffb.app.validator.api.RequestValidator;
 import com.ffb.model.api.request.account.RegisterRequest;
 import com.ffb.model.api.response.account.AccountResponse;
 import com.ffb.model.api.response.error.ErrorResponse;
@@ -32,17 +33,19 @@ import jakarta.ws.rs.core.MediaType;
 
 @ApplicationScoped
 @Path("account")
-public class AccountApi {
+public class AccountEndpointImpl {
 
-	private final Logger LOG = LoggerFactory.getLogger(AccountApi.class);
+	private final Logger LOG = LoggerFactory.getLogger(AccountEndpointImpl.class);
 
 	@Inject
-	JsonWebToken jwt;
+	JsonWebToken webToken;
 	private final AccountService accountService;
+	private final RequestValidator validator;
 
 	@Inject
-	public AccountApi(AccountService accountService) {
+	public AccountEndpointImpl(AccountService accountService, RequestValidator validator) {
 		this.accountService = accountService;
+        this.validator = validator;
     }
 
 	@POST
@@ -112,8 +115,15 @@ public class AccountApi {
 			),
 			@APIResponse(responseCode = "401", description = "Not Authorized")
 	})
-	public Response logout() {
-		LOG.info("logging out loginNr={{}}", jwt.getName());
+	public Response logout() throws ApiException {
+		String loginNr;
+		try {
+			loginNr = validator.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("logging out loginNr={{}}", loginNr);
 		NewCookie cleared = new NewCookie.Builder("access_token")//
 				.value("")//
 				.path("/")//
@@ -145,12 +155,14 @@ public class AccountApi {
 			)
 	})
 	public Response register(@PartType(MediaType.APPLICATION_JSON) RegisterRequest registerRequest) throws ApiException {
-		String loginNr = registerRequest.loginNr();
-		LOG.trace("Register attempt for loginNr={{}}", loginNr);
-		if (loginNr == null || loginNr.isBlank()) {
-			LOG.error("Register attempt failed: login number is null or blank.");
-			throw new ApiException("The login number must not be null or blank.", Response.Status.BAD_REQUEST);
+		String loginNr;
+		try {
+			loginNr = validator.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
 		}
+		LOG.trace("Register attempt for loginNr={{}}", loginNr);
 		if (registerRequest.password() == null || registerRequest.password().isBlank()) {
 			LOG.error("Register attempt failed: password is null or blank.");
 			throw new ApiException("The password must not be null or blank.", Response.Status.BAD_REQUEST);
@@ -194,8 +206,15 @@ public class AccountApi {
 			@APIResponse(responseCode = "401", description = "Not Authorized"),
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
-	public Response listAll() {
-		LOG.info("listAll loginNr={{}}", jwt.getName());
+	public Response listAll() throws ApiException {
+		String loginNr;
+		try {
+			loginNr = validator.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("listAll loginNr={{}}", loginNr);
 		List<AccountResponse> data = accountService.getAllAccounts();
 		LOG.info("found {} accounts", data.size());
 		return Response.status(Response.Status.OK).entity(data).build();

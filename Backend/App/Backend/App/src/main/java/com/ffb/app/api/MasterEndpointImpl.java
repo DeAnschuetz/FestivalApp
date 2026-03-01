@@ -4,7 +4,9 @@ import com.ffb.app.service.api.account.AccountService;
 import com.ffb.app.service.api.cart.CartService;
 import com.ffb.app.service.api.credit.CreditService;
 import com.ffb.app.service.api.food.court.FoodCourtService;
+import com.ffb.app.service.api.food.order.FoodOrderService;
 import com.ffb.app.service.api.product.ProductService;
+import com.ffb.app.service.impl.food.court.FoodCourtSimulationService;
 import com.ffb.model.api.request.account.AccountRequest;
 import com.ffb.model.api.request.cart.CartItemCreationRequest;
 import com.ffb.model.api.request.credit.CreditAddRequest;
@@ -30,10 +32,10 @@ import java.util.UUID;
 
 @ApplicationScoped
 @Path("master")
-public class MasterApi {
+public class MasterEndpointImpl {
 
     // TODO Logging
-    private final Logger LOG = LoggerFactory.getLogger(MasterApi.class);
+    private final Logger LOG = LoggerFactory.getLogger(MasterEndpointImpl.class);
 
     /*
         LOGIN NUMBERS
@@ -96,16 +98,16 @@ public class MasterApi {
     /*
         PRODUCTS
     */
-    private static final String BURGER_MENÜ_MIT_COLA = "Burger Menü mit Cola";
+    private static final String BURGER_MENU_MIT_COLA = "Burger Menü mit Cola";
     private static final UUID BURGER_MENU_MIT_COLA_ID = UUID.fromString("88091439-2cc5-4e25-af0b-27fe6d393563");
-    private static final double BURGER_MENÜ_MIT_COLA_PRICE = 12;
-    private static final int BURGER_MENÜ_MIT_COLA_MINIMAL_WARNING = 10;
-    private static final String BURGER_MENÜ_MIT_COLA_SYMBOL_IDENTIFIER = "TEST";
-    private static final String BURGER_MENÜ = "Burger Menü";
+    private static final double BURGER_MENU_MIT_COLA_PRICE = 12;
+    private static final int BURGER_MENU_MIT_COLA_MINIMAL_WARNING = 10;
+    private static final String BURGER_MENU_MIT_COLA_SYMBOL_IDENTIFIER = "TEST";
+    private static final String BURGER_MENU = "Burger Menü";
     private static final UUID BURGER_MENU_ID = UUID.fromString("dbcb35ab-0e7e-4af0-8517-c2ab45897f18");
-    private static final double BURGER_MENÜ_PRICE = 11;
-    private static final int BURGER_MENÜ_MINIMAL_WARNING = 10;
-    private static final String BURGER_MENÜ_SYMBOL_IDENTIFIER = "TEST";
+    private static final double BURGER_MENU_PRICE = 11;
+    private static final int BURGER_MENU_MINIMAL_WARNING = 10;
+    private static final String BURGER_MENU_SYMBOL_IDENTIFIER = "TEST";
     private static final String BURGER = "Burger";
     private static final UUID BURGER_ID = UUID.fromString("65de6f9f-c0b4-4038-896d-3bb80aa52434");
     private static final double BURGER_PRICE = 7.5;
@@ -122,23 +124,23 @@ public class MasterApi {
     private static final int POMMES_MINIMAL_WARNING = 10;
     private static final String POMMES_SYMBOL_IDENTIFIER = "TEST";
     private static final List<ProductRequest> FIRST_FOOD_COURT_PRODUCT_REQUESTS = List.of(
-        new ProductRequest(BURGER_MENU_MIT_COLA_ID, BURGER_MENÜ_MIT_COLA_PRICE, BURGER_MENÜ_MIT_COLA, BURGER_MENÜ_MIT_COLA_SYMBOL_IDENTIFIER, BURGER_MENÜ_MIT_COLA_MINIMAL_WARNING),
-        new ProductRequest(BURGER_MENU_ID, BURGER_MENÜ_PRICE, BURGER_MENÜ, BURGER_MENÜ_SYMBOL_IDENTIFIER, BURGER_MENÜ_MINIMAL_WARNING),
+        new ProductRequest(BURGER_MENU_MIT_COLA_ID, BURGER_MENU_MIT_COLA_PRICE, BURGER_MENU_MIT_COLA, BURGER_MENU_MIT_COLA_SYMBOL_IDENTIFIER, BURGER_MENU_MIT_COLA_MINIMAL_WARNING),
+        new ProductRequest(BURGER_MENU_ID, BURGER_MENU_PRICE, BURGER_MENU, BURGER_MENU_SYMBOL_IDENTIFIER, BURGER_MENU_MINIMAL_WARNING),
         new ProductRequest(BURGER_ID, BURGER_PRICE, BURGER, BURGER_SYMBOL_IDENTIFIER, BURGER_MINIMAL_WARNING),
         new ProductRequest(COLA_ID, COLA_PRICE, COLA, COLA_SYMBOL_IDENTIFIER, COLA_MINIMAL_WARNING),
         new ProductRequest(POMMES_ID, POMMES_PRICE, POMMES, POMMES_SYMBOL_IDENTIFIER, POMMES_MINIMAL_WARNING)
     );
 
-    private static final String PIZZA_MARGHERITA_MENÜ_MIT_COLA = "Pizza Margherita Menü mit Fanta";
+    private static final String PIZZA_MARGHERITA_MENU_MIT_COLA = "Pizza Margherita Menü mit Fanta";
     private static final UUID PIZZA_MARGHERITA_MENU_MIT_FANTA_ID = UUID.fromString("8d3cf1a0-7b8c-450f-8cdd-6714f672027c");
-    private static final double PIZZA_MARGHERITA_MENÜ_MIT_COLA_PRICE = 12;
-    private static final int PIZZA_MARGHERITA_MENÜ_MIT_COLA_MINIMAL_WARNING = 10;
-    private static final String PIZZA_MARGHERITA_MENÜ_MIT_COLA_SYMBOL_IDENTIFIER = "TEST";
-    private static final String PIZZA_MARGHERITA_MENÜ = "Pizza Margherita Menü";
+    private static final double PIZZA_MARGHERITA_MENU_MIT_COLA_PRICE = 12;
+    private static final int PIZZA_MARGHERITA_MENU_MIT_COLA_MINIMAL_WARNING = 10;
+    private static final String PIZZA_MARGHERITA_MENU_MIT_COLA_SYMBOL_IDENTIFIER = "TEST";
+    private static final String PIZZA_MARGHERITA_MENU = "Pizza Margherita Menü";
     private static final UUID PIZZA_MARGHERITA_MENU_ID = UUID.fromString("a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6");
-    private static final double PIZZA_MARGHERITA_MENÜ_PRICE = 11;
-    private static final int PIZZA_MARGHERITA_MENÜ_MINIMAL_WARNING = 10;
-    private static final String PIZZA_MARGHERITA_MENÜ_SYMBOL_IDENTIFIER = "TEST";
+    private static final double PIZZA_MARGHERITA_MENU_PRICE = 11;
+    private static final int PIZZA_MARGHERITA_MENU_MINIMAL_WARNING = 10;
+    private static final String PIZZA_MARGHERITA_MENU_SYMBOL_IDENTIFIER = "TEST";
     private static final String PIZZA_MARGHERITA = "Pizza Margherita";
     private static final UUID PIZZA_MARGHERITA_ID = UUID.fromString("17c5680e-22d5-4647-b5bb-b4a586f6c6d2");
     private static final double PIZZA_MARGHERITA_RICE = 7.5;
@@ -155,8 +157,8 @@ public class MasterApi {
     private static final int ANTIPASTI_MINIMAL_WARNING = 10;
     private static final String ANTIPASTI_SYMBOL_IDENTIFIER = "TEST";
     private static final List<ProductRequest> SECOND_FOOD_COURT_PRODUCT_REQUESTS = List.of(
-        new ProductRequest(PIZZA_MARGHERITA_MENU_MIT_FANTA_ID, PIZZA_MARGHERITA_MENÜ_MIT_COLA_PRICE, PIZZA_MARGHERITA_MENÜ_MIT_COLA, PIZZA_MARGHERITA_MENÜ_MIT_COLA_SYMBOL_IDENTIFIER, PIZZA_MARGHERITA_MENÜ_MIT_COLA_MINIMAL_WARNING),
-        new ProductRequest(PIZZA_MARGHERITA_MENU_ID, PIZZA_MARGHERITA_MENÜ_PRICE, PIZZA_MARGHERITA_MENÜ, PIZZA_MARGHERITA_MENÜ_SYMBOL_IDENTIFIER, PIZZA_MARGHERITA_MENÜ_MINIMAL_WARNING),
+        new ProductRequest(PIZZA_MARGHERITA_MENU_MIT_FANTA_ID, PIZZA_MARGHERITA_MENU_MIT_COLA_PRICE, PIZZA_MARGHERITA_MENU_MIT_COLA, PIZZA_MARGHERITA_MENU_MIT_COLA_SYMBOL_IDENTIFIER, PIZZA_MARGHERITA_MENU_MIT_COLA_MINIMAL_WARNING),
+        new ProductRequest(PIZZA_MARGHERITA_MENU_ID, PIZZA_MARGHERITA_MENU_PRICE, PIZZA_MARGHERITA_MENU, PIZZA_MARGHERITA_MENU_SYMBOL_IDENTIFIER, PIZZA_MARGHERITA_MENU_MINIMAL_WARNING),
         new ProductRequest(PIZZA_MARGHERITA_ID, PIZZA_MARGHERITA_RICE, PIZZA_MARGHERITA, PIZZA_MARGHERITA_SYMBOL_IDENTIFIER, PIZZA_MARGHERITA_MINIMAL_WARNING),
         new ProductRequest(FANTA_ID, FANTA_PRICE, FANTA, FANTA_SYMBOL_IDENTIFIER, FANTA_MINIMAL_WARNING),
         new ProductRequest(ANTIPASTI_ID, ANTIPASTI_PRICE, ANTIPASTI, ANTIPASTI_SYMBOL_IDENTIFIER, ANTIPASTI_MINIMAL_WARNING)
@@ -196,18 +198,23 @@ public class MasterApi {
             new CartItemCreationRequest(ANTIPASTI_ID, 2, "")
     );
 
+
     private final AccountService accountService;
     private final CreditService creditService;
     private final ProductService productService;
     private final FoodCourtService foodCourtService;
     private final CartService cartService;
+    private final FoodOrderService foodOrderService;
+    private final FoodCourtSimulationService simulationService;
 
-    public MasterApi(AccountService accountService, CreditService creditService, ProductService productService, FoodCourtService foodCourtService, CartService cartService) {
+    public MasterEndpointImpl(AccountService accountService, CreditService creditService, ProductService productService, FoodCourtService foodCourtService, CartService cartService, FoodOrderService foodOrderService, FoodCourtSimulationService simulationService) {
         this.accountService = accountService;
         this.creditService = creditService;
         this.productService = productService;
         this.foodCourtService = foodCourtService;
         this.cartService = cartService;
+        this.foodOrderService = foodOrderService;
+        this.simulationService = simulationService;
     }
 
     @POST
@@ -255,6 +262,17 @@ public class MasterApi {
                 .toList()//
         ;
 
+        try {
+            foodOrderService.create(V_000_000_001);
+        } catch (ServiceException e) {
+            LOG.error("could not create order for {{}}; Exception: ", V_000_000_001, e);
+        }
+
+        try {
+            foodOrderService.create(V_000_000_002);
+        } catch (ServiceException e) {
+            LOG.error("could not create order for {{}}; Exception: ", V_000_000_002, e);
+        }
 
         return Response.status(Response.Status.OK).build();
     }
@@ -267,5 +285,19 @@ public class MasterApi {
     public Response getALLData() {
         DatabaseResponse data = accountService.getDatabaseResponse();
         return Response.status(Response.Status.OK).entity(data).build();
+    }
+
+    @POST
+    @Path("simmulation/pause")
+    public String pause() {
+        simulationService.pauseSimulation();
+        return "Simulation paused";
+    }
+
+    @POST
+    @Path("simmulation/resume")
+    public String resume() {
+        simulationService.resumeSimulation();
+        return "Simulation resumed";
     }
 }

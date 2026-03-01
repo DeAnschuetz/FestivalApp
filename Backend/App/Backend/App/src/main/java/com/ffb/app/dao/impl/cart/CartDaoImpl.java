@@ -1,52 +1,39 @@
 package com.ffb.app.dao.impl.cart;
 
 import com.ffb.app.dao.api.cart.CartDao;
-import com.ffb.app.repository.api.cart.CartItemRepository;
 import com.ffb.app.repository.api.cart.CartRepository;
 import com.ffb.model.db.object.cart.Cart;
-import com.ffb.model.db.object.cart.CartItem;
 import com.ffb.model.exception.DaoException;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 @ApplicationScoped
 public class CartDaoImpl implements CartDao {
 
     // TODO Logging
-
+    private final Logger LOG = LoggerFactory.getLogger(CartDao.class);
 
     private final CartRepository cartRepo;
-    private final CartItemRepository cartItemRepo;
 
     @Inject
-    public CartDaoImpl(CartRepository cartRepo, CartItemRepository cartItemRepo) {
+    public CartDaoImpl(CartRepository cartRepo) {
         this.cartRepo = cartRepo;
-        this.cartItemRepo = cartItemRepo;
     }
 
     @Override
     public Cart findByLoginNr(String loginNr) throws DaoException {
         return cartRepo.findByLoginNr(loginNr)
-                .orElseThrow(() -> new DaoException("Cart not found for login number: " + loginNr))//
+                .orElseThrow(() -> {
+                    LOG.error("");
+                    return new DaoException("Cart not found for login number: " + loginNr);
+                })//
         ;
-    }
-
-    @Override
-    public Cart findByLoginNrWithItems(String loginNr) throws DaoException {
-        return cartRepo.findByLoginNrWithItems(loginNr)
-                .orElseThrow(() -> new DaoException("Cart not found for login number: " + loginNr))//
-        ;
-    }
-
-    @Override
-    public void persist(Cart cart) {
-        cartRepo.persist(cart);
-    }
-
-    @Override
-    public void persistCartItem(CartItem item) {
-        cartItemRepo.persist(item);
     }
 
     @Override

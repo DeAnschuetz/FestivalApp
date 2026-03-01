@@ -1,19 +1,22 @@
 package com.ffb.app.api;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PushbackInputStream;
-import java.util.List;
-import java.util.UUID;
-import com.ffb.model.api.request.food.court.FoodCourtWithRelationsRequest;
+import com.ffb.app.service.api.food.court.FoodCourtService;
+import com.ffb.app.validator.api.RequestValidator;
+import com.ffb.model.api.request.food.court.FoodCourtRequestSimple;
 import com.ffb.model.api.response.credit.CreditResponse;
 import com.ffb.model.api.response.error.ErrorResponse;
 import com.ffb.model.api.request.food.court.FoodCourtRequest;
 import com.ffb.model.api.response.food.court.FoodCourtResponse;
 import com.ffb.model.exception.ApiException;
 import com.ffb.model.exception.ServiceException;
+
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -21,33 +24,38 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
-import com.ffb.app.service.api.food.court.FoodCourtService;
-import com.ffb.model.api.request.food.court.FoodCourtRequestSimple;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+
 import org.jboss.resteasy.reactive.PartType;
 import org.jboss.resteasy.reactive.RestForm;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
+
+import java.util.List;
+import java.util.UUID;
+
 @ApplicationScoped
 @Path("food_court")
-public class FoodCourtApi {
+public class FoodCourtEndpointImpl {
 
-	// TODO Logging
-	private final Logger LOG = LoggerFactory.getLogger(FoodCourtApi.class);
+	// TODO Logging done furs erste
+	private final Logger LOG = LoggerFactory.getLogger(FoodCourtEndpointImpl.class);
 
 	@Inject
 	JsonWebToken webToken;
 	private final FoodCourtService foodCourtService;
+	private final RequestValidator validatorService;
 
 	@Inject
-	public FoodCourtApi(FoodCourtService foodCourtService) {
+	public FoodCourtEndpointImpl(FoodCourtService foodCourtService, RequestValidator validatorService) {
 		this.foodCourtService = foodCourtService;
-	}
+        this.validatorService = validatorService;
+    }
 
 	@GET
 	@Path("list_all")
@@ -68,10 +76,18 @@ public class FoodCourtApi {
 			@APIResponse(responseCode = "401", description = "Not Authorized"),
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
-	public Response listAll() {
-		LOG.info("list all foodCourts");
+	public Response listAll() throws ApiException {		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("list all food courts request for loginNr={}}", loginNr);
+
 		List<FoodCourtResponse> data = foodCourtService.listAll();
-		LOG.info("found " + data.size() + " foodCourts");
+
+		LOG.info("successfully listed all food courts; count={}", data.size());
 		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
@@ -100,66 +116,31 @@ public class FoodCourtApi {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response getById(@PathParam("foodCourtId") UUID foodCourtId) throws ApiException {
-		LOG.info("geting {" + foodCourtId + "}");
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
 		if (foodCourtId == null) {
 			LOG.error("foodCourtId is null");
 			throw new ApiException("The foodCourtId must not be null.", Response.Status.BAD_REQUEST);
 		}
+		LOG.info("get food court request for loginNr={{}} and foodCourtId={{}}", loginNr, foodCourtId);
+
 
 		FoodCourtResponse data;
         try {
 			data = foodCourtService.get(foodCourtId);
         } catch (ServiceException e) {
-			LOG.error("could not get foodCourt {" + foodCourtId + "}");
-            throw new ApiException(e);
+			LOG.error("could not get food court; foodCourtId={{}}; Exception: ", foodCourtId, e);
+			throw new ApiException(e);
         }
 
-		LOG.info("got foodCourt {" + foodCourtId + "}");
+		LOG.info("successfully got food court; foodCourtId={{}}", foodCourtId);
 		return Response.status(Response.Status.OK).entity(data).build();
     }
-
-	@GET
-	@Path("by_id/{foodCourtId}/with-relations")
-	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed("GUEST")
-	@Operation(summary = "Get a Food Court by ID with optional Relations")
-	@APIResponses({
-			@APIResponse(
-					responseCode = "200",
-					description = "The Food Court with Relations based on Query Parameters",
-					content = @Content(schema = @Schema(implementation = FoodCourtResponse.class, type = SchemaType.OBJECT))
-			),
-			@APIResponse(
-					responseCode = "400",
-					description = "Invalid Request",
-					content = @Content(schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
-			),
-			@APIResponse(
-					responseCode = "404",
-					description = "Food Court not found",
-					content = @Content(schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT))
-			),
-			@APIResponse(responseCode = "401", description = "Not Authorized"),
-			@APIResponse(responseCode = "403", description = "Not Allowed")
-	})
-	public Response getWithRelationsById(FoodCourtWithRelationsRequest request) throws ApiException {
-		LOG.info("getting with relations {{}}", request.foodCourtId());
-		if (request.foodCourtId() == null) {
-			LOG.error("foodCourtId is null");
-			throw new ApiException("The foodCourtId must not be null.", Response.Status.BAD_REQUEST);
-		}
-
-        FoodCourtResponse data;
-        try {
-			data = foodCourtService.get(request);
-        } catch (ServiceException e) {
-			LOG.error("could not get foodCourt {{}}; Exception:", request.foodCourtId(), e);
-            throw new ApiException(e);
-        }
-
-		LOG.info("got with relations for {{}}", request.foodCourtId());
-		return Response.status(Response.Status.OK).entity(data).build();
-	}
 
 	@GET
 	@Produces("image/png")
@@ -186,25 +167,33 @@ public class FoodCourtApi {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response getImageById(@PathParam("foodCourtId") UUID foodCourtId) throws ApiException {
-		LOG.info("get image for {" + foodCourtId + "}");
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
 		if(foodCourtId == null) {
 			LOG.error("foodCourtId is null");
 			throw new ApiException("The foodCourtId must not be null.", Response.Status.BAD_REQUEST);
 		}
+		LOG.info("get food court image request for loginNr={{}} foodCourtId={}", loginNr, foodCourtId);
+
 		byte[] imageBytes;
 		try {
 			imageBytes = foodCourtService.getImage(foodCourtId);
 		} catch (ServiceException e) {
-			LOG.error("could not get iamge for {" + foodCourtId + "}", e);
+			LOG.error("could not get food court image; foodCourtId={{}}; Exception: ", foodCourtId, e);
 			throw new ApiException(e);
 		}
 
 		if (imageBytes == null) {
-			LOG.error("could not get iamge for {" + foodCourtId + "}");
+			LOG.error("food court image not found; foodCourtId={{}}", foodCourtId);
 			return Response.status(Response.Status.NOT_FOUND).build();
 		}
 
-		LOG.info("got image for {" + foodCourtId + "}");
+		LOG.info("successfully got food court image; foodCourtId={}", foodCourtId);
 		return Response.status(Response.Status.OK).entity(imageBytes).build();
 	}
 
@@ -222,17 +211,23 @@ public class FoodCourtApi {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response getFoodCourt() throws ApiException {
-		LOG.info("get foodCourt for " + webToken.getName());
-		String loginNr = webToken.getName();
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("get food court request for loginNr={{}}", loginNr);
         FoodCourtResponse data;
         try {
 			data = foodCourtService.get(loginNr);
         } catch (ServiceException e) {
-			LOG.error("could not get foodCourt for " + loginNr, e);
-            throw new ApiException(e);
+			LOG.error("could not get food court for loginNr={{}}; Exception: ", loginNr, e);
+			throw new ApiException(e);
         }
 
-		LOG.info("got foodCourt {" + data.id() + "}");
+		LOG.info("successfully got food court for loginNr={{}}; foodCourtId={{}}", loginNr, data.id());
 		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
@@ -256,22 +251,27 @@ public class FoodCourtApi {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response update(@PartType(MediaType.APPLICATION_JSON) FoodCourtRequestSimple request) throws ApiException {
-		LOG.info("updating foodCourt for " + webToken.getName());
-		String loginNr = webToken.getName();
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
 		if (request.displayName() == null || request.displayName().isBlank()) {
 			LOG.error("displayName is null or blank");
 			throw new ApiException("The displayName must not be null or blank.", Response.Status.BAD_REQUEST);
 		}
-
+		LOG.info("update food court request for loginNr={{}}", loginNr);
         FoodCourtResponse data;
         try {
 			data = foodCourtService.update(loginNr, request);
         } catch (ServiceException e) {
-			LOG.error("could not update foodCourt for " + loginNr, e);
-            throw new ApiException(e);
+			LOG.error("could not update food court for loginNr={{}}; Exception: ", loginNr, e);
+			throw new ApiException(e);
         }
 
-		LOG.info("updated foodCourtfor " + loginNr);
+		LOG.info("successfully updated food court for loginNr={{}}; foodCourtId={{}}", loginNr, data.id());
 		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
@@ -301,21 +301,27 @@ public class FoodCourtApi {
 
 	})
 	public Response create(@PartType(MediaType.APPLICATION_JSON) FoodCourtRequestSimple request) throws ApiException {
-		LOG.info("creating foodCourt for " + webToken.getName());
-		String loginNr = webToken.getName();
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
 		if ( request.displayName() == null ||  request.displayName().isBlank()) {
 			LOG.error("displayName is null or blank");
 			throw new ApiException("The displayName must not be null or blank.", Response.Status.BAD_REQUEST);
 		}
+		LOG.info("create food court request for loginNr={{}}", loginNr);
 		FoodCourtResponse data;
 		try {
 			data = foodCourtService.create(loginNr, request);
 		} catch (ServiceException e) {
-			LOG.error("could not crea foodCourt for " + loginNr);
+			LOG.error("could not create food court for loginNr={{}}; Exception: ", loginNr, e);
 			throw new ApiException(e);
 		}
 
-		LOG.info("foodCourt created for " + loginNr);
+		LOG.info("successfully created food court for loginNr={{}}; foodCourtId={{}}", loginNr, data.id());
 		return Response.status(Response.Status.CREATED).entity(data).build();
 	}
 
@@ -342,27 +348,32 @@ public class FoodCourtApi {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response addImage(@RestForm("file") @PartType("image/png") InputStream file) throws ApiException {
-		LOG.info("received request to add image for " + webToken.getName());
-		String loginNr = webToken.getName();
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
 		if (file == null) {
 			LOG.error("file is null");
 			throw new ApiException("The file is null.", Response.Status.BAD_REQUEST);
 		}
-
+		LOG.info("add image request for loginNr={{}}", loginNr);
 		try (
 				PushbackInputStream inputData = new PushbackInputStream(new BufferedInputStream(file))
 		) {
 			foodCourtService.addImage(loginNr, inputData);
 		} catch (ServiceException e) {
-			LOG.error("could not add image", e);
+			LOG.error("could not add food court image for loginNr={{}}; Exception: ", loginNr, e);
 			throw new ApiException(e);
 		} catch (IOException e) {
-			LOG.error("could not add image", e);
-            throw new ApiException(e, Response.Status.INTERNAL_SERVER_ERROR);
+			LOG.error("could not add food court image for loginNr={{}}; Exception: ", loginNr, e);
+			throw new ApiException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
 
-		LOG.info("added image for " + loginNr);
-        return Response.status(Response.Status.OK).entity(null).build();
+		LOG.info("successfully added food court image for loginNr={{}}", loginNr);
+		return Response.status(Response.Status.OK).entity(null).build();
 	}
 
 	@POST
@@ -391,7 +402,13 @@ public class FoodCourtApi {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response createById(@PathParam("id") UUID id, @PartType(MediaType.APPLICATION_JSON) FoodCourtRequest request) throws ApiException {
-		LOG.info("creating {" + id + "}");
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
 		if (id == null) {
 			LOG.error("id is null");
 			throw new ApiException("The food court id must not be null.", Response.Status.BAD_REQUEST);
@@ -404,16 +421,17 @@ public class FoodCourtApi {
 			LOG.error("displayName is null");
 			throw new ApiException("The displayName must not be null or blank.", Response.Status.BAD_REQUEST);
 		}
+		LOG.info("create food court by id request for loginNr={{}} and foodCourtId={{}}", loginNr, id);
 
 		FoodCourtResponse data;
 		try {
 			data = foodCourtService.create(id, request);
 		} catch (ServiceException e) {
-			LOG.error("could not create foodCourt {" + id + "}");
+			LOG.error("could not create food court for loginNr={{}} ; foodCourtId={{}}; Exception: ", loginNr, id, e);
 			throw new ApiException(e);
 		}
 
-		LOG.info("created {" + id + "}");
+		LOG.info("successfully created food court for loginNr={{}} ; foodCourtId={{}}", loginNr, id);
 		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
@@ -443,7 +461,14 @@ public class FoodCourtApi {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response updateById(@PathParam("id") UUID id, @PartType(MediaType.APPLICATION_JSON) FoodCourtRequest request) throws ApiException {
-		LOG.info("updating foodCourt {" + id + "}");
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("update food court by id request for loginNr={{}} and foodCourtId={{}}", loginNr, id);
 		if (id == null) {
 			LOG.error("foodCourtId is null");
 			throw new ApiException("The foodCourtId must not be null.", Response.Status.BAD_REQUEST);
@@ -461,10 +486,10 @@ public class FoodCourtApi {
 		try {
 			data = foodCourtService.update(id, request);
 		} catch (ServiceException e) {
-			LOG.error("could not update foodCourt {" + id + "}", e);
+			LOG.error("could not update food court for loginNr={{}} ; foodCourtId={{}}; Exception: ", loginNr, id, e);
 			throw new ApiException(e);
 		}
-		LOG.info("updated foodCourt {" + id + "}");
+		LOG.info("successfully updated food court for loginNr={{}} ; foodCourtId={{}}", loginNr, id);
 		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
@@ -489,7 +514,14 @@ public class FoodCourtApi {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response deleteById(@PathParam("id") UUID id) throws ApiException {
-		LOG.info("deleting foodCourt {" + id + "}");
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("delete food court by id request for loginNr={{}} and foodCourtId={{}}", loginNr, id);
 		if (id == null) {
 			LOG.error("id is null");
 			throw new ApiException("The foodCourtId must not be null.", Response.Status.BAD_REQUEST);
@@ -498,10 +530,10 @@ public class FoodCourtApi {
 		try {
 			foodCourtService.delete(id);
 		} catch (ServiceException e) {
-			LOG.error("could not delete {" + id + "}");
+			LOG.error("could not delete food court for loginNr={{}} ; foodCourtId={{}}; Exception: ", loginNr, id, e);
 			throw new ApiException(e);
 		}
-		LOG.info("deleted {" + id + "}");
+		LOG.info("successfully deleted food court for loginNr={{}}; foodCourtId={}", loginNr, id);
 		return Response.status(Response.Status.OK).entity("Deleted Product {" + id + "}").build();
 	}
 
@@ -528,19 +560,26 @@ public class FoodCourtApi {
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
 	public Response addImageById(@PathParam("id") UUID id, @RestForm("file") @PartType("image/png") InputStream file) throws ApiException {
-		LOG.info("received request to add image for foodCourt {" + id + "}");
+		String loginNr;
+		try {
+			loginNr = validatorService.validateAndGetLoginNr(webToken);
+		} catch (ApiException e) {
+			LOG.error("invalid authentication; Exception: ", e);
+			throw e;
+		}
+		LOG.info("add food court image by id request for loginNr={{}} and foodCourtId={{}}", loginNr, id);
 		try (
 				PushbackInputStream inputData = new PushbackInputStream(new BufferedInputStream(file))
 		) {
 			foodCourtService.addImage(id, inputData);
 		} catch (ServiceException e) {
-			LOG.error("could not add image", e);
+			LOG.error("could not add food court image for loginNr={{}}; foodCourtId={{}}; Exception: ", loginNr, id, e);
 			throw new ApiException(e);
 		} catch (IOException e) {
-			LOG.error("could not add image", e);
+			LOG.error("could not add food court image for loginNr={{}}; foodCourtId={{}}; Exception: ", loginNr, id, e);
 			throw new ApiException(e, Response.Status.INTERNAL_SERVER_ERROR);
 		}
-		LOG.info("added image for foodCourt {" + id + "}");
+		LOG.info("successfully added food court image for loginNr={{}}; foodCourtId={{}}", loginNr, id);
 		return Response.status(Response.Status.OK).entity(null).build();
 	}
 }

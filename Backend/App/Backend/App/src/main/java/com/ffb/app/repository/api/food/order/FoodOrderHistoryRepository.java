@@ -7,7 +7,4 @@ import java.util.List;
 import java.util.UUID;
 
 public interface FoodOrderHistoryRepository extends PanacheRepositoryBase<FoodOrderHistory, UUID> {
-
-    List<FoodOrderHistory> listByFoodOrderId(UUID foodOrderId);
-
 }

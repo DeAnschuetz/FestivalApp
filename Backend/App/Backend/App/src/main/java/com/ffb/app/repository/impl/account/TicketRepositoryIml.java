@@ -2,6 +2,7 @@ package com.ffb.app.repository.impl.account;
 
 import com.ffb.app.repository.api.account.TicketRepository;
 import com.ffb.model.db.object.account.Ticket;
+
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.Optional;
@@ -12,8 +13,11 @@ public class TicketRepositoryIml implements TicketRepository {
     // TODO Logging
 
     @Override
-    public Optional<Ticket> getByTicketNr(String ticketNr) {
-        return find("loginNr", ticketNr)//
+    public Optional<Ticket> getByLoginNr(String ticketNr) {
+        return find(
+                "loginNr",
+                ticketNr
+                )//
                 .firstResultOptional()//
         ;
     }

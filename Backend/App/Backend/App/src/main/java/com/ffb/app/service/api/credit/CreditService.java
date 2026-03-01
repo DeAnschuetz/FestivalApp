@@ -14,6 +14,6 @@ public interface CreditService {
 
     CreditResponse changeAmount(String loginNr, CreditAddRequest request) throws ServiceException;
 
-    List<CreditHistoryResponse> getHistoryByLoginNr(CreditHistoryRequest request) throws ServiceException;
+    List<CreditHistoryResponse> getHistoryByLoginNr(CreditHistoryRequest request);
 
 }

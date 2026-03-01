@@ -10,10 +10,4 @@ public interface FoodCourtRepository extends PanacheRepositoryBase<FoodCourt, UU
     Optional<FoodCourt> getById(UUID id);
 
     Optional<FoodCourt> getByLoginNr(String loginNr);
-
-    Optional<FoodCourt> getByIdWithWaitingTimeAndFoodOrders(UUID id);
-
-    Optional<FoodCourt> getByIdWithWaitingTime(UUID id);
-
-    Optional<FoodCourt> getByIdWithFoodOrders(UUID id);
 }

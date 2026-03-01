@@ -25,11 +25,11 @@ public interface FoodOrderService {
     @Transactional
     void shareOrder(String loginNr, ShareOrderRequest request) throws ServiceException;
 
-    FoodOrderResponseFull getById(UUID id, boolean withItems, boolean withHistory) throws ServiceException;
+    FoodOrderResponseFull getById(UUID id) throws ServiceException;
 
-    List<FoodOrderResponse> listAll(boolean withItems);
+    List<FoodOrderResponse> listAll();
 
-    List<FoodOrderResponse> listByLoginNrAndAccountType(String loginNr, AccountType accountType, boolean withItems) throws ServiceException;
+    List<FoodOrderResponse> listByLoginNrAndAccountType(String loginNr, AccountType accountType) throws ServiceException;
 
-    List<FoodOrderResponse> listByLoginNrAndAccountTypeAndStatus(String loginNr, AccountType accountType, FoodOrderStatus status, boolean withItems) throws ServiceException;
+    List<FoodOrderResponse> listByLoginNrAndAccountTypeAndStatus(String loginNr, AccountType accountType, FoodOrderStatus status) throws ServiceException;
 }
