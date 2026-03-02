@@ -255,6 +255,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public void createLinks(List<ProductLinkRequest> productLinkRequests) {
         LOG.trace("ENTER: createLinks; productLinkRequests=[{}]", productLinkRequests);
 
@@ -273,5 +274,24 @@ public class ProductServiceImpl implements ProductService {
         ;
 
         LOG.trace("EXIT: createLinks; created={}", created.size());
+    }
+
+    @Override
+    @Transactional
+    public boolean updateProductCount(UUID productId, int newCount) throws ServiceException {
+        LOG.trace("ENTER: updateProductCount; productId={{}}, newCount={}", productId, newCount);
+        Product product = productDao.getById(productId);
+        if (product == null) {
+            LOG.error("product not found for productId={{}}", productId);
+            throw new ServiceException("Product could not be found for productId={" + productId + "}", Response.Status.NOT_FOUND);
+        }
+
+        if (newCount <= 0) {
+            LOG.error("product count must be greater than 0 for productId={{}}", productId);
+            throw new ServiceException("New count must be greater than zero", Response.Status.BAD_REQUEST);
+        }
+
+        product.getProductCount().setProductCount(newCount);
+        return true;
     }
 }

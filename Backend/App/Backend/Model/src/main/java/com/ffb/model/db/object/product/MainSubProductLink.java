@@ -15,13 +15,25 @@ public class MainSubProductLink {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@MapsId("mainProductId")
 	@JdbcTypeCode(SqlTypes.UUID)
-	@JoinColumn(name = "main_product_id", referencedColumnName = "id")
+	@JoinColumn(
+			name = "main_product_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_main_product"),
+			unique = false,
+			nullable = false
+	)
 	public Product mainProduct;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@MapsId("subProductId")
 	@JdbcTypeCode(SqlTypes.UUID)
-	@JoinColumn(name = "sub_product_id", referencedColumnName = "id")
+	@JoinColumn(
+			name = "sub_product_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_sub_product"),
+			unique = false,
+			nullable = false
+	)
 	public Product subProduct;
 
 	protected MainSubProductLink() {}

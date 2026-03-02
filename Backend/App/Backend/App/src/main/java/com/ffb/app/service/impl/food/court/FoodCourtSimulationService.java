@@ -6,10 +6,12 @@ import com.ffb.model.db.object.food_court.FoodCourt;
 import com.ffb.model.db.object.foodorder.FoodOrder;
 import com.ffb.model.db.object.foodorder.FoodOrderStatus;
 
+import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.scheduler.Scheduler;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
@@ -34,6 +36,10 @@ public class FoodCourtSimulationService {
         this.foodOrderDao = foodOrderDao;
         this.foodCourtDao = foodCourtDao;
         this.scheduler = scheduler;
+    }
+
+    void onStart(@Observes StartupEvent event) {
+        scheduler.pause("foodCourt-OrderProcessing-Simulation");
     }
 
     @Scheduled(

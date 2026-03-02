@@ -24,7 +24,13 @@ public class FoodCourtWaitingTime extends PanacheEntityBase {
 	@JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "food_court_id", referencedColumnName = "id")
+    @JoinColumn(
+			name = "food_court_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_food_court"),
+			unique = true,
+			nullable = false
+	)
 	private FoodCourt foodCourt;
 
 	@JdbcTypeCode(SqlTypes.INTEGER)

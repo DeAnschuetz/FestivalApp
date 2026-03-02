@@ -9,15 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ffb.model.db.object.account.Account;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -37,7 +29,13 @@ public class Credit extends PanacheEntityBase {
 	@JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "account_id", referencedColumnName = "id")
+	@JoinColumn(
+			name = "account_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_account"),
+			unique = true,
+			nullable = false
+	)
 	private Account account;
 
 	@JsonIgnore
