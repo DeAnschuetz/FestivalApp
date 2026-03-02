@@ -95,12 +95,13 @@ import type {
   PutFoodOrderUpdateOrderIdStatus400,
   PutFoodOrderUpdateOrderIdStatus404,
   PutNotificationUpdateNotificationIdNewStatus404,
+  PutProductUpdateCountProductIdNewCount400,
   RegisterRequest,
   ShareOrderRequest,
   TicketRequest,
   TicketResponse,
   Uuid
-} from './model';
+} from './ffbAPI.schemas';
 
 
 /**
@@ -1991,7 +1992,7 @@ export type getMasterResponse200 = {
 export type getMasterResponseSuccess = (getMasterResponse200) & {
   headers: Headers;
 };
-;
+
 
 export type getMasterResponse = (getMasterResponseSuccess)
 
@@ -2033,7 +2034,7 @@ export type postMasterResponse200 = {
 export type postMasterResponseSuccess = (postMasterResponse200) & {
   headers: Headers;
 };
-;
+
 
 export type postMasterResponse = (postMasterResponseSuccess)
 
@@ -2075,7 +2076,7 @@ export type postMasterSimmulationPauseResponse200 = {
 export type postMasterSimmulationPauseResponseSuccess = (postMasterSimmulationPauseResponse200) & {
   headers: Headers;
 };
-;
+
 
 export type postMasterSimmulationPauseResponse = (postMasterSimmulationPauseResponseSuccess)
 
@@ -2117,7 +2118,6 @@ export type postMasterSimmulationResumeResponse200 = {
 export type postMasterSimmulationResumeResponseSuccess = (postMasterSimmulationResumeResponse200) & {
   headers: Headers;
 };
-;
 
 export type postMasterSimmulationResumeResponse = (postMasterSimmulationResumeResponseSuccess)
 
@@ -2670,6 +2670,60 @@ export const getProductListAll = async ( options?: RequestInit): Promise<getProd
   
   const data: getProductListAllResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as getProductListAllResponse
+}
+  
+
+
+/**
+ * @summary Update the Count of a Product by its ID
+ */
+export type putProductUpdateCountProductIdNewCountResponse400 = {
+  data: PutProductUpdateCountProductIdNewCount400
+  status: 400
+}
+
+export type putProductUpdateCountProductIdNewCountResponse401 = {
+  data: void
+  status: 401
+}
+
+export type putProductUpdateCountProductIdNewCountResponse403 = {
+  data: void
+  status: 403
+}
+
+;
+export type putProductUpdateCountProductIdNewCountResponseError = (putProductUpdateCountProductIdNewCountResponse400 | putProductUpdateCountProductIdNewCountResponse401 | putProductUpdateCountProductIdNewCountResponse403) & {
+  headers: Headers;
+};
+
+export type putProductUpdateCountProductIdNewCountResponse = (putProductUpdateCountProductIdNewCountResponseError)
+
+export const getPutProductUpdateCountProductIdNewCountUrl = (productId: Uuid,
+    newCount: number,) => {
+
+
+  
+
+  return `/product/update/count/${productId}/${newCount}`
+}
+
+export const putProductUpdateCountProductIdNewCount = async (productId: Uuid,
+    newCount: number, options?: RequestInit): Promise<putProductUpdateCountProductIdNewCountResponse> => {
+  
+  const res = await fetch(getPutProductUpdateCountProductIdNewCountUrl(productId,newCount),
+  {      
+    ...options,
+    method: 'PUT'
+    
+    
+  }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  
+  const data: putProductUpdateCountProductIdNewCountResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as putProductUpdateCountProductIdNewCountResponse
 }
   
 

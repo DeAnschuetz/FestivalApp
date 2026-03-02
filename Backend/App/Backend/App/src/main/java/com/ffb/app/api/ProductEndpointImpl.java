@@ -406,7 +406,7 @@ public class ProductEndpointImpl {
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("update/count/{productId}/{newCount}")
-    @RolesAllowed({"ADMIN", "WORKER"})
+    @RolesAllowed({"ADMIN", "FOOD_COURT_WORKER"})
     @Operation(summary = "Update the Count of a Product by its ID")
     @APIResponses({
             @APIResponse(
