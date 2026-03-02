@@ -80,7 +80,7 @@ public class FoodOrder extends PanacheEntityBase {
 			referencedColumnName = "id",
 			foreignKey = @ForeignKey(name = "fk_shared_account"),
 			unique = false,
-			nullable = false
+			nullable = true
 	)
 	private Account sharedAccount;
     
