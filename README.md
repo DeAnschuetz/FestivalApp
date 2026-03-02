@@ -2,6 +2,9 @@
 - Name des 1. Frontends: Virtual Line Party Fast
 - Name des 2. Frondends: FoodAppIndia
 
+# API-Test Endpoint
+http://10.45.129.22:8080/q/swagger-ui/#/
+
 # Notes: 
 Mock Up VLPF 
 - bekommt noch einen Speicher Btn bei den Stand Settings
