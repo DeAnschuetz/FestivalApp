@@ -9,7 +9,7 @@ const SuccessPage = () => {
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#F7F7F7', pb: { xs: 10, sm: 12 } }}>
-      <Box sx={{ px: 2, pt: 2 }}>
+      <Box sx={{ px: 2, pt: 2, display: 'flex', alignItems: 'flex-start' }}>
         <IconButton
           onClick={() => navigate('/home')}
           sx={{
