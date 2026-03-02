@@ -3,12 +3,14 @@ import { Button } from '@mui/material';
 
 interface OrderButtonProps {
     cardTitle: string;
+    onClick?: () => void;
 }
 
-const OrderButton = ({ cardTitle }: OrderButtonProps) => {
+const OrderButton = ({ cardTitle, onClick }: OrderButtonProps) => {
   return (
         <Button 
             variant="contained"
+            onClick={onClick}
             sx={{
                 position: 'fixed',
                 bottom: { xs: 55, sm: 65 },

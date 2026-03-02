@@ -1,14 +1,28 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
+import { useCart } from '../../context/CartContext';
+
 interface DetailViewCardProps {
+    id: string;
     MenuDetailViewImage: string;
     MenuTitle?: string;
     imgWidth?: number;
     price?: string;
+    priceNumber?: number;
+    showControls?: boolean;
 }
 
-const DetailViewCard: React.FC<DetailViewCardProps> = ({ MenuDetailViewImage, MenuTitle, imgWidth = 80, price = '$8.09' }) => {
-  const [itemCount, setItemCount] = useState(1);
+const DetailViewCard: React.FC<DetailViewCardProps> = ({ id, MenuDetailViewImage, MenuTitle, imgWidth = 80, price = '$8.09', priceNumber = 8.09, showControls = true }) => {
+  const { getCount, updateCount, addToCart } = useCart();
+  const itemCount = getCount(id);
+
+  // Register item in cart on first render
+  React.useEffect(() => {
+    addToCart({ id, title: MenuTitle || '', img: MenuDetailViewImage, price: priceNumber });
+  }, [id]);
+
+  const handleIncrement = () => updateCount(id, itemCount + 1);
+  const handleDecrement = () => updateCount(id, Math.max(0, itemCount - 1));
   return (
     <Box
       sx={{
@@ -66,7 +80,7 @@ const DetailViewCard: React.FC<DetailViewCardProps> = ({ MenuDetailViewImage, Me
           <Button 
             size="small" 
             sx={{ minWidth: { xs: 28, sm: 32 }, color: '#000', fontSize: { xs: 12, sm: 14 }, p: 0.5 }}
-            onClick={() => setItemCount(Math.max(0, itemCount - 1))}
+            onClick={handleDecrement}
           >
             —
           </Button>
@@ -74,7 +88,7 @@ const DetailViewCard: React.FC<DetailViewCardProps> = ({ MenuDetailViewImage, Me
           <Button 
             size="small" 
             sx={{ minWidth: { xs: 28, sm: 32 }, color: '#000', fontSize: { xs: 12, sm: 14 }, p: 0.5 }}
-            onClick={() => setItemCount(itemCount + 1)}
+            onClick={handleIncrement}
           >
             +
           </Button>
