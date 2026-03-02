@@ -61,7 +61,6 @@ public class FoodCourtDaoImpl implements FoodCourtDao {
                     .orElseThrow(() -> new DaoException("Food court with login number " + loginNr + " not found."))
             ;
             foodcourt.setImage(bytes);
-            foodCourtRepo.persist(foodcourt);
         } catch (IOException e) {
             throw new DaoException("Failed to read image data from stream.", e);
         }

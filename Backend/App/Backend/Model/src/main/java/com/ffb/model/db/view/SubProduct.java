@@ -2,11 +2,11 @@ package com.ffb.model.db.view;
 
 import java.util.UUID;
 
-import com.ffb.model.db.object.food_court.FoodCourt;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
