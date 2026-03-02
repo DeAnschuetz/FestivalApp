@@ -26,21 +26,21 @@ const HomePage = () => {
       <Box>
         <Box
           sx={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: 1,
-            justifyItems: 'center',
+            display: 'flex',
+            flexWrap: 'wrap',
+            flexDirection: 'row',
+           
           }}
         >
           {cards.map((card, idx) => {
             const isLast = idx === cards.length - 1;
             const isOdd = cards.length % 2 === 1;
             const cardProps = isLast && isOdd
-              ? { cardWidth: '93%', imgWidth: 80 }
-              : { cardWidth: 160, imgWidth: 80 };
+              ? { cardWidth: '100%', imgWidth: 80 }
+              : { cardWidth: '100%', imgWidth: 80 };
             return (
-              <Box key={card.title + idx} sx={isLast && isOdd ? { gridColumn: 'span 2', width: '100%', display: 'flex', justifyContent: 'start' } : {}}>
-                <OverViewCard MenuOverViewImage={card.img} MenuTitle={card.title} navigateToMenuDetail={() => navigate(`/menu/${card.title.toLowerCase()}`)} {...cardProps} />
+              <Box key={card.title + idx} >
+                <OverViewCard MenuOverViewImage={card.img} MenuTitle={card.title} navigateToMenuDetail={() => navigate(`/menu/${card.title.toLowerCase()}`)} {...cardProps}/>
               </Box>
             );
           })}

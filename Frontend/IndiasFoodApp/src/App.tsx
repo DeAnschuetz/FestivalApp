@@ -3,6 +3,10 @@ import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage.tsx';
 import HomePage from './pages/HomePage.tsx';
 import MenuDetailPage from './pages/MenuDetailPage.tsx';
+import ProfilePage from './pages/ProfilePage.tsx';
+import OrdersPage from './pages/OrdersPage.tsx';
+import ConfirmOderPage from './pages/ConfirmOderPage.tsx';
+import SuccessPage from './pages/SuccessPage.tsx';
 
 export type GlobalContext = {
   signedIn: boolean;
@@ -24,6 +28,10 @@ function App() {
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/home" element={<HomePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/confirm-order" element={<ConfirmOderPage />} />
+          <Route path="/success" element={<SuccessPage />} />
           <Route path="/menu/:menuTitle" element={<MenuDetailPage />} />
         </Routes>
       </BrowserRouter>
