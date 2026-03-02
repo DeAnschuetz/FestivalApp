@@ -58,7 +58,7 @@ public class JaxRsEndpointSeeder {
         p = p.replaceAll("//+", "/");
         if (!p.startsWith("/")) p = "/" + p;
         if (p.length() > 1 && p.endsWith("/")) p = p.substring(0, p.length() - 1);
-        // normalize ids to keep keys stable
+
         p = p.replaceAll("/\\{[^/}]+}", "/{param}");
         return p;
     }
