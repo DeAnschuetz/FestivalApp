@@ -636,11 +636,11 @@ paths:
       security:
       - SecurityScheme:
         - GUEST
-  /cart/{newPrio}:
+  /cart/{newPriority}:
     put:
       summary: Change the Priority of the Cart for the currently logged-in Guest Account
       parameters:
-      - name: newPrio
+      - name: newPriority
         in: path
         required: true
         schema:
