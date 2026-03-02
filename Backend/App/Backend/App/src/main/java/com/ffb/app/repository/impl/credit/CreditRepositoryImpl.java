@@ -1,0 +1,29 @@
+package com.ffb.app.repository.impl.credit;
+
+import com.ffb.app.repository.api.credit.CreditRepository;
+import com.ffb.model.db.object.credit.Credit;
+
+import jakarta.enterprise.context.ApplicationScoped;
+
+import java.util.Optional;
+
+@ApplicationScoped
+public class CreditRepositoryImpl implements CreditRepository {
+
+    // TODO Logging
+
+    @Override
+    public Optional<Credit> findByLoginNr(String loginNr) {
+        return find(
+                    "account.ticket.loginNr",
+                    loginNr
+                )//
+                .firstResultOptional()
+        ;
+    }
+
+    @Override
+    public boolean existsByLoginNr(String loginNr) {
+        return count("account.ticket.loginNr",loginNr) > 0;
+    }
+}

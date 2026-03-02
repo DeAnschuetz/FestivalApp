@@ -5,7 +5,7 @@
     <id>UMLGeneric</id>
     <coordinates>
       <x>456</x>
-      <y>96</y>
+      <y>88</y>
       <w>696</w>
       <h>800</h>
     </coordinates>
@@ -116,13 +116,13 @@ halign=left</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>864</x>
-      <y>352</y>
-      <w>104</w>
-      <h>96</h>
+      <y>360</y>
+      <w>96</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=.&gt;
 &lt;&lt;extends&gt;&gt;</panel_attributes>
-    <additional_attributes>90.0;100.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;100.0;80.0</additional_attributes>
   </element>
   <element>
     <id>UMLUseCase</id>
@@ -139,13 +139,13 @@ halign=left</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>864</x>
-      <y>432</y>
-      <w>88</w>
-      <h>80</h>
+      <y>440</y>
+      <w>96</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>lt=.&gt;
 &lt;&lt;extends&gt;&gt;</panel_attributes>
-    <additional_attributes>90.0;10.0;10.0;80.0</additional_attributes>
+    <additional_attributes>10.0;70.0;100.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLUseCase</id>
@@ -211,7 +211,7 @@ valign=top</panel_attributes>
     </coordinates>
     <panel_attributes>lt=.&gt;
 &lt;&lt;includes&gt;&gt;</panel_attributes>
-    <additional_attributes>180.0;20.0;10.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;180.0;20.0</additional_attributes>
   </element>
   <element>
     <id>UMLUseCase</id>
@@ -245,19 +245,19 @@ valign=top</panel_attributes>
     </coordinates>
     <panel_attributes>lt=.&gt;
 &lt;&lt;extends&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;60.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>568</x>
-      <y>352</y>
-      <w>112</w>
-      <h>128</h>
+      <y>344</y>
+      <w>104</w>
+      <h>136</h>
     </coordinates>
     <panel_attributes>lt=.&gt;
 &lt;&lt;extends&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;140.0;110.0;10.0</additional_attributes>
+    <additional_attributes>90.0;10.0;10.0;150.0</additional_attributes>
   </element>
   <element>
     <id>UMLActor</id>
@@ -317,14 +317,14 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>864</x>
-      <y>568</y>
-      <w>96</w>
+      <x>856</x>
+      <y>560</y>
+      <w>104</w>
       <h>32</h>
     </coordinates>
     <panel_attributes>lt=.&gt;
 &lt;&lt;extends&gt;&gt;</panel_attributes>
-    <additional_attributes>100.0;20.0;10.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;110.0;20.0</additional_attributes>
   </element>
   <element>
     <id>UMLUseCase</id>
