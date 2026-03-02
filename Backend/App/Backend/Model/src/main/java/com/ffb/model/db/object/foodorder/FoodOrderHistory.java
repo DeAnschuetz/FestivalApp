@@ -6,15 +6,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -42,7 +34,13 @@ public class FoodOrderHistory extends PanacheEntityBase {
     @JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "food_order_id", referencedColumnName = "id")
+    @JoinColumn(
+			name = "food_order_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_food_order"),
+			unique = false,
+			nullable = false
+	)
     private FoodOrder order;
 
     protected FoodOrderHistory() {} 

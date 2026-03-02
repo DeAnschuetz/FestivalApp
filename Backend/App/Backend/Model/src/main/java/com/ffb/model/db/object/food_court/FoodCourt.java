@@ -37,7 +37,13 @@ public class FoodCourt extends PanacheEntityBase {
 	@JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "account_id", referencedColumnName = "id")
+	@JoinColumn(
+			name = "account_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_account"),
+			unique = true,
+			nullable = false
+	)
 	private Account account;
 
 	@JsonIgnore

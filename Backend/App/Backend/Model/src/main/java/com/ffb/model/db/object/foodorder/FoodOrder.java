@@ -12,17 +12,7 @@ import com.ffb.model.db.object.food_court.FoodCourt;
 import com.ffb.model.db.object.notification.FoodOrderNotification;
 import com.ffb.model.db.object.notification.NotificationStatus;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -73,19 +63,37 @@ public class FoodOrder extends PanacheEntityBase {
     @JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @JoinColumn(
+			name = "account_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_account"),
+			unique = false,
+			nullable = false
+	)
     private Account account;
 
 	@JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "shared_account_id", referencedColumnName = "id")
+	@JoinColumn(
+			name = "shared_account_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_shared_account"),
+			unique = false,
+			nullable = false
+	)
 	private Account sharedAccount;
     
     @JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "food_court_id", referencedColumnName = "id")
+    @JoinColumn(
+			name = "food_court_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_food_court"),
+			unique = false,
+			nullable = false
+	)
     private FoodCourt foodCourt;
 
     protected FoodOrder() {}

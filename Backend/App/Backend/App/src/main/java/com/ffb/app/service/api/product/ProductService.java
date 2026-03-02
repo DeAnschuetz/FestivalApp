@@ -33,6 +33,7 @@ public interface ProductService {
     @Transactional
     boolean createAssignment(ProductLinkRequest request) throws ServiceException;
 
+    @Transactional
     void deleteAssignmentById(UUID linkId) throws ServiceException;
 
     @Transactional
@@ -41,5 +42,9 @@ public interface ProductService {
     @Transactional
     void createProducts(UUID id, List<ProductRequest> productRequests);
 
+    @Transactional
     void createLinks(List<ProductLinkRequest> productLinkRequests);
+
+    @Transactional
+    boolean updateProductCount(UUID productId, int newCount) throws ServiceException;
 }
