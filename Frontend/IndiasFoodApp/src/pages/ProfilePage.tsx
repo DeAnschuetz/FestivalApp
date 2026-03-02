@@ -5,7 +5,7 @@ import Header from '../components/Header';
 
 const ProfilePage = () => {
   return (
-    <Box>
+    <Box sx={{ pb: { xs: 7, sm: 8 }, pt: { xs: 9, sm: 10, md: 12 } }}>
         <Header />
         <h1>Profile Page</h1>
         <Navigation />

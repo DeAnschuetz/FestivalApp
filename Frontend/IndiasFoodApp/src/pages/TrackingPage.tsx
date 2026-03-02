@@ -1,11 +1,13 @@
 import { Box, Divider, Typography } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import QRCode from 'qrcode';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header/Header';
 import Navigation from '../components/Navigation/Navigation';
 import { useCart } from '../context/CartContext';
 
 const TrackingPage = () => {
+  const navigate = useNavigate();
   const { latestOrderItems, latestOrderId } = useCart();
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState('');
 
@@ -78,7 +80,13 @@ const TrackingPage = () => {
               }}
             >
               {qrCodeDataUrl ? (
-                <Box component="img" src={qrCodeDataUrl} alt="Order QR" sx={{ width: 64, height: 64 }} />
+                <Box
+                  component="img"
+                  src={qrCodeDataUrl}
+                  alt="Order QR"
+                  sx={{ width: 64, height: 64, cursor: 'pointer' }}
+                  onClick={() => navigate('/qr-scan')}
+                />
               ) : (
                 <Typography sx={{ fontSize: 10, color: '#6C7769' }}>No QR</Typography>
               )}

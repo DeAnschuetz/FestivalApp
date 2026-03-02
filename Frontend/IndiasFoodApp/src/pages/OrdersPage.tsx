@@ -37,7 +37,7 @@ const OrdersPage = () => {
       </Box>
       {cartItems.length > 0 && (
         <OrderButton 
-          cardTitle={`Bestellen — $${total.toFixed(2)}`}
+          cardTitle={`Zur Bestellübersicht`}
           onClick={() => navigate('/confirm-order')}
         />
       )}
