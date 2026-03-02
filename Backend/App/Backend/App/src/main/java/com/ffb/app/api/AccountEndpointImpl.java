@@ -1,6 +1,7 @@
 package com.ffb.app.api;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -86,18 +87,25 @@ public class AccountEndpointImpl {
             throw new ApiException(e);
         }
 
-		NewCookie cookie = new NewCookie.Builder("access_token")
-				.value(token)//
-				.path("/")//
-				.httpOnly(true)//
-				.secure(false)//
-				.sameSite(NewCookie.SameSite.LAX)//
-				.maxAge(2 * 60 * 60)//
-				.build()//
-		;
+//		NewCookie cookie = new NewCookie.Builder("access_token")
+//				.value(token)//
+//				.path("/")//
+//				.httpOnly(true)//
+//				.secure(false)//
+//				.sameSite(NewCookie.SameSite.LAX)//
+//				.maxAge(2 * 60 * 60)//
+//				.build()//
+//		;
 
 		LOG.info("login successful for loginNr={{}}", loginNr);
-		return Response.status(Response.Status.OK).entity("Successfully logged in: {" + loginNr +"}").cookie(cookie).build();
+		return Response.status(Response.Status.OK).entity(
+				Map.of(
+					"token", token,
+					"loginNr", loginRequest.loginNr()
+					)//
+				)//
+				.build()//
+		;
 	}
 
 	@POST

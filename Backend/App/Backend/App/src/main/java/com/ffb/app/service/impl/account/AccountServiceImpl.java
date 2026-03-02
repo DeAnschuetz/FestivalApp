@@ -172,7 +172,7 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public String createToken(@NonNull String loginNr,@NonNull Set<String> roles) {
 		LOG.trace("ENTER: createToken; loginNr={{}}, roles={{}}", loginNr, roles);
-		String token = Jwt.issuer("https://your-app.example")
+		String token = Jwt.issuer("festival_food_app")
 				.upn(loginNr)//
 				.groups(roles)//
 				.expiresIn(Duration.ofHours(2))//

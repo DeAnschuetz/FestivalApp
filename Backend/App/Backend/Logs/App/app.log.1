@@ -1,0 +1,22 @@
+2026-03-02 16:24:10,276 INFO  [co.ff.ap.ap.FoodCourtEndpointImpl] (executor-thread-1) list all food courts request for loginNr=V-000-000-001}
+2026-03-02 16:24:10,280 TRACE [co.ff.ap.se.im.fo.co.FoodCourtServiceImpl] (executor-thread-1) ENTER: listAll
+2026-03-02 16:24:10,290 TRACE [co.ff.ap.se.im.fo.co.FoodCourtServiceImpl] (executor-thread-1) EXIT: listAll found 2 foodCourts
+2026-03-02 16:24:10,290 INFO  [co.ff.ap.ap.FoodCourtEndpointImpl] (executor-thread-1) successfully listed all food courts; count=2
+2026-03-02 16:24:11,014 INFO  [co.ff.ap.se.im.fo.co.FoodCourtSimulationService] (vert.x-worker-thread-25) Simulating Order processing
+2026-03-02 16:24:11,014 INFO  [co.ff.ap.se.im.fo.co.FoodCourtWaitingTimeService] (vert.x-worker-thread-26) Updating Waiting Times
+2026-03-02 16:24:11,023 DEBUG [co.ff.ap.se.im.fo.co.FoodCourtWaitingTimeService] (vert.x-worker-thread-26) Updating Waiting Time for 'Burger Palace'
+2026-03-02 16:24:11,028 INFO  [co.ff.ap.se.im.fo.co.FoodCourtSimulationService] (vert.x-worker-thread-25) Simulating Order processing for 'Burger Palace'
+2026-03-02 16:24:11,035 DEBUG [co.ff.ap.se.im.fo.co.FoodCourtSimulationService] (vert.x-worker-thread-25) Order {1ae5d023-d90c-4a01-8080-3bcb4c25be4a} is READY_FOR_PICKUP
+2026-03-02 16:24:11,035 DEBUG [co.ff.ap.se.im.fo.co.FoodCourtSimulationService] (vert.x-worker-thread-25) Order {8510bd64-aec5-44b7-9bb3-8691c7d69806} is READY_FOR_PICKUP
+2026-03-02 16:24:11,035 DEBUG [co.ff.ap.se.im.fo.co.FoodCourtSimulationService] (vert.x-worker-thread-25) Orders in Progress: 0
+2026-03-02 16:24:11,035 INFO  [co.ff.ap.se.im.fo.co.FoodCourtSimulationService] (vert.x-worker-thread-25) Simulating Order processing for 'Pizza Palace'
+2026-03-02 16:24:11,036 DEBUG [co.ff.ap.se.im.fo.co.FoodCourtWaitingTimeService] (vert.x-worker-thread-26) New Waiting Time: 0
+2026-03-02 16:24:11,036 DEBUG [co.ff.ap.se.im.fo.co.FoodCourtWaitingTimeService] (vert.x-worker-thread-26) Updating Waiting Time for 'Pizza Palace'
+2026-03-02 16:24:11,039 DEBUG [co.ff.ap.se.im.fo.co.FoodCourtWaitingTimeService] (vert.x-worker-thread-26) New Waiting Time: 0
+2026-03-02 16:24:11,039 DEBUG [co.ff.ap.se.im.fo.co.FoodCourtSimulationService] (vert.x-worker-thread-25) Order {03bc2fac-7080-466e-a6af-a489cf9029ba} is READY_FOR_PICKUP
+2026-03-02 16:24:11,039 DEBUG [co.ff.ap.se.im.fo.co.FoodCourtSimulationService] (vert.x-worker-thread-25) Orders in Progress: 0
+2026-03-02 16:24:11,039 INFO  [co.ff.ap.se.im.fo.co.FoodCourtSimulationService] (vert.x-worker-thread-25) Finished Order processing
+2026-03-02 16:24:51,675 INFO  [co.ff.ap.ap.FoodCourtEndpointImpl] (executor-thread-3) get food court request for loginNr={V-000-000-001} and foodCourtId={e9b30a36-d946-4295-b934-9aec9014c8c1}
+2026-03-02 16:24:51,675 TRACE [co.ff.ap.se.im.fo.co.FoodCourtServiceImpl] (executor-thread-3) ENTER: get; id={e9b30a36-d946-4295-b934-9aec9014c8c1}
+2026-03-02 16:24:51,680 TRACE [co.ff.ap.se.im.fo.co.FoodCourtServiceImpl] (executor-thread-3) EXIT: get; id={e9b30a36-d946-4295-b934-9aec9014c8c1}, response=[FoodCourtResponse[id=e9b30a36-d946-4295-b934-9aec9014c8c1, name=Pizza Palace, waitingTime=0]]
+2026-03-02 16:24:51,680 INFO  [co.ff.ap.ap.FoodCourtEndpointImpl] (executor-thread-3) successfully got food court; foodCourtId={e9b30a36-d946-4295-b934-9aec9014c8c1}
