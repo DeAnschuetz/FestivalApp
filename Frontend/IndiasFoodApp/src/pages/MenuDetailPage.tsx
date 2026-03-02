@@ -1,8 +1,6 @@
-import React from 'react';
 import { Box } from '@mui/material';
 import Header from '../components/Header/Header';
-import Navigation from '../components/Navigation/Navigation'; 
-import OverViewCard from '../components/Menu/OverViewCard';
+import Navigation from '../components/Navigation/Navigation';
 import { OrderButton } from '../components/Buttons';
 import burgerMenuImg from '../assets/burgerMenu.png';
 import pizzaMenuImg from '../assets/pizza.png';
@@ -19,17 +17,16 @@ const cards = [
 ];
 
 const MenuDetailPage = () => (
-  <Box sx={{bgcolor: '#FAF7F5'}}>
+  <Box sx={{bgcolor: '#FAF7F5', pb: { xs: 14, sm: 16 }, pt: { xs: 9, sm: 10, md: 12 }}}>
     <Header />
-    <Box sx={{pt:12, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-      <DetailViewCard MenuDetailViewImage={cards[1].img} MenuTitle={`${cards[1].title} Margaritha`}/*  cardHeight={'10%'} cardWidth={130} */ imgWidth={130} />
-      <DetailViewCard MenuDetailViewImage={cards[1].img} MenuTitle={`${cards[1].title} Salami`} /* cardHeight={140} cardWidth={130} */ imgWidth={130} />
-      <DetailViewCard MenuDetailViewImage={cards[1].img} MenuTitle={`${cards[1].title} Funghi`} /* cardHeight={140} cardWidth={130} */ imgWidth={130} />
-      <DetailViewCard MenuDetailViewImage={cards[1].img} MenuTitle={`${cards[1].title} Funghi`} /* cardHeight={140} cardWidth={130} */ imgWidth={130} />
-
-        <OrderButton cardTitle='Add to card' />
-      
+    <Box sx={{ px: { xs: 1.5, sm: 2, md: 3 }, display: 'flex', flexDirection: 'column' }}>
+      <DetailViewCard MenuDetailViewImage={cards[1].img} MenuTitle={`${cards[1].title} Margaritha`} imgWidth={80} />
+      <DetailViewCard MenuDetailViewImage={cards[1].img} MenuTitle={`${cards[1].title} Salami`} imgWidth={80} />
+      <DetailViewCard MenuDetailViewImage={cards[1].img} MenuTitle={`${cards[1].title} Funghi`} imgWidth={80} />
+      <DetailViewCard MenuDetailViewImage={cards[1].img} MenuTitle={`${cards[1].title} Funghi`} imgWidth={80} />
     </Box>
+
+    <OrderButton cardTitle='Add to card' />
     <Navigation />
   </Box>
 );

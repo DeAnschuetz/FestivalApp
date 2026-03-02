@@ -1,62 +1,87 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
-interface OverViewCardProps {
+interface DetailViewCardProps {
     MenuDetailViewImage: string;
     MenuTitle?: string;
-    /* cardWidth?: number | string; */
     imgWidth?: number;
-    /* cardHeight?: number | string; */
+    price?: string;
 }
 
-const OverViewCard: React.FC<OverViewCardProps> = ({ MenuDetailViewImage, MenuTitle,  imgWidth }) => {
-  const [itemCount, setItemCount] = useState(0);
+const DetailViewCard: React.FC<DetailViewCardProps> = ({ MenuDetailViewImage, MenuTitle, imgWidth = 80, price = '$8.09' }) => {
+  const [itemCount, setItemCount] = useState(1);
   return (
     <Box
       sx={{
-        backgroundColor: '#ffffffff',
-        p:1,
-        m:1,
-        borderRadius: 4,
+        backgroundColor: '#fff',
+        p: { xs: 1, sm: 1.5 },
+        mx: 0,
+        mb: { xs: 1, sm: 1.5 },
+        borderRadius: { xs: 2.5, sm: 3 },
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: { xs: 1.5, sm: 2 },
       }}
     >
+      {/* Image */}
       <Box
         sx={{
           bgcolor: '#F0ECE9',
           borderRadius: 2,
-          flexDirection: 'row',
-          p: 1,
+          p: { xs: 0.75, sm: 1 },
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minWidth: { xs: imgWidth * 0.75 + 12, sm: imgWidth + 16 },
+          flexShrink: 0,
         }}
       >
         <Box
           component="img"
           src={MenuDetailViewImage}
           alt={MenuTitle || ''}
-          sx={{ width: imgWidth, height: 'auto', mb: 1 }}
+          sx={{ width: { xs: imgWidth * 0.75, sm: imgWidth }, height: 'auto' }}
         />
-        
       </Box>
-      <Box>
-        <Typography variant="subtitle1" fontWeight="bold" sx={{ fontSize: { xs: 16, sm: 18 } }}>
+
+      {/* Content */}
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 0.5, minWidth: 0 }}>
+        <Typography variant="subtitle2" fontWeight="bold" sx={{ fontSize: { xs: 12, sm: 14 }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {MenuTitle}
         </Typography>
-        <Typography variant="body2" sx={{ mt: 1 }}>
-          $8.04        
+        <Typography variant="body2" fontWeight="bold" sx={{ fontSize: { xs: 14, sm: 16 } }}>
+          {price}
         </Typography>
-        <Box sx={{borderRadius: '20px', border: '1px solid #E3DCD5',  display: 'flex', alignItems: 'center', width: '80%', justifyContent: 'center'}}>
-          <Button onClick={() => setItemCount(itemCount - 1)}>
+        
+        {/* Quantity Controls */}
+        <Box sx={{ 
+          borderRadius: '20px', 
+          border: '1px solid #E3DCD5', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          mt: 0.5,
+          maxWidth: { xs: 100, sm: 120 },
+        }}>
+          <Button 
+            size="small" 
+            sx={{ minWidth: { xs: 28, sm: 32 }, color: '#000', fontSize: { xs: 12, sm: 14 }, p: 0.5 }}
+            onClick={() => setItemCount(Math.max(0, itemCount - 1))}
+          >
             —
           </Button>
-          <Box>{itemCount}</Box>
-          <Button onClick={() => setItemCount(itemCount + 1)}>
+          <Typography sx={{ fontSize: { xs: 12, sm: 14 }, fontWeight: 'bold' }}>{itemCount}</Typography>
+          <Button 
+            size="small" 
+            sx={{ minWidth: { xs: 28, sm: 32 }, color: '#000', fontSize: { xs: 12, sm: 14 }, p: 0.5 }}
+            onClick={() => setItemCount(itemCount + 1)}
+          >
             +
           </Button>
         </Box>
-        
       </Box>
     </Box>
   );
 };
 
-export default OverViewCard;
+export default DetailViewCard;
