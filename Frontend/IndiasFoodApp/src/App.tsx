@@ -7,6 +7,7 @@ import ProfilePage from './pages/ProfilePage.tsx';
 import OrdersPage from './pages/OrdersPage.tsx';
 import ConfirmOderPage from './pages/ConfirmOderPage.tsx';
 import SuccessPage from './pages/SuccessPage.tsx';
+import TrackingPage from './pages/TrackingPage.tsx';
 import { CartProvider } from './context/CartContext.tsx';
 
 export type GlobalContext = {
@@ -32,6 +33,7 @@ function App() {
             <Route path="/home" element={<HomePage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/tracking" element={<TrackingPage />} />
             <Route path="/confirm-order" element={<ConfirmOderPage />} />
             <Route path="/success" element={<SuccessPage />} />
             <Route path="/menu/:menuTitle" element={<MenuDetailPage />} />

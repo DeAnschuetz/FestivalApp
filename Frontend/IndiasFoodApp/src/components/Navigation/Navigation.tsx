@@ -19,7 +19,7 @@ const Navigation = () => {
       >
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-around', minHeight: { xs: '42px !important', sm: '48px !important' }, py: 0.5 }}>
          
-            <LocalShippingIcon sx={{ fontSize: { xs: 20, sm: 22 }, cursor: 'pointer' }} onClick={() => navigate('/orders')} />
+            <LocalShippingIcon sx={{ fontSize: { xs: 20, sm: 22 }, cursor: 'pointer' }} onClick={() => navigate('/tracking')} />
             <HomeIcon sx={{ fontSize: { xs: 20, sm: 22 }, cursor: 'pointer' }} onClick={() => navigate('/home')} />
             <PersonIcon sx={{ fontSize: { xs: 20, sm: 22 }, cursor: 'pointer' }} onClick={() => navigate('/profile')} />
         

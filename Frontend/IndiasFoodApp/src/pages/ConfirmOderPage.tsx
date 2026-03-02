@@ -8,12 +8,14 @@ import { useNavigate } from 'react-router-dom';
 
 const ConfirmOrderPage = () => {
   const navigate = useNavigate();
-  const { getCartItemsWithCount, getTotal, clearCart } = useCart();
+  const { getCartItemsWithCount, getTotal, checkoutOrder } = useCart();
   const cartItems = getCartItemsWithCount();
-  const total = getTotal();
+  const subtotal = getTotal();
+  const vipFee = cartItems.length > 0 ? 5.25 : 0;
+  const total = Math.max(0, subtotal - vipFee);
 
   const handleCheckout = () => {
-    clearCart();
+    checkoutOrder();
     navigate('/success');
   };
 
@@ -40,6 +42,24 @@ const ConfirmOrderPage = () => {
           ))
         )}
       </Box>
+
+      {cartItems.length > 0 && (
+        <Box sx={{ px: { xs: 2, sm: 3 }, pt: 2 }}>
+          <Typography sx={{ color: '#9b9b9b', fontSize: 14, mb: 1 }}>Bestellübersicht</Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.8 }}>
+            <Typography sx={{ color: '#666', fontSize: 14 }}>Subtotal</Typography>
+            <Typography sx={{ color: '#666', fontSize: 14 }}>${subtotal.toFixed(2)}</Typography>
+          </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.8 }}>
+            <Typography sx={{ color: '#666', fontSize: 14 }}>VIP Fee</Typography>
+            <Typography sx={{ color: '#666', fontSize: 14 }}>-${vipFee.toFixed(2)}</Typography>
+          </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', pt: 0.4 }}>
+            <Typography sx={{ color: '#2e2e2e', fontSize: 15, fontWeight: 'bold' }}>Total</Typography>
+            <Typography sx={{ color: '#2e2e2e', fontSize: 15, fontWeight: 'bold' }}>${total.toFixed(2)}</Typography>
+          </Box>
+        </Box>
+      )}
 
       {/* Checkout Button */}
       {cartItems.length > 0 && (
