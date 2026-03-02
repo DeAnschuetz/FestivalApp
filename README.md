@@ -3,7 +3,7 @@
 - Name des 2. Frondends: FoodAppIndia
 
 # API-Test Endpoint
-http://10.45.129.22:8080/q/swagger-ui/#/
+http://#aktuelleIP#:8080/q/swagger-ui/#/
 
 # Notes: 
 Mock Up VLPF 
