@@ -1,5 +1,5 @@
-import React, { use } from 'react';
-import { AppBar, Box, Toolbar, IconButton } from '@mui/material';
+import React from 'react';
+import { AppBar, Box, Toolbar } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
@@ -15,10 +15,10 @@ const Navigation = () => {
         sx={{
           bgcolor:'#464646',
           color: '#FAF7F5',
-          borderRadius: 15,     
+          borderRadius: 5,     
         }}
       >
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', mx: 8, py: 2}}>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', mx: 8, py: 1.5}}>
          
             <LocalShippingIcon fontSize="large" onClick={() => navigate('/orders')} />
             <HomeIcon fontSize="large" onClick={() => navigate('/home')} />

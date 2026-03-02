@@ -1,36 +1,32 @@
-import React from 'react';
-import { Box, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Button } from '@mui/material';
 interface OverViewCardProps {
     MenuDetailViewImage: string;
     MenuTitle?: string;
-    cardWidth?: number | string;
+    /* cardWidth?: number | string; */
     imgWidth?: number;
-    cardHeight?: number | string;
+    /* cardHeight?: number | string; */
 }
 
-const OverViewCard: React.FC<OverViewCardProps> = ({ MenuDetailViewImage, MenuTitle, cardWidth, imgWidth, cardHeight = 140 }) => {
+const OverViewCard: React.FC<OverViewCardProps> = ({ MenuDetailViewImage, MenuTitle,  imgWidth }) => {
+  const [itemCount, setItemCount] = useState(0);
   return (
     <Box
       sx={{
         backgroundColor: '#ffffffff',
-        p: 2,
+        p:1,
         m:1,
         borderRadius: 4,
         display: 'flex',
-        justifyContent: 'space-between',
+        flexDirection: 'column',
       }}
     >
       <Box
         sx={{
-          width: cardWidth,
-          minHeight: cardHeight,
           bgcolor: '#F0ECE9',
           borderRadius: 2,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          flexDirection: 'row',
           p: 1,
-          justifyContent: 'center',
         }}
       >
         <Box
@@ -48,8 +44,14 @@ const OverViewCard: React.FC<OverViewCardProps> = ({ MenuDetailViewImage, MenuTi
         <Typography variant="body2" sx={{ mt: 1 }}>
           $8.04        
         </Typography>
-        <Box sx={{borderRadius: '20px', border: '2px solid black', height: '40px'}}>
-
+        <Box sx={{borderRadius: '20px', border: '1px solid #E3DCD5',  display: 'flex', alignItems: 'center', width: '80%', justifyContent: 'center'}}>
+          <Button onClick={() => setItemCount(itemCount - 1)}>
+            —
+          </Button>
+          <Box>{itemCount}</Box>
+          <Button onClick={() => setItemCount(itemCount + 1)}>
+            +
+          </Button>
         </Box>
         
       </Box>

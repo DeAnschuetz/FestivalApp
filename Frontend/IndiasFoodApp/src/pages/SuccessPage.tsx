@@ -1,4 +1,4 @@
-import React from 'react';
+// ...existing code...
 import { Box } from '@mui/material';
 import Navigation from '../components/Navigation/Navigation';
 import Header from '../components/Header';
