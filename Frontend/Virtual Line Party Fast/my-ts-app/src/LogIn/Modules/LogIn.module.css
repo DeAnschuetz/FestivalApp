@@ -1,6 +1,6 @@
 .Background{
     height: 100vh;
-    background-image: url('../Background.png');
+    background-image: url('../../Background.png');
     background-repeat: no-repeat;
     background-size: cover;
     display: flex;

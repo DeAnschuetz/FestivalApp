@@ -1,12 +1,15 @@
 import React from 'react'
-import styles from './LogIn.module.css'
-import LogInContainer from './LogInContainer'
+import styles from './Modules/LogIn.module.css'
 import VLPFLogo from '../VLPFLogo.png';
 import RegisterContainer from './RegisterContainer';
+import LogInContainer from './LogInContainer';
 
 type LoginProps = {
     mode: 'login' | 'register'
 }
+
+
+
 
 function LogIn(props: LoginProps) {
     const {mode } = props;

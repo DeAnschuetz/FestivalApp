@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./LogInContainer.module.css";
+import styles from './Modules/LogInContainer.module.css'
 import InputElement from "../Components/InputElement";
 import { Checkbox } from "@progress/kendo-react-inputs";
 import { Button } from "@progress/kendo-react-buttons";
@@ -43,6 +43,7 @@ function LogInContainer() {
           height: "36px",
           fontSize: "large",
         }}
+        onClick={() => navigate("/user_view")}
       >
         Login
       </Button>
