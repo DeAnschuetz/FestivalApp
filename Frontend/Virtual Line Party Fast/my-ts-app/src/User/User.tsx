@@ -1,29 +1,26 @@
 import React from "react";
 import styles from "./Modules/User.module.css";
-import { Button } from '@progress/kendo-react-buttons';
+import Header from "./Header";
 
 interface Props {}
 
 function User(props: Props) {
   const {} = props;
 
-  return (
-    <div className={styles.User}>
-      <div>
-        <div className={styles.Credits}>
-        <i className="fa fa-money-bills"></i>
-          <Button
-            type="button"
-            fillMode={"outline"}
-             iconClass="fa fa-plus"
-             style={{borderRadius: '100%'}}
-             size={'small'}
-          >
+  // const response = fetch("http://10.45.129.22:8080/food_order/list_all", {
+  //   method: "Get",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   credentials: "include",
+  //   // body: JSON.stringify({ loginNr, password }),
+  // });
 
-          </Button>
-        </div>
-        <div></div>
-      </div>
+  // console.log("hier", response);
+
+  return (
+    <div>
+      <Header />
     </div>
   );
 }

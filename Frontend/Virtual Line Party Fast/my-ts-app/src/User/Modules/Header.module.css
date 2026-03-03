@@ -1,0 +1,32 @@
+.User {
+  background-color: #dcd2cc;
+  padding: 0px 0px 10px 12px;
+  border-bottom: 1px solid black;
+}
+
+.Credits {
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  padding: 6px 12px 6px 12px;
+  margin: 0px 0px 0px 6px;
+}
+
+.Wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.Price {
+  margin: 0px 6px;
+}
+
+.UserWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.LogInNr{
+    margin: 0px 0px 0px 6px;
+}
