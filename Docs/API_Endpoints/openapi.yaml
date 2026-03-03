@@ -376,9 +376,16 @@ paths:
         required: true
       responses:
         "200":
-          description: Login succeeded; cookie set
+          description: Login succeeded; Token served
           content:
-            text/plain: {}
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lgoinNr:
+                    type: string
+                  token:
+                    type: string
         "400":
           description: Invalid request
           content:
@@ -2121,7 +2128,7 @@ paths:
       security:
       - SecurityScheme:
         - ADMIN
-        - WORKER
+        - FOOD_COURT_WORKER
   /product/{id}:
     get:
       summary: Get a Product by ID
