@@ -7,11 +7,14 @@
     "dev": "vite --host",
     "dev:mobile": "vite --host",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "types:gen": "openapi-typescript \"http://10.45.129.44:8080/q/openapi?format=json\" -o src/types/api.generated.ts",
+    "types:gen:file": "openapi-typescript openapi/openapi.json -o src/types/api.generated.ts"
   },
   "devDependencies": {
     "@types/react-dom": "^19.1.9",
     "@types/react-router-dom": "^5.3.3",
+    "openapi-typescript": "^7.13.0",
     "typescript": "~5.8.3",
     "vite": "^7.1.2"
   },

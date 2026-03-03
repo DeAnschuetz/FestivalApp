@@ -3,26 +3,66 @@ import React, { useState } from 'react';
 
 import { Box, Button, FormControl, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import type { paths } from '../types/api.generated';
 
 import burgerImg from '../assets/burger.png';
 
+type LoginRequestBody = paths['/account/login']['post']['requestBody']['content']['application/json'];
+type LoginSuccessResponse = paths['/account/login']['post']['responses'][200]['content']['application/json'];
+
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [ticketNumber, setTicketNumber] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // look for ticketnumber that starts with 3
-    const ticketNumber = (document.getElementById('ticketNumber') as HTMLInputElement | null)?.value || '';
-    if (ticketNumber.startsWith('V')) {
-      console.log('Ticket number starts with V');
-      setIsLoggedIn(true);
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const apiBaseUrl = import.meta.env.DEV
+        ? '/api'
+        : import.meta.env.VITE_API_BASE_URL || 'http://10.45.129.44:8080';
+      const payload: LoginRequestBody = {
+        loginNr: ticketNumber,
+        password,
+      };
+      const response = await fetch(`${apiBaseUrl}/account/login`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || `Login failed (${response.status})`);
+      }
+
+      const data: LoginSuccessResponse = await response.json();
+      console.log('Login successful:', data);
+      if (data?.token) {
+        localStorage.setItem('authToken', data.token);
+      }
+
       navigate('/home');
-    } else {
-      console.log('Ticket number does not start with V');
-      setIsLoggedIn(false);
+    } catch (loginError) {
+      console.error('Login failed:', loginError);
+      if (loginError instanceof TypeError) {
+        setError('Backend nicht erreichbar (Netzwerk/CORS). Bitte Dev-Server neu starten und URL prüfen.');
+      } else {
+        setError('Login fehlgeschlagen. Bitte Zugangsdaten prüfen und erneut versuchen.');
+      }
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Box
@@ -80,6 +120,8 @@ const LoginPage = () => {
               placeholder="Ticketnummer"
               variant="outlined"
               name="ticketNumber"
+              value={ticketNumber}
+              onChange={(event) => setTicketNumber(event.target.value)}
             />
 
             <TextField
@@ -91,12 +133,14 @@ const LoginPage = () => {
               placeholder="Passwort"
               variant="outlined"
               name="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
             />
 
             <Button
               type="submit"
               fullWidth
-			        onSubmit={handleLoginSubmit}
+              disabled={isLoading}
               sx={{
                 mt: 2,
                 bgcolor: '#2e2e2e',
@@ -106,8 +150,21 @@ const LoginPage = () => {
                 borderRadius: '12px',
               }}
             >
-              Anmelden
+              {isLoading ? 'Anmeldung läuft...' : 'Anmelden'}
             </Button>
+
+            {error && (
+              <Typography
+                variant="body2"
+                sx={{
+                  textAlign: 'center',
+                  mt: 2,
+                  color: '#c62828',
+                }}
+              >
+                {error}
+              </Typography>
+            )}
 
             <Typography
               variant="body2"
