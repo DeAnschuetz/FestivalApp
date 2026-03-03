@@ -15,8 +15,8 @@ public class TicketRepositoryIml implements TicketRepository {
     @Override
     public Optional<Ticket> getByLoginNr(String ticketNr) {
         return find(
-                "loginNr",
-                ticketNr
+                        "loginNr",
+                        ticketNr
                 )//
                 .firstResultOptional()//
         ;

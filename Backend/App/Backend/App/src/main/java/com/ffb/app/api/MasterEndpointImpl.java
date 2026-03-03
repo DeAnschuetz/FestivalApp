@@ -282,7 +282,8 @@ public class MasterEndpointImpl {
     @Consumes(MediaType.APPLICATION_JSON)
     @PermitAll
     @Operation(summary = "get all data")
-    public Response getALLData() {
+    public Response getALLData(@HeaderParam("Authorization") String auth) {
+        System.out.println("Authorization header: " + auth);
         DatabaseResponse data = accountService.getDatabaseResponse();
         return Response.status(Response.Status.OK).entity(data).build();
     }
