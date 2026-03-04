@@ -143,14 +143,13 @@ export interface FoodOrderResponse {
   orderItems?: FoodOrderItemResponse[];
 }
 
-export interface FoodOrderResponseFull {
+export interface FoodOrderResponseHistory {
   id?: Uuid;
   status?: FoodOrderStatus;
   foodCourtName?: string;
   waitingTime?: number;
   orderItems?: FoodOrderItemResponse[];
   history?: FoodOrderHistoryResponse[];
-  notifications?: FoodOrderNotificationResponse[];
 }
 
 export interface LoginRequest {
@@ -210,6 +209,11 @@ export interface TicketResponse {
 export type GetAccountListAll400 = {
   code?: string;
   message?: string;
+};
+
+export type PostAccountLogin200 = {
+  lgoinNr?: string;
+  token?: string;
 };
 
 export type PostAccountLogin400 = {

@@ -10,6 +10,7 @@ import com.ffb.app.service.api.food.order.FoodOrderService;
 import com.ffb.model.api.request.food.order.ShareOrderRequest;
 import com.ffb.model.api.response.food.order.FoodOrderResponse;
 import com.ffb.model.api.response.food.order.FoodOrderResponseFull;
+import com.ffb.model.api.response.food.order.FoodOrderResponseHistory;
 import com.ffb.model.db.object.account.Account;
 import com.ffb.model.db.object.account.AccountType;
 import com.ffb.model.db.object.cart.Cart;
@@ -263,7 +264,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
             throw new ServiceException(e, Response.Status.NOT_FOUND);
         }
 
-        FoodOrderResponseFull response = responseMapper.getFoodOrderResponseFull(foodOrder);
+        FoodOrderResponseFull response = responseMapper.getFoodOrderResponseFullWithNotification(foodOrder);
         LOG.trace("EXIT: getById; id={{}} response=[{}]", id, response);
         return response;
     }
@@ -353,6 +354,81 @@ public class FoodOrderServiceImpl implements FoodOrderService {
                 ;
 
         LOG.trace("EXIT: listByLoginNrAndAccountTypeAndStatus; loginNr={{}} found {} orders", loginNr, responses.size());
+        return responses;
+    }
+
+    @Override
+    public List<FoodOrderResponseHistory> listByLoginNrAndAccountTypeWithHistory(String loginNr, AccountType accountType) throws ServiceException {
+        LOG.trace("ENTER: listByLoginNrAndAccountTypeWithHistory; loginNr={{}}, accountType={}", loginNr, accountType);
+
+        List<FoodOrder> foodOrders;
+        if (accountType == AccountType.ADMIN) {
+            LOG.info("Listing all Food Orders (ADMIN); loginNr={{}}", loginNr);
+            foodOrders = foodOrderDao.listAll();
+        } else if (accountType == AccountType.FOOD_COURT_WORKER) {
+            LOG.info("Listing Food Orders by FoodCourt (FOOD_COURT_WORKER); loginNr={{}}", loginNr);
+            FoodCourt foodCourt;
+            try {
+                foodCourt = foodCourtDao.getByLoginNr(loginNr);
+            } catch (DaoException e) {
+                LOG.error("could not find foodCourt for worker loginNr={{}}; Exception:", loginNr, e);
+                throw new ServiceException(e, Response.Status.NOT_FOUND);
+            }
+            UUID foodCourtId = foodCourt.getId();
+            foodOrders = foodOrderDao.listByFoodCourtId(foodCourtId);
+        } else if (accountType == AccountType.GUEST) {
+            LOG.info("Listing Food Orders by loginNr (GUEST); loginNr={{}}", loginNr);
+            foodOrders = foodOrderDao.listByLoginNr(loginNr);
+        } else {
+            LOG.error("unknown accountType={}; loginNr={{}}", accountType, loginNr);
+            throw new ServiceException("Unknown Account type: " + accountType.toString(), Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        List<FoodOrderResponseHistory> responses = foodOrders.stream()//
+                .map(responseMapper::FoodOrderResponseHistory)//
+                .collect(Collectors.toList())//
+                ;
+
+        LOG.trace("EXIT: listByLoginNrAndAccountType; loginNr={{}} found {} orders", loginNr, responses.size());
+        return responses;
+    }
+
+    @Override
+    public List<FoodOrderResponseHistory> listByLoginNrAndAccountTypeAndStatusWithHistory(String loginNr, AccountType accountType, FoodOrderStatus status) throws ServiceException {
+        LOG.trace("ENTER: listByLoginNrAndAccountTypeAndStatusWithHistory; loginNr={{}}, accountType={}, status={}", loginNr, accountType, status);
+        List<FoodOrder> foodOrders;
+        if (accountType == AccountType.ADMIN) {
+            LOG.info("Listing Food Orders by status (ADMIN); status={}", status);
+            foodOrders = foodOrderDao.listAllByStatus(status);
+
+        } else if (accountType == AccountType.FOOD_COURT_WORKER) {
+            LOG.info("Listing Food Orders by FoodCourt + status (FOOD_COURT_WORKER); loginNr={{}}, status={}", loginNr, status);
+            FoodCourt foodCourt;
+            try {
+                foodCourt = foodCourtDao.getByLoginNr(loginNr);
+            } catch (DaoException e) {
+                LOG.error("could not find foodCourt for worker loginNr={{}}; Exception:", loginNr, e);
+                throw new ServiceException(e, Response.Status.NOT_FOUND);
+            }
+            UUID foodCourtId = foodCourt.getId();
+            foodOrders = foodOrderDao.listByFoodCourtIdAndStatus(foodCourtId, status);
+
+            LOG.debug("found {} orders for foodCourtId={{}} with status={}", foodOrders.size(), foodCourtId, status);
+        } else if (accountType == AccountType.GUEST) {
+            LOG.info("Listing Food Orders by loginNr + status (GUEST); loginNr={{}}, status={}", loginNr, status);
+            foodOrders = foodOrderDao.listByLoginNrAndStatus(loginNr, status);
+            LOG.debug("found {} orders for loginNr={{}} with status={}", foodOrders.size(), loginNr, status);
+
+        } else {
+            LOG.error("unknown accountType={}; loginNr={{}}", accountType, loginNr);
+            throw new ServiceException("Unknown Account type: " + accountType.toString(), Response.Status.INTERNAL_SERVER_ERROR);
+        }
+
+        List<FoodOrderResponseHistory> responses = foodOrders.stream()//
+                .map(responseMapper::FoodOrderResponseHistory)//
+                .toList()//
+                ;
+
+        LOG.trace("EXIT: listByLoginNrAndAccountTypeAndStatusWithHistory; loginNr={{}} found {} orders", loginNr, responses.size());
         return responses;
     }
 }
