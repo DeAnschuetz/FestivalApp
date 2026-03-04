@@ -1,0 +1,71 @@
+.AbholbereitContainer {
+  margin: 12px 12px 6px 6px;
+}
+
+.AbholbereitTitleWrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0px 0px 6px 0px;
+}
+
+.AbholbereitTitle {
+  margin-left: 6px;
+}
+
+.OrderWrapper {
+  margin: 0px 20px;
+  height: 90px;
+  padding: 6px 12px 0px 0px;
+  overflow: auto;
+}
+
+.StatusWrapper {
+  display: flex;
+  border-top: 1px solid #ede7dc;
+  align-items: center;
+  height: 50%;
+  padding-left: 6px;
+}
+
+.StatusText {
+  margin-left: 6px;
+}
+
+.OrderContainer {
+  background-color: #bdc3cb;
+  border: 1px solid #ede7dc;
+  margin-bottom: 12px;
+  height: 80px;
+  border-radius: 10px;
+  display: flex;
+}
+
+.VerticalWrapper {
+  width: 32%;
+  border-right: 2px solid #ede7dc;
+  height: 100%;
+}
+
+.FoodCourtName {
+  display: flex;
+  align-items: center;
+  height: 50%;
+  padding-left: 6px;
+}
+
+.ItemContainer {
+  width: 68%;
+  padding: 6px;
+  height: 66px;
+  overflow: auto;
+}
+
+.ItemWrapper{
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+
+.ItemName{
+  max-width: 90%;
+}

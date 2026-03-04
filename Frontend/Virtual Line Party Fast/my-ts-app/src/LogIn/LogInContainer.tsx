@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from './Modules/LogInContainer.module.css';
+import styles from "./Modules/LogInContainer.module.css";
 import InputElement from "../Components/InputElement";
 import { Checkbox } from "@progress/kendo-react-inputs";
 import { Button } from "@progress/kendo-react-buttons";
@@ -12,10 +12,10 @@ function LogInContainer() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // verhindert das Standard-Formular-Reload
+    e.preventDefault();
 
     try {
-      const response = await fetch("http://10.45.129.22:8080/account/login", {
+      const response = await fetch("http://10.45.128.255:8080/account/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,14 +25,13 @@ function LogInContainer() {
       });
 
       if (!response.ok) {
-        const text = await response.headers
-        console.log('text: ', text);
-        // throw new Error(text || "Login fehlgeschlagen");
+        throw new Error("Login fehlgeschlagen");
       }
 
-      // Login erfolgreich, z.B. Weiterleitung
+      const data = await response.json();
+      localStorage.setItem("token", data.token);
+
       console.log("Login erfolgreich!");
-      console.log("text",  await response)
       navigate("/user_view");
     } catch (err: any) {
       console.error(err);
@@ -78,7 +77,7 @@ function LogInContainer() {
             color: "white",
             height: "36px",
             fontSize: "large",
-            width: "100%"
+            width: "100%",
           }}
         >
           Login
