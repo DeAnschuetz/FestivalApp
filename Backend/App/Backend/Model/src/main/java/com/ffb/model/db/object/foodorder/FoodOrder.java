@@ -73,7 +73,7 @@ public class FoodOrder extends PanacheEntityBase {
 
 	@JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(
 			name = "shared_account_id",
 			referencedColumnName = "id",
