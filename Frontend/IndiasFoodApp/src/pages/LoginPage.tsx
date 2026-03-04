@@ -1,14 +1,11 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { Box, Button, FormControl, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import type { paths } from '../types/api.generated';
+import handleLoginSubmit from '../api-communication/login';
 
 import burgerImg from '../assets/burger.png';
-
-type LoginRequestBody = paths['/account/login']['post']['requestBody']['content']['application/json'];
-type LoginSuccessResponse = paths['/account/login']['post']['responses'][200]['content']['application/json'];
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -16,53 +13,6 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const handleLoginSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setIsLoading(true);
-
-    try {
-      const apiBaseUrl = import.meta.env.DEV
-        ? '/api'
-        : import.meta.env.VITE_API_BASE_URL || 'http://10.45.129.44:8080';
-      const payload: LoginRequestBody = {
-        loginNr: ticketNumber,
-        password,
-      };
-      const response = await fetch(`${apiBaseUrl}/account/login`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || `Login failed (${response.status})`);
-      }
-
-      const data: LoginSuccessResponse = await response.json();
-      console.log('Login successful:', data);
-      if (data?.token) {
-        localStorage.setItem('authToken', data.token);
-      }
-
-      navigate('/home');
-    } catch (loginError) {
-      console.error('Login failed:', loginError);
-      if (loginError instanceof TypeError) {
-        setError('Backend nicht erreichbar (Netzwerk/CORS). Bitte Dev-Server neu starten und URL prüfen.');
-      } else {
-        setError('Login fehlgeschlagen. Bitte Zugangsdaten prüfen und erneut versuchen.');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Box
@@ -109,7 +59,7 @@ const LoginPage = () => {
         </Box>
 
         {/* Login-Formular */}
-        <Box component="form" sx={{ px: 3, pb: 3 }} onSubmit={handleLoginSubmit}>
+        <Box component="form" sx={{ px: 3, pb: 3 }} onSubmit={(e) => handleLoginSubmit({ ticketNumber, password, setError, setIsLoading, navigate }, e)}>
 
           <FormControl fullWidth>
             <TextField

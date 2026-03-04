@@ -2,7 +2,7 @@ import { defineConfig, loadEnv } from 'vite';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const backendTarget = env.VITE_API_BASE_URL || 'http://10.45.129.44:8080';
+  const backendTarget = env.VITE_API_BASE_URL || 'http://10.45.128.255:8080';
   const backendOrigin = new URL(backendTarget).origin;
 
   return {
