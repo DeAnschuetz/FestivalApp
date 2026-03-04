@@ -5,17 +5,70 @@ import { Checkbox } from "@progress/kendo-react-inputs";
 import { Button } from "@progress/kendo-react-buttons";
 import { useNavigate } from "react-router-dom";
 
+type AccountType = "ADMIN" | "FOOD_COURT_WORKER" | "GUEST";
+const API_BASE = "http://10.45.128.255:8080";
+
+interface AccountResponse {
+  id: string;
+  loginNr: string;
+  type?: AccountType;
+  role?: AccountType;
+}
+
 function LogInContainer() {
   const [loginNr, setLoginNr] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
+  const getAuthHeaders = (token: string) => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  });
+
+  const resolveTargetRoute = async (token: string): Promise<string> => {
+    try {
+      const accountResponse = await fetch(`${API_BASE}/account`, {
+        method: "GET",
+        headers: getAuthHeaders(token),
+        credentials: "include",
+      });
+
+      if (accountResponse.ok) {
+        const accountData = (await accountResponse.json()) as AccountResponse;
+        const accountType = (accountData.type ?? accountData.role ?? "").toUpperCase();
+        if (accountType === "FOOD_COURT_WORKER") {
+          return "/food_court";
+        } else if (accountType === "ADMIN") {
+          return "/user_view";
+        }
+      }
+    } catch (accountError) {
+      console.warn("Account-Typ konnte nicht geladen werden", accountError);
+    }
+
+    try {
+      const foodCourtProbe = await fetch(`${API_BASE}/food_court`, {
+        method: "GET",
+        headers: getAuthHeaders(token),
+        credentials: "include",
+      });
+
+      if (foodCourtProbe.ok) {
+        return "/food_court";
+      }
+    } catch (probeError) {
+      console.warn("Food-Court Probe fehlgeschlagen", probeError);
+    }
+
+    return "/user_view";
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://10.45.128.255:8080/account/login", {
+      const response = await fetch(`${API_BASE}/account/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,9 +83,11 @@ function LogInContainer() {
 
       const data = await response.json();
       localStorage.setItem("token", data.token);
+      const targetRoute = await resolveTargetRoute(data.token);
 
       console.log("Login erfolgreich!");
-      navigate("/user_view");
+      navigate(targetRoute);
+      console.log("Navigiere zu:", targetRoute);
     } catch (err: any) {
       console.error(err);
       alert(err.message);
