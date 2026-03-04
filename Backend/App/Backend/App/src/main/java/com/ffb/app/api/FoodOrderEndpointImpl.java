@@ -6,6 +6,7 @@ import com.ffb.model.api.response.error.ErrorResponse;
 import com.ffb.model.api.response.food.order.FoodOrderResponse;
 import com.ffb.model.api.response.food.order.FoodOrderResponseFull;
 import com.ffb.model.api.request.food.order.ShareOrderRequest;
+import com.ffb.model.api.response.food.order.FoodOrderResponseHistory;
 import com.ffb.model.db.object.foodorder.FoodOrderStatus;
 import com.ffb.model.db.object.account.AccountType;
 import com.ffb.model.exception.ApiException;
@@ -274,7 +275,7 @@ public class FoodOrderEndpointImpl {
 					description = "Orders returned successfully",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
-							schema = @Schema(implementation = FoodOrderResponseFull.class, type = SchemaType.ARRAY)
+							schema = @Schema(implementation = FoodOrderResponseHistory.class, type = SchemaType.ARRAY)
 					)
 			),
 			@APIResponse(
@@ -302,9 +303,9 @@ public class FoodOrderEndpointImpl {
 		}
 		LOG.info("list all with history request for loginNr={{}}", loginNr);
 		AccountType accountType = getAccountType();
-		List<FoodOrderResponse> data;
+		List<FoodOrderResponseHistory> data;
 		try {
-			data = foodOrderService.listByLoginNrAndAccountType(loginNr, accountType);
+			data = foodOrderService.listByLoginNrAndAccountTypeWithHistory(loginNr, accountType);
 		} catch (ServiceException e) {
 			LOG.error("could not list orders with history for loginNr={{}}; Exception: ", loginNr, e);
 			throw new ApiException(e);
@@ -324,7 +325,7 @@ public class FoodOrderEndpointImpl {
 					description = "Orders returned successfully",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON,
-							schema = @Schema(implementation = FoodOrderResponseFull.class, type = SchemaType.ARRAY)
+							schema = @Schema(implementation = FoodOrderResponseHistory.class, type = SchemaType.ARRAY)
 					)
 			),
 			@APIResponse(
@@ -352,9 +353,9 @@ public class FoodOrderEndpointImpl {
 		}
 		LOG.info("list all with history request for loginNr={{}} and status='{}'", loginNr, status);
 		AccountType accountType = getAccountType();
-		List<FoodOrderResponse> data;
+		List<FoodOrderResponseHistory> data;
 		try {
-			data = foodOrderService.listByLoginNrAndAccountTypeAndStatus(loginNr, accountType, status);
+			data = foodOrderService.listByLoginNrAndAccountTypeAndStatusWithHistory(loginNr, accountType, status);
 		} catch (ServiceException e) {
 			LOG.error("could not list orders with history for loginNr={{}} and status='{}'; Exception: ", loginNr, status, e);
 			throw new ApiException(e);

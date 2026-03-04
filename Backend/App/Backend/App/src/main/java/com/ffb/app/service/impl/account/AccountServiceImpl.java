@@ -195,7 +195,7 @@ public class AccountServiceImpl implements AccountService {
 							responseMapper.getCreditResponseFull(account.getCredit()),
 							responseMapper.getCartResponseSimple(account.getCart()),
 							account.getFoodOrders().stream()//
-									.map(responseMapper::getFoodOrderResponseFull)//
+									.map(responseMapper::getFoodOrderResponseFullWithNotification)//
 									.toList(),
 							responseMapper.getFoodCourtResponseFull(account.getFoodCourt())
 					);

@@ -187,7 +187,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FoodOrderItemResponse"
-    FoodOrderResponseFull:
+    FoodOrderResponseHistory:
       type: object
       properties:
         id:
@@ -207,10 +207,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FoodOrderHistoryResponse"
-        notifications:
-          type: array
-          items:
-            $ref: "#/components/schemas/FoodOrderNotificationResponse"
     FoodOrderStatus:
       type: string
       enum:
@@ -1432,7 +1428,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/FoodOrderResponseFull"
+                  $ref: "#/components/schemas/FoodOrderResponseHistory"
         "400":
           description: Invalid Status or unknown Account Type
           content:
@@ -1478,7 +1474,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/FoodOrderResponseFull"
+                  $ref: "#/components/schemas/FoodOrderResponseHistory"
         "400":
           description: Unknown account Type / Role mapping failed
           content:

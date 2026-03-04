@@ -25,7 +25,7 @@ import type {
   FoodCourtRequestSimple,
   FoodCourtResponse,
   FoodOrderResponse,
-  FoodOrderResponseFull,
+  FoodOrderResponseHistory,
   FoodOrderStatus,
   GetAccountListAll400,
   GetCart200,
@@ -50,6 +50,7 @@ import type {
   GetProductListByFoodCourtIdFoodCourtId400,
   LoginRequest,
   NotificationStatus,
+  PostAccountLogin200,
   PostAccountLogin400,
   PostAccountLogout400,
   PostAccountRegister201,
@@ -166,17 +167,24 @@ export const getAccountListAll = async ( options?: RequestInit): Promise<getAcco
 /**
  * @summary Login
  */
+export type postAccountLoginResponse200 = {
+  data: PostAccountLogin200
+  status: 200
+}
+
 export type postAccountLoginResponse400 = {
   data: PostAccountLogin400
   status: 400
 }
 
-;
+export type postAccountLoginResponseSuccess = (postAccountLoginResponse200) & {
+  headers: Headers;
+};
 export type postAccountLoginResponseError = (postAccountLoginResponse400) & {
   headers: Headers;
 };
 
-export type postAccountLoginResponse = (postAccountLoginResponseError)
+export type postAccountLoginResponse = (postAccountLoginResponseSuccess | postAccountLoginResponseError)
 
 export const getPostAccountLoginUrl = () => {
 
@@ -1662,7 +1670,7 @@ export const getFoodOrderListAllByStatusStatus = async (status: FoodOrderStatus,
  * @summary List all Food Orders visible to the currently logged-in Account (Role-Based) filtered by Status with History
  */
 export type getFoodOrderListAllByStatusStatusHistoryResponse200 = {
-  data: FoodOrderResponseFull[]
+  data: FoodOrderResponseHistory[]
   status: 200
 }
 
@@ -1726,7 +1734,7 @@ export const getFoodOrderListAllByStatusStatusHistory = async (status: FoodOrder
  * @summary List all Food Orders, History included visible to the currently logged-in Account (Role-Based)
  */
 export type getFoodOrderListAllHistoryResponse200 = {
-  data: FoodOrderResponseFull[]
+  data: FoodOrderResponseHistory[]
   status: 200
 }
 
@@ -1992,7 +2000,7 @@ export type getMasterResponse200 = {
 export type getMasterResponseSuccess = (getMasterResponse200) & {
   headers: Headers;
 };
-
+;
 
 export type getMasterResponse = (getMasterResponseSuccess)
 
@@ -2034,7 +2042,7 @@ export type postMasterResponse200 = {
 export type postMasterResponseSuccess = (postMasterResponse200) & {
   headers: Headers;
 };
-
+;
 
 export type postMasterResponse = (postMasterResponseSuccess)
 
@@ -2076,7 +2084,7 @@ export type postMasterSimmulationPauseResponse200 = {
 export type postMasterSimmulationPauseResponseSuccess = (postMasterSimmulationPauseResponse200) & {
   headers: Headers;
 };
-
+;
 
 export type postMasterSimmulationPauseResponse = (postMasterSimmulationPauseResponseSuccess)
 
@@ -2118,6 +2126,7 @@ export type postMasterSimmulationResumeResponse200 = {
 export type postMasterSimmulationResumeResponseSuccess = (postMasterSimmulationResumeResponse200) & {
   headers: Headers;
 };
+;
 
 export type postMasterSimmulationResumeResponse = (postMasterSimmulationResumeResponseSuccess)
 
