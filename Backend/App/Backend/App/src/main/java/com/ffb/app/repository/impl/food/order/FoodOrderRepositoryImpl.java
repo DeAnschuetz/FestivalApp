@@ -1,10 +1,13 @@
 package com.ffb.app.repository.impl.food.order;
 
 import com.ffb.app.repository.api.food.order.FoodOrderRepository;
+import com.ffb.app.service.api.food.order.FoodOrderService;
 import com.ffb.model.db.object.foodorder.FoodOrder;
 import com.ffb.model.db.object.foodorder.FoodOrderStatus;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +17,7 @@ import java.util.UUID;
 public class FoodOrderRepositoryImpl implements FoodOrderRepository {
 
     // TODO Logging
+    private static final Logger LOG = LoggerFactory.getLogger(FoodOrderRepository.class);
 
     @Override
     public List<FoodOrder> listAll() {
@@ -78,10 +82,15 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
 
     @Override
     public List<FoodOrder> listByLoginNr(String loginNr) {
+        LOG.info("loginNR=" + loginNr);
         return find(
                     "SELECT DISTINCT fo " +
-                    "FROM FoodOrder fo " +
-                    "WHERE fo.account.ticket.loginNr = ?1 OR fo.sharedAccount.ticket.loginNr = ?1",
+                            "FROM FoodOrder fo " +
+                            "JOIN fo.account a " +
+                            "JOIN a.ticket t " +
+                            "LEFT JOIN fo.sharedAccount sa " +
+                            "LEFT JOIN sa.ticket sat " +
+                            "WHERE t.loginNr = ?1 OR sat.loginNr = ?1",
                     loginNr
                  )//
                 .list()//
@@ -91,9 +100,13 @@ public class FoodOrderRepositoryImpl implements FoodOrderRepository {
     @Override
     public List<FoodOrder> listByLoginNrAndStatus(String loginNr, FoodOrderStatus status) {
         return find(
-                    "SELECT DISTINCT fo " +
-                    "FROM FoodOrder fo " +
-                    "WHERE fo.account.ticket.loginNr = ?1 OR fo.sharedAccount.ticket.loginNr = ?1 AND fo.status = ?2",
+                "SELECT DISTINCT fo " +
+                        "FROM FoodOrder fo " +
+                        "JOIN fo.account a " +
+                        "JOIN a.ticket t " +
+                        "LEFT JOIN fo.sharedAccount sa " +
+                        "LEFT JOIN sa.ticket sat " +
+                        "WHERE t.loginNr = ?1 OR sat.loginNr = ?1 AND fo.status = ?2",
                     loginNr,
                     status
                 )//
