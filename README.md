@@ -2,9 +2,6 @@
 - Name des 1. Frontends: Virtual Line Party Fast
 - Name des 2. Frondends: FoodAppIndia
 
-# Aktuelle IP
-10.45.129.44
-
 # API-Test Endpoint
 http://#aktuelleIP#:8080/q/swagger-ui/#/
 # Komplettes Dev UI mit Log Anzeige
