@@ -1,0 +1,20 @@
+.Background{
+    height: 100vh;
+    background-image: url('../../Background.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.TitelLineOne{
+    margin-top: 38%;
+    font-size: 44px;
+    font-weight: bold;
+}
+
+.TitelLineTwo{
+    font-size: 38px;
+    margin-bottom: 26px;
+}
