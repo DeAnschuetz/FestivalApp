@@ -189,6 +189,9 @@ public class MasterEndpointImpl {
             new CartItemCreationRequest(BURGER_MENU_MIT_COLA_ID, 2, "")
     );
 
+    /*
+        CART ITEMS FOR DIFFERENT FOOD COURTS
+     */
     private static final List<CartItemCreationRequest> SECOND_CART_ITEM_CREATION_REQUESTS = List.of(
             new CartItemCreationRequest(BURGER_MENU_ID, 2, ""),
             new CartItemCreationRequest(BURGER_MENU_ID, 1, "mit extra Käse"),
