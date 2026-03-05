@@ -6,7 +6,7 @@ import { Button } from "@progress/kendo-react-buttons";
 import { useNavigate } from "react-router-dom";
 
 type AccountType = "ADMIN" | "FOOD_COURT_WORKER" | "GUEST";
-const API_BASE = "http://10.45.128.255:8080";
+const API_BASE = "http://10.45.129.19:8080";
 
 interface AccountResponse {
   id: string;

@@ -25,7 +25,9 @@ function HomePageOrderCard({
 }: HomePageOrderCardProps) {
 	const groupedItems = order.orderItems.reduce<Record<string, number>>((accumulator, item) => {
 		accumulator[item.displayName] = (accumulator[item.displayName] ?? 0) + item.count;
-		return accumulator;
+		console.log('accum', accumulator);
+        return accumulator;
+        
 	}, {});
 
 	const extras = order.orderItems
@@ -82,6 +84,12 @@ function HomePageOrderCard({
 					<button className={styles.SmallButton} onClick={onApplyStatus}>
 						Status setzen
 					</button>
+                    {selectedStatus === "READY_FOR_PICKUP" && (
+                        <div className={styles.ready}>
+                            <i className="fa-regular fa-circle-check" />
+                           
+                        </div>
+                    )}
 				</div>
 			</div>
 		</div>

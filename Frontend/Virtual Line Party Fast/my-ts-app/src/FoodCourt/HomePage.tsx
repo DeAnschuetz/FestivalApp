@@ -45,7 +45,6 @@ function HomePage() {
 	const [orders, setOrders] = useState<Order[]>([]);
 	const [allOrders, setAllOrders] = useState<Order[]>([]);
 	const [statusSelection, setStatusSelection] = useState<Record<string, OrderStatus>>({});
-	const [bulkStatusSelection, setBulkStatusSelection] = useState<OrderStatus>("IN_PROGRESS");
 	const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
 	const [activeFilter, setActiveFilter] = useState<FilterKey>("ALL");
 	const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -309,7 +308,7 @@ function HomePage() {
 		}
 	};
 
-	const applyBulkStatusUpdate = async () => {
+	const applyBulkStatusUpdate = async (statusForUpdate: OrderStatus) => {
 		if (selectedOrderIds.length === 0) {
 			return;
 		}
@@ -319,7 +318,7 @@ function HomePage() {
 			setSuccess("");
 			const updatedCount = selectedOrderIds.length;
 			await Promise.all(
-				selectedOrderIds.map((orderId) => updateOrderStatus(orderId, bulkStatusSelection)),
+				selectedOrderIds.map((orderId) => updateOrderStatus(orderId, statusForUpdate)),
 			);
 			await Promise.all([fetchOrders(activeFilter), fetchAllOrders()]);
 			setSelectedOrderIds([]);
@@ -378,7 +377,6 @@ function HomePage() {
 						<div className={styles.TopTitle}>{foodCourt?.name ?? "Food Court"}</div>
 					</div>
 					<div className={styles.TopRight}>
-						{/* <div className={styles.Badge}>UUID: {foodCourt?.id ?? "-"}</div> */}
 						{(directImageUrl || foodCourtImageUrl) ? (
 							<img
 								className={styles.FoodImage}
@@ -428,11 +426,9 @@ function HomePage() {
 				<HomePageBulkActions
 					hasOrders={orders.length > 0}
 					allVisibleOrdersSelected={allVisibleOrdersSelected}
-					bulkStatusSelection={bulkStatusSelection}
 					selectedCount={selectedOrderIds.length}
 					statusLabels={statusLabels}
 					onToggleAll={toggleAllSelectedOrders}
-					onBulkStatusChange={setBulkStatusSelection}
 					onApplyBulk={applyBulkStatusUpdate}
 				/>
 

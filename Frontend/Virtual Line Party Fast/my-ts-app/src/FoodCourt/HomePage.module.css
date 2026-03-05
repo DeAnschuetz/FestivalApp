@@ -191,16 +191,44 @@
 }
 
 .FilterActive {
-  background: #cfd6dd;
+  text-decoration: underline;
+  text-underline-position: under;
   font-weight: 700;
 }
 
 .BulkActionsRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 12px;
   margin-top: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+}
+
+.BulkSelectAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.BulkSelectAll input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.BulkSelectAll input:disabled {
+  cursor: not-allowed;
+}
+
+.BulkUpdateSelect {
+  border: 1px solid #6f6f6f;
+  height: 32px;
+  padding: 0 10px;
+  background: #cfd6dd;
+  min-width: 120px;
 }
 
 .ReadySection {
@@ -414,9 +442,11 @@
   }
 
   .BulkActionsRow {
-    overflow-x: auto;
+   /*  overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    flex-wrap: nowrap;
+    flex-wrap: nowrap; */
+    margin-left: 12px;
+    margin-right: 12px;
   }
 
   .ReadyHeader {
@@ -438,6 +468,12 @@
   .OrderRow {
     display: flex;
     justify-content: space-evenly;
+  }
+
+  .ready{
+    display: inline-flex;
+    align-items: center;
+    color: #2f5f2f;
   }
 }
 
