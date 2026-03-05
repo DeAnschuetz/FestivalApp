@@ -3,6 +3,9 @@ import styles from "./HomePage.module.css";
 import { FoodCourt, Order, OrderStatus } from "../Types";
 import { useNavigate } from "react-router-dom";
 import FoodCourtDropDown from "../Components/FoodCourtDropDown";
+import HomePageFilterBar from "../Components/HomePageFilterBar";
+import HomePageBulkActions from "../Components/HomePageBulkActions";
+import HomePageOrderCard from "../Components/HomePageOrderCard";
 type FilterKey = "ALL" | OrderStatus;
 
 const API_BASE = "http://10.45.129.19:8080";
@@ -42,6 +45,7 @@ function HomePage() {
 	const [orders, setOrders] = useState<Order[]>([]);
 	const [allOrders, setAllOrders] = useState<Order[]>([]);
 	const [statusSelection, setStatusSelection] = useState<Record<string, OrderStatus>>({});
+	const [bulkStatusSelection, setBulkStatusSelection] = useState<OrderStatus>("IN_PROGRESS");
 	const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
 	const [activeFilter, setActiveFilter] = useState<FilterKey>("ALL");
 	const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -49,6 +53,7 @@ function HomePage() {
 	const [useFallbackImage, setUseFallbackImage] = useState<boolean>(false);
 	const [menuOpen, setMenuOpen] = useState<boolean>(false);
 	const [error, setError] = useState<string>("");
+	const [success, setSuccess] = useState<string>("");
 	const menuRef = useRef<HTMLDivElement | null>(null);
 
 	const directImageUrl =
@@ -179,6 +184,20 @@ function HomePage() {
 		};
 	}, []);
 
+	useEffect(() => {
+		if (!success) {
+			return;
+		}
+
+		const timeoutId = window.setTimeout(() => {
+			setSuccess("");
+		}, 2500);
+
+		return () => {
+			window.clearTimeout(timeoutId);
+		};
+	}, [success]);
+
 	const loadFallbackImage = async () => {
 		if (!foodCourt?.id || !isUuid(foodCourt.id)) {
 			return;
@@ -235,6 +254,23 @@ function HomePage() {
 			return countsByStatus[filterKey];
 		};
 
+	const allVisibleOrdersSelected =
+		orders.length > 0 && orders.every((order) => selectedOrderIds.includes(order.id));
+
+	const toggleAllSelectedOrders = () => {
+		setSelectedOrderIds((currentSelection) => {
+			const visibleOrderIds = orders.map((order) => order.id);
+			const allSelected =
+				visibleOrderIds.length > 0 && visibleOrderIds.every((orderId) => currentSelection.includes(orderId));
+
+			if (allSelected) {
+				return currentSelection.filter((orderId) => !visibleOrderIds.includes(orderId));
+			}
+
+			return Array.from(new Set([...currentSelection, ...visibleOrderIds]));
+		});
+	};
+
 	const toggleOrderSelection = (orderId: string) => {
 		setSelectedOrderIds((currentSelection) => {
 			if (currentSelection.includes(orderId)) {
@@ -264,9 +300,11 @@ function HomePage() {
 		}
 
 		try {
+			setSuccess("");
 			await updateOrderStatus(orderId, selectedStatus);
 			await Promise.all([fetchOrders(activeFilter), fetchAllOrders()]);
 		} catch (updateError) {
+			setSuccess("");
 			setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
 		}
 	};
@@ -277,13 +315,19 @@ function HomePage() {
 		}
 
 		try {
+			setError("");
+			setSuccess("");
+			const updatedCount = selectedOrderIds.length;
 			await Promise.all(
-				selectedOrderIds.map((orderId) =>
-					updateOrderStatus(orderId, statusSelection[orderId] ?? "IN_PROGRESS"),
-				),
+				selectedOrderIds.map((orderId) => updateOrderStatus(orderId, bulkStatusSelection)),
 			);
 			await Promise.all([fetchOrders(activeFilter), fetchAllOrders()]);
+			setSelectedOrderIds([]);
+			setSuccess(
+				`Status für ${updatedCount} Bestellung${updatedCount === 1 ? "" : "en"} aktualisiert.`,
+			);
 		} catch (updateError) {
+			setSuccess("");
 			setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
 		}
 	};
@@ -351,19 +395,6 @@ function HomePage() {
 						)}
 					</div>
 				</div>
-
-				{/* <div className={styles.InfoBar}>
-					<div className={styles.InfoLeft}>
-						<i className="fa-solid fa-list-check" />
-						<span>Bestellungen</span>
-						<span className={styles.Badge}>{orders.length}</span>
-					</div>
-					<div className={styles.InfoLeft}>
-						<span>Abholbereit</span>
-						<span className={styles.Badge}>{countsByStatus.READY_FOR_PICKUP}</span>
-					</div>
-				</div> */}
-
 				<div className={styles.ControlsRow}>
 					<div className={styles.WaitingGroup}>
 						<i className="fa-regular fa-clock" />
@@ -387,26 +418,26 @@ function HomePage() {
 					</button>
 				</div>
 
-				<div className={styles.FilterRow}>
-					{filterConfig.map((filter) => (
-						<button
-							key={filter.key}
-							className={`${styles.FilterButton} ${activeFilter === filter.key ? styles.FilterActive : ""}`}
-							onClick={() => setActiveFilter(filter.key)}
-						>
-							{filter.label} ({getFilterCount(filter.key)})
-						</button>
-					))}
-					<button
-						className={styles.PrimaryButton}
-						onClick={applyBulkStatusUpdate}
-						disabled={selectedOrderIds.length === 0}
-					>
-						Alle updaten ({selectedOrderIds.length})
-					</button>
-				</div>
+				<HomePageFilterBar
+					filters={filterConfig}
+					activeFilter={activeFilter}
+					onSelectFilter={(filterKey) => setActiveFilter(filterKey as FilterKey)}
+					getFilterCount={(filterKey) => getFilterCount(filterKey as FilterKey)}
+				/>
+
+				<HomePageBulkActions
+					hasOrders={orders.length > 0}
+					allVisibleOrdersSelected={allVisibleOrdersSelected}
+					bulkStatusSelection={bulkStatusSelection}
+					selectedCount={selectedOrderIds.length}
+					statusLabels={statusLabels}
+					onToggleAll={toggleAllSelectedOrders}
+					onBulkStatusChange={setBulkStatusSelection}
+					onApplyBulk={applyBulkStatusUpdate}
+				/>
 
 				{error && <div className={styles.Error}>{error}</div>}
+				{success && <div className={styles.Success}>{success}</div>}
 				{isLoading && <div className={styles.Loading}>Lade Daten ...</div>}
 
 				<div className={styles.OrderList}>
@@ -414,79 +445,24 @@ function HomePage() {
 						<div className={styles.Empty}>Keine Bestellungen für den gewählten Filter.</div>
 					)}
 
-					{orders.map((order) => {
-						const groupedItems = order.orderItems.reduce<Record<string, number>>((accumulator, item) => {
-							accumulator[item.displayName] = (accumulator[item.displayName] ?? 0) + item.count;
-							return accumulator;
-						}, {});
-
-						const extras = order.orderItems
-							.map((item) => item.extra)
-							.filter((extraText) => extraText && extraText.trim().length > 0)
-							.join(", ");
-
-						return (
-							<div className={styles.OrderCard} key={order.id}>
-								<div>
-									<div className={styles.OrderTop}>
-										<div className={styles.OrderId}>Bestellung #{order.id.slice(0, 8)}</div>
-										<div className={styles.OrderMeta}>
-											<i className="fa-regular fa-clock" />
-											<span>{order.waitingTime} min</span>
-											<span className={styles.Badge}>{statusLabels[order.status]}</span>
-										</div>
-									</div>
-
-									<div className={styles.Items}>
-										{Object.entries(groupedItems).map(([itemName, count]) => (
-											<div className={styles.ItemLine} key={itemName}>
-												<span>{itemName}</span>
-												<span>x {count}</span>
-											</div>
-										))}
-									</div>
-
-									<div className={styles.Extra}>Sonderwünsche: {extras || "-"}</div>
-								</div>
-
-								<div className={styles.CardActions}>
-									<label>
-										<input
-											type="checkbox"
-											checked={selectedOrderIds.includes(order.id)}
-											onChange={() => toggleOrderSelection(order.id)}
-										/>
-										&nbsp;Auswahl
-									</label>
-
-									<select
-										className={styles.StatusSelect}
-										value={statusSelection[order.id] ?? order.status}
-										onChange={(event) => {
-											const value = event.target.value;
-											if (!isOrderStatus(value)) {
-												return;
-											}
-											setStatusSelection((currentSelection) => ({
-												...currentSelection,
-												[order.id]: value,
-											}));
-										}}
-									>
-										{Object.entries(statusLabels).map(([statusKey, label]) => (
-											<option key={statusKey} value={statusKey}>
-												{label}
-											</option>
-										))}
-									</select>
-
-									<button className={styles.SmallButton} onClick={() => applySingleStatus(order.id)}>
-										Status setzen
-									</button>
-								</div>
-							</div>
-						);
-					})}
+					{orders.map((order) => (
+						<HomePageOrderCard
+							key={order.id}
+							order={order}
+							isSelected={selectedOrderIds.includes(order.id)}
+							selectedStatus={statusSelection[order.id] ?? order.status}
+							statusLabels={statusLabels}
+							isOrderStatus={isOrderStatus}
+							onToggleSelected={() => toggleOrderSelection(order.id)}
+							onStatusChange={(value) =>
+								setStatusSelection((currentSelection) => ({
+									...currentSelection,
+									[order.id]: value,
+								}))
+							}
+							onApplyStatus={() => applySingleStatus(order.id)}
+						/>
+					))}
 				</div>
 			</div>
 		</div>
