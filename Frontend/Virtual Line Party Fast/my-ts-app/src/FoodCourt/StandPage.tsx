@@ -125,7 +125,8 @@ function StandPage() {
   const updateProductCount = async (productId: string) => {
     try {
       setError("");
-      const newCount = editedCounts[productId] ?? 0;
+      const rawCount = editedCounts[productId] ?? 0;
+      const newCount = Number.isFinite(rawCount) ? Math.max(0, Math.trunc(rawCount)) : 0;
       const response = await fetch(`${API_BASE}/product/update/count/${productId}/${newCount}`, {
         method: "PUT",
         headers: authHeaders,
@@ -139,6 +140,31 @@ function StandPage() {
       await loadData();
     } catch (updateError) {
       setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
+    }
+  };
+
+  const deleteProduct = async (productId: string) => {
+    const shouldDelete = window.confirm("Produkt wirklich löschen?");
+    if (!shouldDelete) {
+      return;
+    }
+
+    try {
+      setError("");
+      const response = await fetch(`${API_BASE}/product/by_id/${productId}`, {
+        method: "DELETE",
+        headers: authHeaders,
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const responseText = await response.text();
+        throw new Error(responseText || "Produkt konnte nicht gelöscht werden.");
+      }
+
+      await loadData();
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Unbekannter Fehler");
     }
   };
 
@@ -189,18 +215,19 @@ function StandPage() {
                 type="number"
                 min={0}
                 value={editedCounts[product.id] ?? 0}
-                onChange={(event) =>
+                onChange={(event) => {
+                  const parsedValue = Number(event.target.value);
                   setEditedCounts((current) => ({
                     ...current,
-                    [product.id]: Number(event.target.value),
-                  }))
-                }
+                    [product.id]: Number.isFinite(parsedValue) ? parsedValue : 0,
+                  }));
+                }}
               />
 
               <button className={styles.IconBtn} onClick={() => updateProductCount(product.id)}>
                 <i className="fa-regular fa-pen-to-square" />
               </button>
-              <button className={styles.IconBtn}>
+              <button className={styles.IconBtn} onClick={() => deleteProduct(product.id)}>
                 <i className="fa-regular fa-trash-can" />
               </button>
             </div>
