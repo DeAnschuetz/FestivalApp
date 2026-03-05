@@ -1,4 +1,4 @@
-import React from 'react';
+// ...existing code...
 import { AppBar, Toolbar, Typography, IconButton } from '@mui/material';
 
 const Header = () => {

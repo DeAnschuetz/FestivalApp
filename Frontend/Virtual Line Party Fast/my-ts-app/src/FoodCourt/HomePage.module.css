@@ -1,0 +1,505 @@
+.Page {
+  min-height: 100vh;
+  background: #ece6e1;
+  color: #232323;
+  font-family: Arial, sans-serif;
+}
+
+.Container {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 14px;
+}
+
+.TopHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #d9d3ce;
+  border: 1px solid #a9a3a0;
+  padding: 10px 12px;
+}
+
+.TopTitle {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.TopLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.MenuAnchor {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.MenuButton {
+  border: 1px solid #6f6f6f;
+  background: #ece7e2;
+  width: 34px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.LoginTag {
+  border-bottom: 1px solid #868686;
+  color: #4d4d4d;
+  font-size: 14px;
+}
+
+.DropdownMenu {
+  position: absolute;
+  left: 0;
+  top: 34px;
+  z-index: 10;
+  border: 1px solid #5f5f5f;
+  background: #d5c8c1;
+  min-width: 130px;
+}
+
+.DropdownItem {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #5f5f5f;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.DropdownItem:last-child {
+  border-bottom: none;
+}
+
+.DropdownItem:hover {
+  background: #c9bbb3;
+}
+
+.TopRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.FoodImage {
+  width: 90px;
+  height: 90px;
+  border: 1px solid #8a8a8a;
+  object-fit: cover;
+  background: #fff;
+}
+
+.InfoBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #d9d3ce;
+  border-left: 1px solid #a9a3a0;
+  border-right: 1px solid #a9a3a0;
+  border-bottom: 1px solid #a9a3a0;
+  padding: 8px 12px;
+}
+
+.InfoLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.Badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border: 1px solid #757575;
+  background: #efefef;
+  min-width: 36px;
+}
+
+.ControlsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #ddd7d2;
+  border: 1px solid #a9a3a0;
+  border-top: none;
+  padding: 8px 12px;
+}
+
+.WaitingGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.NumberInput {
+  width: 72px;
+  height: 30px;
+  border: 1px solid #7f7f7f;
+  background: #f8f8f8;
+  padding: 0 8px;
+}
+
+.PrimaryButton,
+.SecondaryButton,
+.DangerButton {
+  border: 1px solid #6f6f6f;
+  height: 32px;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.PrimaryButton {
+  background: #cfd6dd;
+}
+
+.SecondaryButton {
+  background: #ededed;
+}
+
+.DangerButton {
+  background: #efe0e0;
+}
+
+.FilterRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-top: none;
+  background: #f1efed;
+  padding: 6px 8px;
+  flex-wrap: wrap;
+}
+
+.FilterButton {
+  border: none;
+  height: 30px;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.FilterActive {
+  text-decoration: underline;
+  text-underline-position: under;
+  font-weight: 700;
+}
+
+.BulkActionsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: nowrap;
+}
+
+.BulkSelectAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.BulkSelectAll input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.BulkSelectAll input:disabled {
+  cursor: not-allowed;
+}
+
+.BulkUpdateSelect {
+  border: 1px solid #6f6f6f;
+  height: 32px;
+  padding: 0 10px;
+  background: #cfd6dd;
+  min-width: 120px;
+}
+
+.ReadySection {
+  margin-top: 10px;
+  border: 1px solid #a9a3a0;
+  background: #e6e1dc;
+}
+
+.ReadyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #a9a3a0;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.ReadyHeaderLeft,
+.ReadyHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.OrderList {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.OrderCard {
+  background: #cad2dd;
+  border: 1px solid #8692a3;
+  padding: 8px;
+  display: grid; 
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+/* .OrderTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+} */
+
+.OrderId {
+  font-weight: 700;
+}
+
+.OrderMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.Items {
+  background: #f6f3ea;
+  border: 1px solid #d3ccc3;
+  padding: 8px;
+}
+
+.ItemLine {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.Extra {
+  margin-top: 8px;
+  background: #ebe6da;
+  border: 1px solid #d3ccc3;
+  min-height: 24px;
+  padding: 6px;
+  font-size: 13px;
+}
+
+.CardActions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.SelectionToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.SelectionToggle input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.StatusSelect {
+  width: 170px;
+  height: 30px;
+  border: 1px solid #7f7f7f;
+  background: #f8f8f8;
+}
+
+.SmallButton {
+  border: 1px solid #6f6f6f;
+  background: #f2f2f2;
+  height: 30px;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.Empty {
+  border: 1px dashed #8f8f8f;
+  padding: 16px;
+  text-align: center;
+  background: #f6f6f6;
+}
+
+.Error {
+  border: 1px solid #b26161;
+  background: #f8e2e2;
+  color: #7a2f2f;
+  padding: 8px;
+}
+
+.Success {
+  border: 1px solid #6a9b6a;
+  background: #e6f3e6;
+  color: #2f5f2f;
+  padding: 8px;
+}
+
+.Loading {
+  padding: 8px;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .Container {
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  .TopTitle {
+    font-size: 22px;
+  }
+
+  .FoodImage {
+    width: 72px;
+    height: 72px;
+  }
+
+  /* .OrderCard {
+    grid-template-columns: 1fr;
+  } */
+
+  .CardActions {
+    align-items: stretch;
+  }
+
+  .StatusSelect,
+  .SmallButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .Container {
+    padding: 8px;
+  }
+
+  .TopHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }  
+
+  .InfoBar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .ControlsRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .WaitingGroup {
+    flex-wrap: wrap;
+  }
+
+  .NumberInput {
+    width: 88px;
+  }
+
+  .FilterRow {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .FilterButton,
+  .PrimaryButton {
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
+
+  .BulkActionsRow {
+   /*  overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap; */
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+  .ReadyHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .OrderTop {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .OrderMeta {
+    flex-wrap: wrap;
+  }
+
+  .OrderRow {
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .ready{
+    display: inline-flex;
+    align-items: center;
+    color: #2f5f2f;
+  }
+}
+
+@media (max-width: 420px) {
+  .TopTitle {
+    font-size: 20px;
+  }
+
+  .Badge {
+    padding: 3px 6px;
+    min-width: 30px;
+    font-size: 12px;
+  }
+
+  .FilterButton,
+  .PrimaryButton,
+  .SecondaryButton,
+  .SmallButton {
+    height: 30px;
+    font-size: 12px;
+    padding: 0 8px;
+  }
+
+  .ItemLine,
+  .Extra,
+  .OrderMeta {
+    font-size: 12px;
+  }
+}
