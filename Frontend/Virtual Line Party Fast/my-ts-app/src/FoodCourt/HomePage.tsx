@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./HomePage.module.css";
 import { FoodCourt, Order, OrderStatus } from "../Types";
-
+import { useNavigate } from "react-router-dom";
+import FoodCourtDropDown from "../Components/FoodCourtDropDown";
 type FilterKey = "ALL" | OrderStatus;
 
 const API_BASE = "http://10.45.128.255:8080";
@@ -30,8 +31,12 @@ const isOrderStatus = (value: string): value is OrderStatus =>
 	value === "DONE" ||
 	value === "CANCELED";
 
+const isUuid = (value: string) =>
+	/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/.test(value);
+
 function HomePage() {
 	const token = localStorage.getItem("token");
+	const navigate = useNavigate();
 	const [foodCourt, setFoodCourt] = useState<FoodCourt | null>(null);
 	const [waitingTime, setWaitingTime] = useState<number>(15);
 	const [orders, setOrders] = useState<Order[]>([]);
@@ -39,7 +44,25 @@ function HomePage() {
 	const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
 	const [activeFilter, setActiveFilter] = useState<FilterKey>("ALL");
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [foodCourtImageUrl, setFoodCourtImageUrl] = useState<string>("");
+	const [useFallbackImage, setUseFallbackImage] = useState<boolean>(false);
+	const [menuOpen, setMenuOpen] = useState<boolean>(false);
 	const [error, setError] = useState<string>("");
+	const menuRef = useRef<HTMLDivElement | null>(null);
+
+	const directImageUrl =
+		foodCourt?.id && isUuid(foodCourt.id) ? `${API_BASE}/food_court/image/${foodCourt.id}` : "";
+	const loginLabel = localStorage.getItem("loginNr") ?? "1234WP56-ZY09";
+
+	const handleLogout = () => {
+		localStorage.removeItem("token");
+		navigate("/login");
+	};
+
+	const handleOpenStand = () => {
+		setMenuOpen(false);
+		navigate("/food_court/stand");
+	};
 
 	const authHeaders = useMemo(
 		() => ({
@@ -119,6 +142,52 @@ function HomePage() {
 	useEffect(() => {
 		loadPageData();
 	}, [loadPageData]);
+
+	useEffect(() => {
+		setUseFallbackImage(false);
+		setFoodCourtImageUrl("");
+	}, [foodCourt?.id]);
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+				setMenuOpen(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
+
+	const loadFallbackImage = async () => {
+		if (!foodCourt?.id || !isUuid(foodCourt.id) || !token) {
+			return;
+		}
+
+		try {
+			const response = await fetch(`${API_BASE}/food_court/image/${foodCourt.id}`, {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					Accept: "image/png",
+				},
+				credentials: "include",
+			});
+
+			if (!response.ok) {
+				return;
+			}
+
+			const blob = await response.blob();
+			const objectUrl = URL.createObjectURL(blob);
+			setFoodCourtImageUrl(objectUrl);
+			setUseFallbackImage(true);
+		} catch {
+			setFoodCourtImageUrl("");
+		}
+	};
 
 	const countsByStatus = useMemo(() => {
 		const initial: Record<OrderStatus, number> = {
@@ -221,17 +290,30 @@ function HomePage() {
 		<div className={styles.Page}>
 			<div className={styles.Container}>
 				<div className={styles.TopHeader}>
-					<div>
+					<div className={styles.TopLeft}>
+						<div className={styles.MenuAnchor} ref={menuRef}>
+							<button className={styles.MenuButton} onClick={() => setMenuOpen((open) => !open)}>
+								<i className="fa fa-bars" />
+							</button>
+							<div className={styles.LoginTag}>{loginLabel}</div>
+							{menuOpen && (
+								<FoodCourtDropDown onOpenStand={handleOpenStand} onLogout={handleLogout} />
+							)}
+						</div>
 						<div className={styles.TopTitle}>{foodCourt?.name ?? "Food Court"}</div>
-						<div>Live-Bestellübersicht</div>
 					</div>
 					<div className={styles.TopRight}>
-						<div className={styles.Badge}>ID: {foodCourt?.id?.slice(0, 8) ?? "-"}</div>
-						{foodCourt?.id ? (
+						{/* <div className={styles.Badge}>UUID: {foodCourt?.id ?? "-"}</div> */}
+						{(directImageUrl || foodCourtImageUrl) ? (
 							<img
 								className={styles.FoodImage}
-								src={`${API_BASE}/food_court/image/${foodCourt.id}`}
+								src={useFallbackImage ? foodCourtImageUrl : directImageUrl}
 								alt="Food Court"
+								onError={() => {
+									if (!useFallbackImage) {
+										loadFallbackImage();
+									}
+								}}
 							/>
 						) : (
 							<div className={styles.FoodImage} />
