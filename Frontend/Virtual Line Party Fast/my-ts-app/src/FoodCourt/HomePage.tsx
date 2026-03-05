@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import FoodCourtDropDown from "../Components/FoodCourtDropDown";
 type FilterKey = "ALL" | OrderStatus;
 
-const API_BASE = "http://10.45.128.255:8080";
+const API_BASE = "http://10.45.129.19:8080";
 
 const filterConfig: { key: FilterKey; label: string }[] = [
 	{ key: "ALL", label: "Alle" },
@@ -40,6 +40,7 @@ function HomePage() {
 	const [foodCourt, setFoodCourt] = useState<FoodCourt | null>(null);
 	const [waitingTime, setWaitingTime] = useState<number>(15);
 	const [orders, setOrders] = useState<Order[]>([]);
+	const [allOrders, setAllOrders] = useState<Order[]>([]);
 	const [statusSelection, setStatusSelection] = useState<Record<string, OrderStatus>>({});
 	const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
 	const [activeFilter, setActiveFilter] = useState<FilterKey>("ALL");
@@ -65,10 +66,17 @@ function HomePage() {
 	};
 
 	const authHeaders = useMemo(
-		() => ({
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${token ?? ""}`,
-		}),
+		() => {
+			const headers: Record<string, string> = {
+				"Content-Type": "application/json",
+			};
+
+			if (token) {
+				headers.Authorization = `Bearer ${token}`;
+			}
+
+			return headers;
+		},
 		[token],
 	);
 
@@ -122,22 +130,32 @@ function HomePage() {
         
 	);
 
-	const loadPageData = useCallback(async () => {
-		if (!token) {
-			setError("Kein Login-Token vorhanden. Bitte neu anmelden.");
-			return;
+	const fetchAllOrders = useCallback(async () => {
+		const response = await fetch(`${API_BASE}/food_order/list_all`, {
+			method: "GET",
+			headers: authHeaders,
+			credentials: "include",
+		});
+
+		if (!response.ok) {
+			throw new Error("Bestellungszahlen konnten nicht geladen werden.");
 		}
 
+		const result = (await response.json()) as Order[];
+		setAllOrders(result);
+	}, [authHeaders]);
+
+	const loadPageData = useCallback(async () => {
 		setIsLoading(true);
 		setError("");
 		try {
-			await Promise.all([fetchFoodCourt(), fetchOrders(activeFilter)]);
+			await Promise.all([fetchFoodCourt(), fetchOrders(activeFilter), fetchAllOrders()]);
 		} catch (fetchError) {
 			setError(fetchError instanceof Error ? fetchError.message : "Unbekannter Fehler");
 		} finally {
 			setIsLoading(false);
 		}
-	}, [activeFilter, fetchFoodCourt, fetchOrders, token]);
+	}, [activeFilter, fetchAllOrders, fetchFoodCourt, fetchOrders]);
 
 	useEffect(() => {
 		loadPageData();
@@ -162,17 +180,22 @@ function HomePage() {
 	}, []);
 
 	const loadFallbackImage = async () => {
-		if (!foodCourt?.id || !isUuid(foodCourt.id) || !token) {
+		if (!foodCourt?.id || !isUuid(foodCourt.id)) {
 			return;
+		}
+
+		const imageHeaders: Record<string, string> = {
+			Accept: "image/png",
+		};
+
+		if (token) {
+			imageHeaders.Authorization = `Bearer ${token}`;
 		}
 
 		try {
 			const response = await fetch(`${API_BASE}/food_court/image/${foodCourt.id}`, {
 				method: "GET",
-				headers: {
-					Authorization: `Bearer ${token}`,
-					Accept: "image/png",
-				},
+				headers: imageHeaders,
 				credentials: "include",
 			});
 
@@ -198,11 +221,19 @@ function HomePage() {
 			CANCELED: 0,
 		};
 
-		return orders.reduce<Record<OrderStatus, number>>((accumulator, order) => {
+		return allOrders.reduce<Record<OrderStatus, number>>((accumulator, order) => {
 			accumulator[order.status] += 1;
 			return accumulator;
 		}, initial);
-	}, [orders]);
+		}, [allOrders]);
+
+		const getFilterCount = (filterKey: FilterKey) => {
+			if (filterKey === "ALL") {
+				return allOrders.length;
+			}
+
+			return countsByStatus[filterKey];
+		};
 
 	const toggleOrderSelection = (orderId: string) => {
 		setSelectedOrderIds((currentSelection) => {
@@ -234,7 +265,7 @@ function HomePage() {
 
 		try {
 			await updateOrderStatus(orderId, selectedStatus);
-			await fetchOrders(activeFilter);
+			await Promise.all([fetchOrders(activeFilter), fetchAllOrders()]);
 		} catch (updateError) {
 			setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
 		}
@@ -251,7 +282,7 @@ function HomePage() {
 					updateOrderStatus(orderId, statusSelection[orderId] ?? "IN_PROGRESS"),
 				),
 			);
-			await fetchOrders(activeFilter);
+			await Promise.all([fetchOrders(activeFilter), fetchAllOrders()]);
 		} catch (updateError) {
 			setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
 		}
@@ -269,18 +300,18 @@ function HomePage() {
 				headers: authHeaders,
 				credentials: "include",
 				body: JSON.stringify({
-					name: foodCourt.name,
-					waitingTime,
+					displayName: foodCourt.name,
 				}),
 			});
 
 			if (!response.ok) {
-				throw new Error("Wartezeit konnte nicht aktualisiert werden.");
+				const responseText = await response.text();
+				throw new Error(responseText || "Wartezeit konnte nicht aktualisiert werden.");
 			}
 
 			const updatedFoodCourt = (await response.json()) as FoodCourt;
 			setFoodCourt(updatedFoodCourt);
-			setWaitingTime(updatedFoodCourt.waitingTime ?? waitingTime);
+			setWaitingTime(updatedFoodCourt.waitingTime);
 		} catch (updateError) {
 			setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
 		}
@@ -321,7 +352,7 @@ function HomePage() {
 					</div>
 				</div>
 
-				<div className={styles.InfoBar}>
+				{/* <div className={styles.InfoBar}>
 					<div className={styles.InfoLeft}>
 						<i className="fa-solid fa-list-check" />
 						<span>Bestellungen</span>
@@ -331,7 +362,7 @@ function HomePage() {
 						<span>Abholbereit</span>
 						<span className={styles.Badge}>{countsByStatus.READY_FOR_PICKUP}</span>
 					</div>
-				</div>
+				</div> */}
 
 				<div className={styles.ControlsRow}>
 					<div className={styles.WaitingGroup}>
@@ -342,7 +373,10 @@ function HomePage() {
 							type="number"
 							min={0}
 							value={waitingTime}
-							onChange={(event) => setWaitingTime(Number(event.target.value))}
+							onChange={(event) => {
+								const parsedValue = Number(event.target.value);
+								setWaitingTime(Number.isFinite(parsedValue) ? parsedValue : 0);
+							}}
 						/>
 						<button className={styles.PrimaryButton} onClick={updateFoodCourtWaitingTime}>
 							Speichern
@@ -360,7 +394,7 @@ function HomePage() {
 							className={`${styles.FilterButton} ${activeFilter === filter.key ? styles.FilterActive : ""}`}
 							onClick={() => setActiveFilter(filter.key)}
 						>
-							{filter.label}
+							{filter.label} ({getFilterCount(filter.key)})
 						</button>
 					))}
 					<button

@@ -176,7 +176,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid #a9a3a0;
+  border: none;
   border-top: none;
   background: #f1efed;
   padding: 6px 8px;
@@ -184,8 +184,7 @@
 }
 
 .FilterButton {
-  border: 1px solid #8b8b8b;
-  background: #ececec;
+  border: none;
   height: 30px;
   padding: 0 10px;
   cursor: pointer;
@@ -350,17 +349,8 @@
   }
 
   .TopHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .TopLeft {
-    width: 100%;
-  }
-
-  .TopRight {
-    width: 100%;
+    display: flex;
+    align-items: center;
     justify-content: space-between;
   }
 

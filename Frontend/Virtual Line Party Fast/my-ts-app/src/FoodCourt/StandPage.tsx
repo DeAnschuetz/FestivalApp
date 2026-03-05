@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./StandPage.module.css";
 import { FoodCourt } from "../Types";
 
-const API_BASE = "http://10.45.128.255:8080";
+const API_BASE = "http://10.45.129.19:8080";
 
 interface Product {
   id: string;
@@ -26,19 +26,21 @@ function StandPage() {
   const [error, setError] = useState<string>("");
 
   const authHeaders = useMemo(
-    () => ({
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token ?? ""}`,
-    }),
+    () => {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      return headers;
+    },
     [token],
   );
 
   const loadData = useCallback(async () => {
-    if (!token) {
-      setError("Kein Login-Token vorhanden. Bitte neu anmelden.");
-      return;
-    }
-
     setError("");
 
     try {
@@ -78,7 +80,7 @@ function StandPage() {
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Unbekannter Fehler");
     }
-  }, [authHeaders, token]);
+  }, [authHeaders]);
 
   useEffect(() => {
     loadData();
@@ -89,6 +91,12 @@ function StandPage() {
       return;
     }
 
+    const safeWaitingTime = Number.isFinite(waitingTime) ? Math.max(0, Math.trunc(waitingTime)) : NaN;
+    if (!Number.isFinite(safeWaitingTime)) {
+      setError("Bitte eine gültige Wartezeit eingeben.");
+      return;
+    }
+
     try {
       setError("");
       const response = await fetch(`${API_BASE}/food_court`, {
@@ -96,18 +104,19 @@ function StandPage() {
         headers: authHeaders,
         credentials: "include",
         body: JSON.stringify({
-          name: foodCourt.name,
-          waitingTime,
+          displayName: foodCourt.name,
+          waitingTime: safeWaitingTime,
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Wartezeit konnte nicht gespeichert werden.");
+        const responseText = await response.text();
+        throw new Error(responseText || "Wartezeit konnte nicht gespeichert werden.");
       }
 
       const updatedFoodCourt = (await response.json()) as FoodCourt;
       setFoodCourt(updatedFoodCourt);
-      setWaitingTime(updatedFoodCourt.waitingTime ?? waitingTime);
+      setWaitingTime(updatedFoodCourt.waitingTime ?? safeWaitingTime);
     } catch (updateError) {
       setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
     }
@@ -206,7 +215,10 @@ function StandPage() {
               type="number"
               min={0}
               value={waitingTime}
-              onChange={(event) => setWaitingTime(Number(event.target.value))}
+              onChange={(event) => {
+                const parsedValue = Number(event.target.value);
+                setWaitingTime(Number.isFinite(parsedValue) ? parsedValue : 0);
+              }}
             />
             <span>Min</span>
             <button className={styles.IconBtn} onClick={updateWaitingTime}>
