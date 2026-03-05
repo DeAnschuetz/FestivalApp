@@ -1,0 +1,19 @@
+.Container{
+    background-color: rgba(211, 211, 211, 0.6);
+    width: 70%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 20px 20px 20px;
+}
+
+.Title{
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: center;
+    font-size: x-large;
+}
+
+.Checkbox{
+    margin: 6px 0px 20px 0px;
+}
