@@ -67,20 +67,18 @@ public class FoodOrder extends PanacheEntityBase {
 			name = "account_id",
 			referencedColumnName = "id",
 			foreignKey = @ForeignKey(name = "fk_account"),
-			unique = false,
 			nullable = false
 	)
     private Account account;
 
 	@JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(
 			name = "shared_account_id",
 			referencedColumnName = "id",
 			foreignKey = @ForeignKey(name = "fk_shared_account"),
-			unique = false,
-			nullable = false
+			nullable = true
 	)
 	private Account sharedAccount;
     
@@ -91,7 +89,6 @@ public class FoodOrder extends PanacheEntityBase {
 			name = "food_court_id",
 			referencedColumnName = "id",
 			foreignKey = @ForeignKey(name = "fk_food_court"),
-			unique = false,
 			nullable = false
 	)
     private FoodCourt foodCourt;
@@ -132,7 +129,7 @@ public class FoodOrder extends PanacheEntityBase {
 		);
 	}
 
-	public FoodOrder(UUID id, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime, LocalDateTime orderTime, List<FoodOrderItem> items, FoodCourt foodCourt) {
+	public FoodOrder(UUID id, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime, List<FoodOrderItem> items, FoodCourt foodCourt) {
 		this.id = id;
 		this.status = status;
 		this.hasPrio = hasPrio;
@@ -141,9 +138,10 @@ public class FoodOrder extends PanacheEntityBase {
 		this.isHidden = false;
 		this.items = items;
 		this.foodCourt = foodCourt;
+		this.orderTime = LocalDateTime.now();
 	}
 
-	public FoodOrder(UUID id, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime, LocalDateTime orderTime, List<FoodOrderItem> items) {
+	public FoodOrder(UUID id, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime,List<FoodOrderItem> items) {
 		super();
 		this.id = id;
 		this.status = status;
@@ -152,6 +150,7 @@ public class FoodOrder extends PanacheEntityBase {
 		this.waitingTime = waitingTime;
 		this.isHidden = false;
 		this.items = items;
+		this.orderTime = LocalDateTime.now();
 	}
 
 	public UUID getId() {

@@ -187,7 +187,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FoodOrderItemResponse"
-    FoodOrderResponseFull:
+    FoodOrderResponseHistory:
       type: object
       properties:
         id:
@@ -207,10 +207,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FoodOrderHistoryResponse"
-        notifications:
-          type: array
-          items:
-            $ref: "#/components/schemas/FoodOrderNotificationResponse"
     FoodOrderStatus:
       type: string
       enum:
@@ -376,9 +372,16 @@ paths:
         required: true
       responses:
         "200":
-          description: Login succeeded; cookie set
+          description: Login succeeded; Token served
           content:
-            text/plain: {}
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lgoinNr:
+                    type: string
+                  token:
+                    type: string
         "400":
           description: Invalid request
           content:
@@ -1425,7 +1428,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/FoodOrderResponseFull"
+                  $ref: "#/components/schemas/FoodOrderResponseHistory"
         "400":
           description: Invalid Status or unknown Account Type
           content:
@@ -1471,7 +1474,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/FoodOrderResponseFull"
+                  $ref: "#/components/schemas/FoodOrderResponseHistory"
         "400":
           description: Unknown account Type / Role mapping failed
           content:
@@ -2121,7 +2124,7 @@ paths:
       security:
       - SecurityScheme:
         - ADMIN
-        - WORKER
+        - FOOD_COURT_WORKER
   /product/{id}:
     get:
       summary: Get a Product by ID
@@ -2379,4 +2382,4 @@ paths:
         - ADMIN
 info:
   title: App API
-  version: 0.1.0-SNAPSHOT
+  version: 1.0.0-SNAPSHOT

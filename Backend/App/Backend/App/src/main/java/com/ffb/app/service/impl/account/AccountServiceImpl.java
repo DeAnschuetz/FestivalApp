@@ -10,6 +10,7 @@ import com.ffb.model.api.request.ticket.TicketRequest;
 import com.ffb.model.api.response.DatabaseResponse;
 import com.ffb.model.api.response.account.AccountResponse;
 import com.ffb.model.api.response.account.AccountResponseFull;
+import com.ffb.model.api.response.account.LoginResponse;
 import com.ffb.model.api.response.ticket.TicketResponse;
 import com.ffb.model.db.object.account.Account;
 import com.ffb.model.db.object.account.AccountType;
@@ -71,7 +72,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public String verifyAccount(@NonNull LoginRequest request) throws ServiceException {
+	public LoginResponse verifyAccount(@NonNull LoginRequest request) throws ServiceException {
 		LOG.trace("ENTER: verifyAccount; request={{}}", request);
 		String loginNr = request.loginNr();
 		String rawPassword = request.password();
@@ -96,7 +97,7 @@ public class AccountServiceImpl implements AccountService {
 		Set<String> roles = Set.of(type.toString());
 		String token = createToken(loginNr, roles);
 		LOG.trace("EXIT: verifyAccount for {{}}", loginNr);
-		return token;
+		return new LoginResponse(loginNr, token);
 	}
 
 	@Override
@@ -194,7 +195,7 @@ public class AccountServiceImpl implements AccountService {
 							responseMapper.getCreditResponseFull(account.getCredit()),
 							responseMapper.getCartResponseSimple(account.getCart()),
 							account.getFoodOrders().stream()//
-									.map(responseMapper::getFoodOrderResponseFull)//
+									.map(responseMapper::getFoodOrderResponseFullWithNotification)//
 									.toList(),
 							responseMapper.getFoodCourtResponseFull(account.getFoodCourt())
 					);

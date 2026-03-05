@@ -18,7 +18,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public List<Product> listByLoginNr(String loginNr) {
         return list(
-                    "foodCourt.account.ticket.login_nr",
+                    "foodCourt.account.ticket.loginNr",
                     loginNr
                 )
         ;

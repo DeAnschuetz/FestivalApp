@@ -1,0 +1,25 @@
+CREATE OR REPLACE VIEW virtual.v_sub_product AS
+SELECT
+    gen_random_uuid() as v_id,
+    sp.id,
+    sp.price,
+    sp.display_name,
+    sp.symbol_identifier,
+    sp.minimal_warning,
+    sp.food_court_id,
+    msp.main_product_id
+FROM ffb.main_sub_product msp
+         JOIN ffb.product sp
+              ON sp.id = msp.sub_product_id;
+
+CREATE OR REPLACE VIEW virtual.v_main_product AS
+SELECT DISTINCT
+    p.id,
+    p.price,
+    p.display_name,
+    p.symbol_identifier,
+    p.minimal_warning,
+    p.food_court_id
+FROM ffb.product p
+         JOIN ffb.main_sub_product msp
+              ON msp.main_product_id = p.id;

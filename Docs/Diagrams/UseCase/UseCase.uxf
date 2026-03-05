@@ -202,18 +202,6 @@ valign=top</panel_attributes>
     <additional_attributes>100.0;10.0;10.0;180.0</additional_attributes>
   </element>
   <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>592</x>
-      <y>480</y>
-      <w>160</w>
-      <h>32</h>
-    </coordinates>
-    <panel_attributes>lt=.&gt;
-&lt;&lt;includes&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;20.0;180.0;20.0</additional_attributes>
-  </element>
-  <element>
     <id>UMLUseCase</id>
     <coordinates>
       <x>472</x>
