@@ -423,14 +423,16 @@ function HomePage() {
 					getFilterCount={(filterKey) => getFilterCount(filterKey as FilterKey)}
 				/>
 
-				<HomePageBulkActions
-					hasOrders={orders.length > 0}
-					allVisibleOrdersSelected={allVisibleOrdersSelected}
-					selectedCount={selectedOrderIds.length}
-					statusLabels={statusLabels}
-					onToggleAll={toggleAllSelectedOrders}
-					onApplyBulk={applyBulkStatusUpdate}
-				/>
+				{orders.length > 0 && (
+					<HomePageBulkActions
+						hasOrders={orders.length > 0}
+						allVisibleOrdersSelected={allVisibleOrdersSelected}
+						selectedCount={selectedOrderIds.length}
+						statusLabels={statusLabels}
+						onToggleAll={toggleAllSelectedOrders}
+						onApplyBulk={applyBulkStatusUpdate}
+					/>
+				)}
 
 				{error && <div className={styles.Error}>{error}</div>}
 				{success && <div className={styles.Success}>{success}</div>}
