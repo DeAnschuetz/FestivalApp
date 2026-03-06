@@ -28,9 +28,9 @@ function StandPage() {
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   const [isCreatingProduct, setIsCreatingProduct] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState("");
-  const [newPrice, setNewPrice] = useState("0");
+  const [newPrice, setNewPrice] = useState("");
   const [newSymbolIdentifier, setNewSymbolIdentifier] = useState("TEST");
-  const [newMinimalWarning, setNewMinimalWarning] = useState("0");
+  const [newMinimalWarning, setNewMinimalWarning] = useState("");
 
   const authHeaders = useMemo(
     () => {
@@ -148,6 +148,7 @@ function StandPage() {
     } catch (updateError) {
       setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
     }
+    console.log("Aktualisierte Produktbestände:", editedCounts);
   };
 
   const deleteProduct = async (productId: string) => {
@@ -182,6 +183,11 @@ function StandPage() {
       return;
     }
 
+    if (!newPrice.trim()) {
+      setError("Preis ist ein Pflichtfeld.");
+      return;
+    }
+
     const price = Number(newPrice);
     if (!Number.isFinite(price) || price < 0) {
       setError("Preis muss eine gültige Zahl >= 0 sein.");
@@ -191,6 +197,11 @@ function StandPage() {
     const symbolIdentifier = newSymbolIdentifier.trim();
     if (!symbolIdentifier) {
       setError("Symbol-Identifier darf nicht leer sein.");
+      return;
+    }
+
+    if (!newMinimalWarning.trim()) {
+      setError("Bestand Warnung ist ein Pflichtfeld.");
       return;
     }
 
@@ -234,9 +245,9 @@ function StandPage() {
       }
 
       setNewDisplayName("");
-      setNewPrice("0");
+      setNewPrice("");
       setNewSymbolIdentifier("TEST");
-      setNewMinimalWarning("0");
+      setNewMinimalWarning("");
       setIsCreateFormOpen(false);
       await loadData();
     } catch (createError) {
@@ -289,25 +300,18 @@ function StandPage() {
             <input
               className={styles.CreateInput}
               type="number"
+              placeholder="Preis"
               min={0}
               step="0.01"
-              placeholder="Preis"
               value={newPrice}
               onChange={(event) => setNewPrice(event.target.value)}
-            />
-            <input
-              className={styles.CreateInput}
-              type="text"
-              placeholder="Symbol"
-              value={newSymbolIdentifier}
-              onChange={(event) => setNewSymbolIdentifier(event.target.value)}
             />
             <input
               className={styles.CreateInput}
               type="number"
               min={0}
               step={1}
-              placeholder="Warnung"
+              placeholder="Bestand Warnung"
               value={newMinimalWarning}
               onChange={(event) => setNewMinimalWarning(event.target.value)}
             />

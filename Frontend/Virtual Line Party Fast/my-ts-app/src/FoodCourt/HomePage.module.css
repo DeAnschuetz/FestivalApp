@@ -117,6 +117,8 @@
   gap: 12px;
   margin-top: 8px;
   flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .BulkSelectAll {
@@ -125,6 +127,8 @@
   gap: 6px;
   font-size: 14px;
   cursor: pointer;
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 .BulkSelectAll input {
@@ -142,7 +146,10 @@
   height: 32px;
   padding: 0 10px;
   background: #cfd6dd;
-  min-width: 120px;
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+  flex: 0 0 auto;
 }
 
 .ReadySection {
@@ -356,11 +363,16 @@
   }
 
   .BulkActionsRow {
-   /*  overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    flex-wrap: nowrap; */
-    margin-left: 12px;
-    margin-right: 12px;
+    margin-left: 0;
+    margin-right: 0;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .BulkUpdateSelect {
+    width: 140px;
+    min-width: 140px;
+    max-width: 140px;
   }
 
   .ReadyHeader {
