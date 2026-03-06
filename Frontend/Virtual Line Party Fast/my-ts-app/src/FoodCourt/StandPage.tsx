@@ -129,11 +129,17 @@ function StandPage() {
     }
   };
 
-  const updateProductCount = async (productId: string) => {
+  const updateProductCount = async (productId: string, nextCount?: number) => {
     try {
       setError("");
-      const rawCount = editedCounts[productId] ?? 0;
+      const rawCount = nextCount ?? editedCounts[productId] ?? 0;
       const newCount = Number.isFinite(rawCount) ? Math.max(0, Math.trunc(rawCount)) : 0;
+
+      setEditedCounts((current) => ({
+        ...current,
+        [productId]: newCount,
+      }));
+
       const response = await fetch(`${API_BASE}/product/update/count/${productId}/${newCount}`, {
         method: "PUT",
         headers: authHeaders,
@@ -148,7 +154,18 @@ function StandPage() {
     } catch (updateError) {
       setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
     }
-    console.log("Aktualisierte Produktbestände:", editedCounts);
+  };
+
+  const adjustProductCount = async (productId: string, delta: number) => {
+    const currentCount = editedCounts[productId] ?? 0;
+    const nextCount = Math.max(0, currentCount + delta);
+
+    setEditedCounts((current) => ({
+      ...current,
+      [productId]: nextCount,
+    }));
+
+    await updateProductCount(productId, nextCount);
   };
 
   const deleteProduct = async (productId: string) => {
@@ -300,7 +317,7 @@ function StandPage() {
             <input
               className={styles.CreateInput}
               type="number"
-              placeholder="Preis"
+              placeholder="Preis in €"
               min={0}
               step="0.01"
               value={newPrice}
@@ -346,19 +363,39 @@ function StandPage() {
 
               <div className={styles.Price}>{product.price.toFixed(2)} €</div>
 
-              <input
-                className={styles.CountInput}
-                type="number"
-                min={0}
-                value={editedCounts[product.id] ?? 0}
-                onChange={(event) => {
-                  const parsedValue = Number(event.target.value);
-                  setEditedCounts((current) => ({
-                    ...current,
-                    [product.id]: Number.isFinite(parsedValue) ? parsedValue : 0,
-                  }));
-                }}
-              />
+              <div>
+                <button
+                  className={styles.IconBtn}
+                  onClick={() => adjustProductCount(product.id, -1)}
+                  disabled={(editedCounts[product.id] ?? 0) <= 0}
+                >
+                  —
+                </button>
+                <input
+                  className={styles.CountInput}
+                  type="number"
+                  min={0}
+                  value={editedCounts[product.id] ?? 0}
+                  onChange={(event) => {
+                    const parsedValue = Number(event.target.value);
+                    setEditedCounts((current) => ({
+                      ...current,
+                      [product.id]: Number.isFinite(parsedValue) ? Math.max(0, parsedValue) : 0,
+                    }));
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      updateProductCount(product.id);
+                    }
+                  }}
+                />
+                <button
+                  className={styles.IconBtn}
+                  onClick={() => adjustProductCount(product.id, 1)}
+                >
+                  +
+                </button>
+              </div>
 
               <button className={styles.IconBtn} onClick={() => updateProductCount(product.id)}>
                 <i className="fa-regular fa-pen-to-square" />

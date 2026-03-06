@@ -92,12 +92,7 @@ function HomePage() {
 
 	const fetchOrders = useCallback(
 		async (filter: FilterKey) => {
-			const endpoint =
-				filter === "ALL"
-					? `${API_BASE}/food_order/list_all`
-					: `${API_BASE}/food_order/list_all/by_status/${filter}`;
-
-			const response = await fetch(endpoint, {
+			const response = await fetch(`${API_BASE}/food_order/list_all`, {
 				method: "GET",
 				headers: authHeaders,
 				credentials: "include",
@@ -107,48 +102,38 @@ function HomePage() {
 				throw new Error("Bestellungen konnten nicht geladen werden.");
 			}
 
-			const result = (await response.json()) as Order[];
-            console.log("fetchOrders-Funktion erstellt mit Filter:", filter, "Ergebnis:", result);
-			setOrders(result);
+			const allResult = (await response.json()) as Order[];
+			setAllOrders(allResult);
+			const filteredResult =
+				filter === "ALL"
+					? allResult
+					: allResult.filter((order) => order.status === filter);
+			console.log("fetchOrders-Funktion erstellt mit Filter:", filter, "Ergebnis:", filteredResult);
+			setOrders(filteredResult);
 			setSelectedOrderIds([]);
 			setStatusSelection(
-				result.reduce<Record<string, OrderStatus>>((accumulator, order) => {
+				filteredResult.reduce<Record<string, OrderStatus>>((accumulator, order) => {
 					accumulator[order.id] = order.status;
 					return accumulator;
 				}, {}),
 			);
 		},
-       
+
 		[authHeaders],
-        
+
 	);
-
-	const fetchAllOrders = useCallback(async () => {
-		const response = await fetch(`${API_BASE}/food_order/list_all`, {
-			method: "GET",
-			headers: authHeaders,
-			credentials: "include",
-		});
-
-		if (!response.ok) {
-			throw new Error("Bestellungszahlen konnten nicht geladen werden.");
-		}
-
-		const result = (await response.json()) as Order[];
-		setAllOrders(result);
-	}, [authHeaders]);
 
 	const loadPageData = useCallback(async () => {
 		setIsLoading(true);
 		setError("");
 		try {
-			await Promise.all([fetchFoodCourt(), fetchOrders(activeFilter), fetchAllOrders()]);
+			await Promise.all([fetchFoodCourt(), fetchOrders(activeFilter)]);
 		} catch (fetchError) {
 			setError(fetchError instanceof Error ? fetchError.message : "Unbekannter Fehler");
 		} finally {
 			setIsLoading(false);
 		}
-	}, [activeFilter, fetchAllOrders, fetchFoodCourt, fetchOrders]);
+	}, [activeFilter, fetchFoodCourt, fetchOrders]);
 
 	useEffect(() => {
 		loadPageData();
@@ -183,13 +168,13 @@ function HomePage() {
 		}, initial);
 		}, [allOrders]);
 
-		const getFilterCount = (filterKey: FilterKey) => {
-			if (filterKey === "ALL") {
-				return allOrders.length;
-			}
+	const getFilterCount = (filterKey: FilterKey) => {
+		if (filterKey === "ALL") {
+			return allOrders.length;
+		}
 
-			return countsByStatus[filterKey];
-		};
+		return countsByStatus[filterKey];
+	};
 
 	const allVisibleOrdersSelected =
 		orders.length > 0 && orders.every((order) => selectedOrderIds.includes(order.id));
@@ -239,7 +224,7 @@ function HomePage() {
 		try {
 			setSuccess("");
 			await updateOrderStatus(orderId, selectedStatus);
-			await Promise.all([fetchOrders(activeFilter), fetchAllOrders()]);
+			await fetchOrders(activeFilter);
 		} catch (updateError) {
 			setSuccess("");
 			setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
@@ -258,7 +243,7 @@ function HomePage() {
 			await Promise.all(
 				selectedOrderIds.map((orderId) => updateOrderStatus(orderId, statusForUpdate)),
 			);
-			await Promise.all([fetchOrders(activeFilter), fetchAllOrders()]);
+			await fetchOrders(activeFilter);
 			setSelectedOrderIds([]);
 			setSuccess(
 				`Status für ${updatedCount} Bestellung${updatedCount === 1 ? "" : "en"} aktualisiert.`,
