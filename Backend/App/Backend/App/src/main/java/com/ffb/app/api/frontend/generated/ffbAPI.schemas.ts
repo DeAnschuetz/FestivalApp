@@ -212,7 +212,7 @@ export type GetAccountListAll400 = {
 };
 
 export type PostAccountLogin200 = {
-  lgoinNr?: string;
+  loginNr?: string;
   token?: string;
 };
 
