@@ -1,0 +1,48 @@
+.Dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 20;
+    min-width: 126px;
+    background: #d2beb8;
+    border: 1px solid #3b3431;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.Item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 34px;
+    align-items: stretch;
+    padding: 0;
+    border: 0;
+   /*  border-bottom: 1px solid #3b3431; */
+    background: transparent;
+    color: #161616;
+    font-size: 17px;
+    line-height: 1;
+    text-align: left;
+    cursor: pointer;
+}
+
+.Item:last-child {
+    border-bottom: 0;
+}
+
+.Item:hover {
+    background: #c7b2ab;
+}
+
+.Label {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+}
+
+.IconBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid #3b3431;
+    font-size: 16px;
+}
