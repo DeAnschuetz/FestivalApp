@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./StandPage.module.css";
 import { FoodCourt } from "../Types";
+import HeaderFoodCourt from "../Components/HeaderFoodCourt";
 
-const API_BASE = "http://10.45.129.19:8080";
+const API_BASE = "http://10.45.129.4:8080";
 
 interface Product {
   id: string;
@@ -24,6 +25,12 @@ function StandPage() {
   const [waitingTime, setWaitingTime] = useState<number>(15);
   const [editedCounts, setEditedCounts] = useState<Record<string, number>>({});
   const [error, setError] = useState<string>("");
+  const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
+  const [isCreatingProduct, setIsCreatingProduct] = useState(false);
+  const [newDisplayName, setNewDisplayName] = useState("");
+  const [newPrice, setNewPrice] = useState("0");
+  const [newSymbolIdentifier, setNewSymbolIdentifier] = useState("TEST");
+  const [newMinimalWarning, setNewMinimalWarning] = useState("0");
 
   const authHeaders = useMemo(
     () => {
@@ -168,35 +175,160 @@ function StandPage() {
     }
   };
 
+  const createProduct = async () => {
+    const displayName = newDisplayName.trim();
+    if (!displayName) {
+      setError("Produktname darf nicht leer sein.");
+      return;
+    }
+
+    const price = Number(newPrice);
+    if (!Number.isFinite(price) || price < 0) {
+      setError("Preis muss eine gültige Zahl >= 0 sein.");
+      return;
+    }
+
+    const symbolIdentifier = newSymbolIdentifier.trim();
+    if (!symbolIdentifier) {
+      setError("Symbol-Identifier darf nicht leer sein.");
+      return;
+    }
+
+    const minimalWarning = Number(newMinimalWarning);
+    if (!Number.isInteger(minimalWarning) || minimalWarning < 0) {
+      setError("Mindestwarnung muss eine ganze Zahl >= 0 sein.");
+      return;
+    }
+
+    try {
+      setIsCreatingProduct(true);
+      setError("");
+      const response = await fetch(`${API_BASE}/product`, {
+        method: "POST",
+        headers: authHeaders,
+        credentials: "include",
+        body: JSON.stringify({
+          price,
+          displayName,
+          symbolIdentifier,
+          minimalWarning,
+        }),
+      });
+
+      if (!response.ok) {
+        let errorMessage = "Produkt konnte nicht erstellt werden.";
+
+        try {
+          const errorData = (await response.json()) as { message?: string };
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch {
+          const responseText = await response.text();
+          if (responseText) {
+            errorMessage = responseText;
+          }
+        }
+
+        throw new Error(errorMessage);
+      }
+
+      setNewDisplayName("");
+      setNewPrice("0");
+      setNewSymbolIdentifier("TEST");
+      setNewMinimalWarning("0");
+      setIsCreateFormOpen(false);
+      await loadData();
+    } catch (createError) {
+      setError(createError instanceof Error ? createError.message : "Unbekannter Fehler");
+    } finally {
+      setIsCreatingProduct(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
+  const handleOpenStand = () => {
+    navigate("/food_court/stand");
+  };
+
   return (
     <div className={styles.Page}>
       <div className={styles.Container}>
-        <div className={styles.HeaderTop}>
-          <div className={styles.StandTitle}>{foodCourt?.name ?? "Stand"}</div>
-          <i className="fa-regular fa-pen-to-square" />
-        </div>
-
-        <div className={styles.HeaderRow}>
-          <i className="fa-solid fa-bars" />
-          <i className="fa-solid fa-user-chef" />
-          <span className={styles.LoginLabel}>{loginLabel}</span>
-          <div className={styles.ImageWrap}>
-            {foodCourt?.id ? (
-              <img src={`${API_BASE}/food_court/image/${foodCourt.id}`} alt="Food Court" className={styles.FoodImage} />
-            ) : (
-              <div className={styles.FoodImage} />
-            )}
-          </div>
-        </div>
+        <HeaderFoodCourt
+          title={foodCourt?.name ?? "Stand"}
+          loginLabel={loginLabel}
+          foodCourtId={foodCourt?.id}
+          apiBase={API_BASE}
+          token={token}
+          onOpenStand={handleOpenStand}
+          onLogout={handleLogout}
+        />
 
         <div className={styles.SectionHeader}>
           <button className={styles.BackBtn} onClick={() => navigate("/food_court")}>
             <i className="fa-solid fa-arrow-left" /> Produkte
           </button>
-          <button className={styles.AddBtn}>
+          <button className={styles.AddBtn} onClick={() => setIsCreateFormOpen((open) => !open)}>
             <i className="fa-solid fa-plus" />
           </button>
         </div>
+
+        {isCreateFormOpen && (
+          <div className={styles.CreateForm}>
+            <input
+              className={styles.CreateInputWide}
+              type="text"
+              placeholder="Produktname"
+              value={newDisplayName}
+              onChange={(event) => setNewDisplayName(event.target.value)}
+            />
+            <input
+              className={styles.CreateInput}
+              type="number"
+              min={0}
+              step="0.01"
+              placeholder="Preis"
+              value={newPrice}
+              onChange={(event) => setNewPrice(event.target.value)}
+            />
+            <input
+              className={styles.CreateInput}
+              type="text"
+              placeholder="Symbol"
+              value={newSymbolIdentifier}
+              onChange={(event) => setNewSymbolIdentifier(event.target.value)}
+            />
+            <input
+              className={styles.CreateInput}
+              type="number"
+              min={0}
+              step={1}
+              placeholder="Warnung"
+              value={newMinimalWarning}
+              onChange={(event) => setNewMinimalWarning(event.target.value)}
+            />
+            <div className={styles.CreateActions}>
+              <button
+                className={styles.IconBtn}
+                onClick={createProduct}
+                disabled={isCreatingProduct}
+              >
+                {isCreatingProduct ? "..." : "OK"}
+              </button>
+              <button
+                className={styles.IconBtn}
+                onClick={() => setIsCreateFormOpen(false)}
+                disabled={isCreatingProduct}
+              >
+                X
+              </button>
+            </div>
+          </div>
+        )}
 
         {error && <div className={styles.Error}>{error}</div>}
 

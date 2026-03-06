@@ -1,14 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./HomePage.module.css";
 import { FoodCourt, Order, OrderStatus } from "../Types";
 import { useNavigate } from "react-router-dom";
-import FoodCourtDropDown from "../Components/FoodCourtDropDown";
 import HomePageFilterBar from "../Components/HomePageFilterBar";
 import HomePageBulkActions from "../Components/HomePageBulkActions";
 import HomePageOrderCard from "../Components/HomePageOrderCard";
+import HeaderFoodCourt from "../Components/HeaderFoodCourt";
 type FilterKey = "ALL" | OrderStatus;
 
-const API_BASE = "http://10.45.129.19:8080";
+const API_BASE = "http://10.45.129.4:8080";
 
 const filterConfig: { key: FilterKey; label: string }[] = [
 	{ key: "ALL", label: "Alle" },
@@ -34,9 +34,6 @@ const isOrderStatus = (value: string): value is OrderStatus =>
 	value === "DONE" ||
 	value === "CANCELED";
 
-const isUuid = (value: string) =>
-	/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/.test(value);
-
 function HomePage() {
 	const token = localStorage.getItem("token");
 	const navigate = useNavigate();
@@ -48,15 +45,8 @@ function HomePage() {
 	const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
 	const [activeFilter, setActiveFilter] = useState<FilterKey>("ALL");
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [foodCourtImageUrl, setFoodCourtImageUrl] = useState<string>("");
-	const [useFallbackImage, setUseFallbackImage] = useState<boolean>(false);
-	const [menuOpen, setMenuOpen] = useState<boolean>(false);
 	const [error, setError] = useState<string>("");
 	const [success, setSuccess] = useState<string>("");
-	const menuRef = useRef<HTMLDivElement | null>(null);
-
-	const directImageUrl =
-		foodCourt?.id && isUuid(foodCourt.id) ? `${API_BASE}/food_court/image/${foodCourt.id}` : "";
 	const loginLabel = localStorage.getItem("loginNr") ?? "1234WP56-ZY09";
 
 	const handleLogout = () => {
@@ -65,7 +55,6 @@ function HomePage() {
 	};
 
 	const handleOpenStand = () => {
-		setMenuOpen(false);
 		navigate("/food_court/stand");
 	};
 
@@ -166,24 +155,6 @@ function HomePage() {
 	}, [loadPageData]);
 
 	useEffect(() => {
-		setUseFallbackImage(false);
-		setFoodCourtImageUrl("");
-	}, [foodCourt?.id]);
-
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-				setMenuOpen(false);
-			}
-		};
-
-		document.addEventListener("mousedown", handleClickOutside);
-		return () => {
-			document.removeEventListener("mousedown", handleClickOutside);
-		};
-	}, []);
-
-	useEffect(() => {
 		if (!success) {
 			return;
 		}
@@ -196,39 +167,6 @@ function HomePage() {
 			window.clearTimeout(timeoutId);
 		};
 	}, [success]);
-
-	const loadFallbackImage = async () => {
-		if (!foodCourt?.id || !isUuid(foodCourt.id)) {
-			return;
-		}
-
-		const imageHeaders: Record<string, string> = {
-			Accept: "image/png",
-		};
-
-		if (token) {
-			imageHeaders.Authorization = `Bearer ${token}`;
-		}
-
-		try {
-			const response = await fetch(`${API_BASE}/food_court/image/${foodCourt.id}`, {
-				method: "GET",
-				headers: imageHeaders,
-				credentials: "include",
-			});
-
-			if (!response.ok) {
-				return;
-			}
-
-			const blob = await response.blob();
-			const objectUrl = URL.createObjectURL(blob);
-			setFoodCourtImageUrl(objectUrl);
-			setUseFallbackImage(true);
-		} catch {
-			setFoodCourtImageUrl("");
-		}
-	};
 
 	const countsByStatus = useMemo(() => {
 		const initial: Record<OrderStatus, number> = {
@@ -363,36 +301,15 @@ function HomePage() {
 	return (
 		<div className={styles.Page}>
 			<div className={styles.Container}>
-				<div className={styles.TopHeader}>
-					<div className={styles.TopLeft}>
-						<div className={styles.MenuAnchor} ref={menuRef}>
-							<button className={styles.MenuButton} onClick={() => setMenuOpen((open) => !open)}>
-								<i className="fa fa-bars" />
-							</button>
-							<div className={styles.LoginTag}>{loginLabel}</div>
-							{menuOpen && (
-								<FoodCourtDropDown onOpenStand={handleOpenStand} onLogout={handleLogout} />
-							)}
-						</div>
-						<div className={styles.TopTitle}>{foodCourt?.name ?? "Food Court"}</div>
-					</div>
-					<div className={styles.TopRight}>
-						{(directImageUrl || foodCourtImageUrl) ? (
-							<img
-								className={styles.FoodImage}
-								src={useFallbackImage ? foodCourtImageUrl : directImageUrl}
-								alt="Food Court"
-								onError={() => {
-									if (!useFallbackImage) {
-										loadFallbackImage();
-									}
-								}}
-							/>
-						) : (
-							<div className={styles.FoodImage} />
-						)}
-					</div>
-				</div>
+				<HeaderFoodCourt
+					title={foodCourt?.name ?? "Food Court"}
+					loginLabel={loginLabel}
+					foodCourtId={foodCourt?.id}
+					apiBase={API_BASE}
+					token={token}
+					onOpenStand={handleOpenStand}
+					onLogout={handleLogout}
+				/>
 				<div className={styles.ControlsRow}>
 					<div className={styles.WaitingGroup}>
 						<i className="fa-regular fa-clock" />

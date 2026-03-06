@@ -6,7 +6,7 @@ import { Button } from "@progress/kendo-react-buttons";
 import { useNavigate } from "react-router-dom";
 
 type AccountType = "ADMIN" | "FOOD_COURT_WORKER" | "GUEST";
-const API_BASE = "http://10.45.129.19:8080";
+const API_BASE = "http://10.45.129.4:8080";
 
 interface AccountResponse {
   id: string;
@@ -39,7 +39,7 @@ function LogInContainer() {
         const accountType = (accountData.type ?? accountData.role ?? "").toUpperCase();
         if (accountType === "FOOD_COURT_WORKER") {
           return "/food_court";
-        } else if (accountType === "ADMIN") {
+        } else{
           return "/user_view";
         }
       }
