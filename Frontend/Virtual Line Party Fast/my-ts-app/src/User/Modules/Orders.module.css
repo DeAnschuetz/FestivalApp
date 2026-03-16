@@ -1,0 +1,21 @@
+.Header {
+  background-color: #ede7dc;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  padding-left: 10%;
+}
+
+.BtnLabel {
+  font-size: larger;
+  margin-left: 6px;
+}
+
+.OpenLabel {
+  text-decoration: underline;
+}
+
+.Content{
+}

@@ -15,7 +15,7 @@ function LogInContainer() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://10.45.128.255:8080/account/login", {
+      const response = await fetch("/account/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

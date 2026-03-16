@@ -4,6 +4,8 @@ import Header from "./Header";
 import { Order } from "../Types";
 import ReadyforPickUp from "./ReadyforPickUp";
 import InProgress from "./InProgress";
+import Orders from "./Orders";
+import FoodCourt from "./FoodCourt";
 
 interface Props {}
 
@@ -16,7 +18,7 @@ function User(props: Props) {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "http://10.45.128.255:8080/food_order/list_all",
+          "http://10.45.129.19:8080/food_order/list_all",
           {
             method: "GET",
             headers: {
@@ -55,6 +57,8 @@ function User(props: Props) {
       <Header />
       <ReadyforPickUp readyForPickup={readyForPickup} />
       <InProgress inProgress={inProgress}/>
+      <Orders orders={orders}/>
+      <FoodCourt/>
     </div>
   );
 }

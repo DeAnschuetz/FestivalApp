@@ -12,8 +12,7 @@ function InProgress(props: Props) {
   return (
     <div className={styles.AbholbereitContainer}>
       <div className={styles.AbholbereitTitleWrapper}>
-        <i className="fa fa-clipboard-list"></i>
-        <div className={styles.AbholbereitTitle}>Abholbereit</div>
+        <i className="fa fa-check-to-slot"></i>
       </div>
       <div className={styles.OrderWrapper}>
         {inProgress.map((order) => (
@@ -22,22 +21,31 @@ function InProgress(props: Props) {
               <div className={styles.FoodCourtName}>{order.foodCourtName}</div>
               <div className={styles.StatusWrapper}>
                 <i className="fa-regular fa-hourglass"></i>
-                <div className={styles.StatusText}>{order.waitingTime}</div>
+                <div className={styles.StatusText}>{order.waitingTime} Min</div>
               </div>
             </div>
-            <div className={styles.ItemContainer}>
-              {Object.entries(
-                order.orderItems.reduce(
-                  (acc, item) => {
-                    acc[item.displayName] = (acc[item.displayName] || 0) + 1;
-                    return acc;
-                  },
-                  {} as Record<string, number>,
-                ),
-              ).map(([name, count]) => (
-                <div key={name} className={styles.ItemWrapper}>
-                  <div className={styles.ItemName}>{name}</div>
-                  <div>x {count}</div>
+             <div className={styles.ItemContainer}>
+              {order.orderItems.map((item, index) => (
+                <div key={index} className={styles.ItemWrapper}>
+                  <div className={styles.FlexWrapper}>
+                    <div className={styles.ItemName}>{item.displayName}</div>
+                    <div>x {item.count}</div>
+                  </div>
+                  <div className={styles.ItemExtra}>{item.extra}</div>
+
+                  {item.subItems && item.subItems.length > 0 && (
+                    <div className={styles.SubItemContainer}>
+                      {item.subItems.map((subItem, subIndex) => (
+                        <div key={subIndex} >
+                          <div className={styles.FlexWrapper}>
+                            <div>- {subItem.displayName}</div>
+                            <div> x {subItem.count}</div>
+                          </div>
+                          <div className={styles.Extra}>{subItem.extra}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
