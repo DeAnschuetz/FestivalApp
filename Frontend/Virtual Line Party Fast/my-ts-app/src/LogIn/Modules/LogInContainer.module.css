@@ -1,6 +1,6 @@
 .Container{
     background-color: rgba(211, 211, 211, 0.6);
-    width: 70%;
+    width: 290px;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
