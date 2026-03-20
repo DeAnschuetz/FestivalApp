@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Modules/LogInContainer.module.css";
 import InputElement from "../Components/InputElement";
 import { Checkbox } from "@progress/kendo-react-inputs";
@@ -17,44 +17,54 @@ function LogInContainer() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    setLoginNr("");
+    setPassword("");
+    setError("");
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
-    const loginRequest: LoginRequest = {
-      loginNr,
-      password,
-    };
+    const registeredUser = users.find((u) => u.login_Nr === loginNr);
 
-    try {
-      const loggedInUser: LoginResult = await login(loginRequest);
+    if (!registeredUser) {
+      setError("Not registered yet. \nPlease Register first.");
+      return;
+    }
 
-      if (rememberMe) {
-        localStorage.setItem("rememberedPassword_" + loginNr, password);
-      } else {
-        localStorage.removeItem("rememberedPassword_" + loginNr);
-      }
+    const user = users.find(
+      (u) => u.login_Nr === loginNr && u.password === password,
+    );
 
-      const userType = getAccountTypeForRouting(loggedInUser.loginNr ?? loginNr);
+    if (!user) {
+      setError("Login number or password is incorrect.");
+      return;
+    }
 
-      switch (userType) {
-        case "ADMIN":
-          navigate("/admin_view");
-          break;
+    localStorage.setItem("currentUser", user.login_Nr);
 
-        case "FOOD_COURT_WORKER":
-          navigate("/foodcourt_view");
-          break;
+    if (rememberMe) {
+      localStorage.setItem("rememberedPassword_" + loginNr, password);
+    } else {
+      localStorage.removeItem("rememberedPassword_" + loginNr);
+    }
 
-        case "GUEST":
-        default:
-          navigate("/user_view");
-          break;
-      }
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Login failed. Please try again.";
-      setError(message);
+    login(user.type);
+
+    switch (user.type) {
+      case "ADMIN":
+        navigate("/admin_view");
+        break;
+
+      case "GUEST":
+        navigate("/user_view");
+        break;
+
+      case "FOOD_COURT_WORKER":
+        navigate("/foodcourt_view");
+        break;
     }
   };
 
@@ -76,8 +86,7 @@ function LogInContainer() {
           {error}
         </div>
       )}
-
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} autoComplete="off">
         <InputElement
           label="Login-Nr."
           editorId="login_nr"
@@ -87,6 +96,7 @@ function LogInContainer() {
             setError("");
 
             const saved = localStorage.getItem("rememberedPassword_" + value);
+            setError("");
 
             if (saved) {
               setPassword(saved);
