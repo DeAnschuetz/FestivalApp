@@ -1,30 +1,38 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Button } from "@progress/kendo-react-buttons";
 import styles from "./Modules/Header.module.css";
-import { getCredit } from "../Api/ffb/creditApi";
-import { Credit } from "../Api/ffb";
+import { useNavigate } from "react-router-dom";
 
-interface Props {}
+interface HeaderProps{
+  setPayisOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  credits: number
+}
 
-function Header(props: Props) {
-  const {} = props;
+function Header(props: HeaderProps) {
+  const {setPayisOpen, credits} = props
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+  const loginNr = localStorage.getItem("currentUser");
 
-  const [credit, setCredit] = useState<any>(0);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchCredit = async () => {
-      try {
-
-        const data: Credit = await getCredit();
-        console.log('Credit data: ', data);
-        setCredit(data.credit);
-      } catch (error) {
-        console.error("Credit konnte nicht geladen werden:", error);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
       }
     };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [loginNr]);
 
-    fetchCredit();
-  }, []);
+  const handleLogout = () => {
+    localStorage.removeItem("currentUser");
+    navigate("/login");
+  };
 
   return (
     <div className={styles.User}>
@@ -33,37 +41,59 @@ function Header(props: Props) {
           type="button"
           fillMode={"flat"}
           iconClass="fa-regular fa-envelope"
-          size={"large"}
+          size={"medium"}
           style={{ marginRight: "6px" }}
-        ></Button>
+        />
         <Button
           type="button"
           fillMode={"flat"}
           iconClass="fa fa-basket-shopping"
-          size={"large"}
-        ></Button>
+          size={"medium"}
+        />
         <div className={styles.Credits}>
           <i className="fa fa-money-bills"></i>
-          <div className={styles.Price}>{credit} €</div>
+          <div className={styles.Price}>{credits} €</div>
           <Button
             type="button"
             fillMode={"outline"}
             iconClass="fa fa-plus"
             style={{ borderRadius: "100%" }}
             size={"small"}
-          ></Button>
+            onClick={()=>setPayisOpen(true)}
+          />
         </div>
       </div>
-      <div className={styles.UserWrapper}>
+
+      <div className={styles.UserWrapper} ref={dropdownRef}>
         <Button
           type="button"
           fillMode={"flat"}
           iconClass="fa fa-bars"
-          size={"large"}
+          size={"medium"}
           style={{ marginRight: "6px" }}
-        ></Button>
+          onClick={() => setIsDropdownOpen((prev) => !prev)}
+        />
         <i className="fa-regular fa-user"></i>
-        <div className={styles.LogInNr}>V-123-456-789</div>
+        <div className={styles.LogInNr}>{loginNr}</div>
+
+        {isDropdownOpen && (
+          <div className={styles.DropdownMenu}>
+            <Button
+              type="button"
+              fillMode="flat"
+              onClick={handleLogout}
+              size={"small"}
+            >
+              <div className={styles.ButtonContent}>
+                Log Out
+                <i
+                  className="fa fa-arrow-right-from-bracket"
+                  style={{ marginLeft: "5px" }}
+                ></i>
+              </div>
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

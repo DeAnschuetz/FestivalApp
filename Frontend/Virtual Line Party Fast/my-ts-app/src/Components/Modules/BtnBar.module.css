@@ -3,8 +3,16 @@
     background-color: white;
     height: 30px;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     padding: 0px 8px;
     margin: 12px 0px;
     box-shadow: 0px 0px 6px 0px gray;
+}
+
+.Active{
+    text-decoration: underline;
+}
+
+.BtnHover:hover{
+    text-decoration: underline;
 }

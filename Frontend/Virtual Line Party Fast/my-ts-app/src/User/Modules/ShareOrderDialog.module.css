@@ -1,0 +1,36 @@
+.BtnContainer {
+  display: flex;
+  justify-content: space-between;
+  margin: 0px 10px;
+  color: black;
+}
+
+:global(.k-window) {
+  background-color: #f2f2f1 !important;
+}
+
+:global(.k-window-titlebar) {
+  background-color: #f2f2f1 !important;
+  color: black;
+}
+
+:global(.Dialog .k-window-titlebar .k-button-md) {
+  border: 1px solid black !important;
+  border-radius: 100%;
+  color: black;
+}
+
+.CancelBtn {
+  color: black;
+}
+
+.ShareBtn {
+  color: black;
+  background-color: #BDC3CB;
+}
+
+.Title {
+  white-space: normal;
+  word-break: break-word;
+  margin-right: 20px;
+}

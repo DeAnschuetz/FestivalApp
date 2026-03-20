@@ -1,20 +1,35 @@
-import React from 'react'
-import styles from './Modules/BtnBar.module.css'
+import React from "react";
+import styles from "./Modules/BtnBar.module.css";
 
-interface Props {}
-
-function BtnBar(props: Props) {
-    const {} = props
-
-    return (
-        <div className={styles.BtnBar}>
-            <div>Alle</div>
-            <div>In Arbeit</div>
-            <div>Abholbereit</div>
-            <div>Abgeschlossen</div>
-            <div>Storniert</div>
-        </div>
-    )
+interface BtnBarProps {
+  filter: string;
+  setFilter: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default BtnBar
+function BtnBar(props: BtnBarProps) {
+  const { filter, setFilter } = props;
+
+  const filters = [
+    { label: "Alle", value: "" },
+    { label: "In Arbeit", value: "in_progress" },
+    { label: "Abholbereit", value: "ready_for_pickup" },
+    { label: "Abgeschlossen", value: "done" },
+    { label: "Storniert", value: "canceled" },
+  ];
+
+  return (
+    <div className={styles.BtnBar}>
+      {filters.map((item, index) => (
+        <div
+          key={index}
+          className={filter === item.value ? styles.Active : styles.BtnHover}
+          onClick={() => setFilter(item.value)}
+        >
+          {item.label}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default BtnBar;

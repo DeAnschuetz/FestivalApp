@@ -14,89 +14,11 @@
 
 .OrderWrapper {
   margin: 0px 20px;
-  height: 90px;
+  max-height: 90px;
   padding: 6px 12px 0px 0px;
   overflow: auto;
 }
 
 .OrderWrapper::-webkit-scrollbar {
   display: none;
-}
-
-.StatusWrapper {
-  display: flex;
-  border-top: 1px solid #ede7dc;
-  align-items: center;
-  height: 50%;
-  padding-left: 6px;
-}
-
-.StatusText {
-  margin-left: 6px;
-}
-
-.OrderContainer {
-  background-color: #bdc3cb;
-  border: 1px solid #ede7dc;
-  margin-bottom: 12px;
-  height: 80px;
-  border-radius: 10px;
-  display: flex;
-  padding-right: 3px;
-}
-
-.VerticalWrapper {
-  width: 40%;
-  border-right: 2px solid #ede7dc;
-  height: 100%;
-}
-
-.FoodCourtName {
-  display: flex;
-  align-items: center;
-  height: 50%;
-  padding-left: 6px;
-  font-size: large;
-}
-
-.ItemContainer {
-  width: 68%;
-  padding: 6px;
-  height: 66px;
-  overflow: auto;
-}
-
-.ItemContainer::-webkit-scrollbar {
-  display: none;
-}
-
-.ItemWrapper {
-  display: flex;
-  margin-bottom: 3px;
-  flex-direction: column;
-}
-
-.ItemName {
-  max-width: 90%;
-  font-size: large;
-}
-
-.FlexWrapper {
-  display: flex;
-  justify-content: space-between;
-  padding-right: 6px;
-}
-
-.SubItemContainer {
-  margin: 3px 0px 3px 12px;
-  width: 80%;
-}
-
-.Extra{
-  margin-left: 20px;
-}
-
-.ItemExtra{
-  margin-left: 6px;
-  font-style: italic;
 }
