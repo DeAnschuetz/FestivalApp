@@ -1,144 +1,148 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="15.1">
-  <zoom_level>8</zoom_level>
+  <zoom_level>10</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1000</x>
-      <y>320</y>
-      <w>168</w>
-      <h>96</h>
+      <x>1250</x>
+      <y>190</y>
+      <w>210</w>
+      <h>120</h>
     </coordinates>
-    <panel_attributes>Users
+    <panel_attributes>Account
 --
--login_Nr: string PK
--password: string
--type: string</panel_attributes>
+-id: UUID PK
+-lgoin_Nr Varchar(13) FK
+-password: Varchar(60)
+-type: Varchar(255)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>632</x>
-      <y>320</y>
-      <w>168</w>
-      <h>64</h>
+      <x>790</x>
+      <y>190</y>
+      <w>210</w>
+      <h>100</h>
     </coordinates>
     <panel_attributes>Foodcourt
 --
--id: string PK
--name: string
--image: image
+-id: UUID PK
+-account_id UUID PK, FK
+-display_name: Varchar(100)
+-image: OID
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>816</x>
-      <y>320</y>
-      <w>168</w>
-      <h>112</h>
+      <x>1020</x>
+      <y>190</y>
+      <w>210</w>
+      <h>140</h>
     </coordinates>
-    <panel_attributes>Products
+    <panel_attributes>Product
 --
--id: string PK
--foodcourt_Id: string FK
--price: float
--name: string
--symbol: image
--minimal_Warning: int
+-id: UUID PK
+-foodcourt_Id: UUID FK
+-price: Decimal(10,2)
+-display_name: Varchar(100)
+-symbol_identifier: Varchar(100)
+-minimal_warning: Integer
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1392</x>
-      <y>320</y>
-      <w>168</w>
-      <h>56</h>
+      <x>1740</x>
+      <y>190</y>
+      <w>210</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>Credit
 --
--login_Nr: string PK, FK
--ammount: float
+-id: UUID PK
+-account_id: UUID PK, FK
+-amount: Numeric(17,2)
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>632</x>
-      <y>440</y>
-      <w>168</w>
-      <h>56</h>
+      <x>790</x>
+      <y>350</y>
+      <w>210</w>
+      <h>80</h>
     </coordinates>
-    <panel_attributes>FoodcourtWaitingTime
+    <panel_attributes>Foodcourt_Waiting_Time
 --
--foodcourt_Id: string PK,FK
--waiting_Time: int
+-id: UUID
+-foodcourt_id: UUID PK,FK
+-waiting_time: Integer
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1184</x>
-      <y>320</y>
-      <w>192</w>
-      <h>120</h>
+      <x>1480</x>
+      <y>190</y>
+      <w>240</w>
+      <h>150</h>
     </coordinates>
-    <panel_attributes>Notification
+    <panel_attributes>Food_Order_Notification
 --
--id: string PK
--login_Nr: string FK
--type: NotificationType
--status: StatusType
--message: string
--order_Time: DateTime
--pickup_Time: int
+-id: UUID PK
+-accound_id: UUID FK
+-type: Varchar(255)
+-status: Varchar(255)
+-message: Varchar(255)
+-creation_time: Timestamp(6)
+-pickup_time: Timestamp(6)
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>216</x>
-      <y>320</y>
-      <w>192</w>
-      <h>160</h>
+      <x>270</x>
+      <y>190</y>
+      <w>240</w>
+      <h>200</h>
     </coordinates>
-    <panel_attributes>Order
+    <panel_attributes>Food_Order
 --
--id: string PK
--login_Nr: string FK
--foodcourt_Id: string FK
--status: OrderStatus
--has_Prio: bool
--total: float
--waiting_Time: int
--shared_with: string
--order_Time: DateTime
--is_hidden: bool</panel_attributes>
+-id: UUID PK
+-account_id: UUID FK
+-foodcourt_Id: UUID FK
+-status: Varchar(255)
+-has_Prio: Boolean
+-total: Numeric(17,2)
+-waiting_Time: Integer
+-account_id: UUID FK
+-order_Time: Timestamp(6)
+-is_hidden: Boolean</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>216</x>
-      <y>552</y>
-      <w>192</w>
-      <h>120</h>
+      <x>270</x>
+      <y>480</y>
+      <w>240</w>
+      <h>150</h>
     </coordinates>
-    <panel_attributes>OrderItem
+    <panel_attributes>Food_Order_Item
 --
--id: string PK
--order_Id: string FK
--product_Id: string FK
--price: float
--count: int
--extra: string
+-id: UUID PK
+-order_Id: UUID FK
+-product_Id: UUID FK
+-price: Numeric(17,2)
+-count: Integer
+-extra: Varchar(255)
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -146,9 +150,9 @@
     <id>UMLClass</id>
     <coordinates>
       <x>0</x>
-      <y>216</y>
-      <w>1560</w>
-      <h>24</h>
+      <y>60</y>
+      <w>1950</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>Datamodell</panel_attributes>
     <additional_attributes/>
@@ -156,60 +160,61 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>424</x>
-      <y>320</y>
-      <w>192</w>
-      <h>96</h>
+      <x>530</x>
+      <y>190</y>
+      <w>240</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>Cart
 --
--id: string PK
--login_Nr: string FK
--has_Prio: bool
--total: float
--waiting_Time: int</panel_attributes>
+-id: UUID PK
+-account_id: UUID PK, FK
+-has_Prio: Boolean
+-total: Numeric(17,2)
+-waiting_Time: Integer</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>824</x>
-      <y>528</y>
-      <w>160</w>
-      <h>64</h>
+      <x>1030</x>
+      <y>450</y>
+      <w>200</w>
+      <h>80</h>
     </coordinates>
-    <panel_attributes>ProductCount
+    <panel_attributes>Product_Count
 --
--product_Id: string PK,FK
--count: int
+-id: UUID PK
+-product_id: UUID PK,FK
+-count: Integer
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>424</x>
-      <y>552</y>
-      <w>192</w>
-      <h>120</h>
+      <x>530</x>
+      <y>480</y>
+      <w>240</w>
+      <h>150</h>
     </coordinates>
-    <panel_attributes>CartItem
+    <panel_attributes>Cart_Item
 --
--id: string PK
--cart_Id: string FK
--product_Id: string FK
--price: float
--count: int
--extra: string</panel_attributes>
+-id: UUID PK
+-cart_Id: UUID FK
+-product_Id: UUID FK
+-price: Numeric(17,2)
+-count: Integer
+-extra: Varchar(255)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>88</x>
-      <y>344</y>
-      <w>128</w>
-      <h>96</h>
+      <x>110</x>
+      <y>220</y>
+      <w>160</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>OrderStatus:
 -ordered
@@ -222,10 +227,10 @@
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1048</x>
-      <y>416</y>
-      <w>112</w>
-      <h>88</h>
+      <x>1310</x>
+      <y>310</y>
+      <w>140</w>
+      <h>110</h>
     </coordinates>
     <panel_attributes>Login_Nr:
 User -&gt; V
@@ -238,17 +243,12 @@ V-123-456-789</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1256</x>
-      <y>440</y>
-      <w>112</w>
-      <h>128</h>
+      <x>1580</x>
+      <y>340</y>
+      <w>140</w>
+      <h>160</h>
     </coordinates>
-    <panel_attributes>NotificationTypes:
--ordered
--ready
--canceled
-
-Status:
+    <panel_attributes>NotificationStatus:
 -new
 -read
 -removed</panel_attributes>
@@ -257,45 +257,44 @@ Status:
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1576</x>
-      <y>320</y>
-      <w>168</w>
-      <h>88</h>
+      <x>1970</x>
+      <y>190</y>
+      <w>210</w>
+      <h>110</h>
     </coordinates>
-    <panel_attributes>CreditHistory
+    <panel_attributes>Credit_History
 --
--id: string PK
--login_Nr: string FK
--old_Ammount: float
--new_Ammount: float
--timestamp: DateTime
+-id: UUID PK
+-old_amount: Numeric(17,2)
+-new_amount: Numeric(17,2)
+-timestamp: Timestamp(6)
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>8</x>
-      <y>552</y>
-      <w>192</w>
-      <h>120</h>
+      <x>10</x>
+      <y>480</y>
+      <w>240</w>
+      <h>150</h>
     </coordinates>
-    <panel_attributes>OrderHistory
+    <panel_attributes>Food_Order_History
 --
--id: string PK
--order_Id: string FK
--status_Change_Time: DateTime
--old_Status: OrderStatus
--new_Status: OrderStatus</panel_attributes>
+-id: UUID PK
+-food_order_Id: UUID FK
+-status_Change_Time: Timestamp(6)
+-old_Status: Varchar(255)
+-new_Status: Varchar(255)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>232</x>
-      <y>472</y>
-      <w>32</w>
-      <h>96</h>
+      <x>290</x>
+      <y>380</y>
+      <w>40</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m1=1
@@ -306,10 +305,10 @@ fg=PINK</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>440</x>
-      <y>408</y>
-      <w>32</w>
-      <h>160</h>
+      <x>550</x>
+      <y>300</y>
+      <w>40</w>
+      <h>200</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m1=1
@@ -320,10 +319,10 @@ fg=LIGHT_GRAY</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>24</x>
-      <y>472</y>
-      <w>240</w>
-      <h>96</h>
+      <x>30</x>
+      <y>380</y>
+      <w>300</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=-
 m1=1
@@ -334,24 +333,24 @@ fg=PINK</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>648</x>
-      <y>376</y>
-      <w>32</w>
-      <h>80</h>
+      <x>810</x>
+      <y>280</y>
+      <w>40</w>
+      <h>90</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m1=1
 m2=1
 fg=GREEN</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>856</x>
-      <y>424</y>
-      <w>32</w>
-      <h>120</h>
+      <x>1070</x>
+      <y>320</y>
+      <w>40</w>
+      <h>150</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m1=1
@@ -362,10 +361,10 @@ fg=GREEN</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1016</x>
-      <y>240</y>
-      <w>608</w>
-      <h>96</h>
+      <x>1270</x>
+      <y>90</y>
+      <w>760</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m1=1
@@ -376,10 +375,10 @@ fg=MAGENTA</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>472</x>
-      <y>424</y>
-      <w>400</w>
-      <h>144</h>
+      <x>590</x>
+      <y>320</y>
+      <w>500</w>
+      <h>180</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m1=n
@@ -390,10 +389,10 @@ fg=CYAN</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>264</x>
-      <y>424</y>
-      <w>608</w>
-      <h>144</h>
+      <x>330</x>
+      <y>320</y>
+      <w>760</w>
+      <h>180</h>
     </coordinates>
     <panel_attributes>lt=-
 m1=n
@@ -404,10 +403,10 @@ fg=CYAN</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>248</x>
-      <y>272</y>
-      <w>432</w>
-      <h>64</h>
+      <x>310</x>
+      <y>130</y>
+      <w>540</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m1=1
@@ -419,10 +418,10 @@ fg=BLUE</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>232</x>
-      <y>240</y>
-      <w>816</w>
-      <h>96</h>
+      <x>290</x>
+      <y>90</y>
+      <w>1020</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=-
 m1=1
@@ -433,10 +432,10 @@ fg=MAGENTA</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1016</x>
-      <y>240</y>
-      <w>216</w>
-      <h>96</h>
+      <x>1270</x>
+      <y>90</y>
+      <w>270</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 m1=n
@@ -447,10 +446,10 @@ fg=MAGENTA</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1016</x>
-      <y>240</y>
-      <w>416</w>
-      <h>96</h>
+      <x>1270</x>
+      <y>90</y>
+      <w>520</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 m1=1
@@ -461,10 +460,10 @@ fg=MAGENTA</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>440</x>
-      <y>240</y>
-      <w>608</w>
-      <h>96</h>
+      <x>550</x>
+      <y>90</y>
+      <w>760</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=-
 m1=1
@@ -475,12 +474,12 @@ fg=MAGENTA</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1000</x>
-      <y>528</y>
-      <w>168</w>
-      <h>64</h>
+      <x>1250</x>
+      <y>450</y>
+      <w>210</w>
+      <h>80</h>
     </coordinates>
-    <panel_attributes>SubProducts
+    <panel_attributes>Main_Sub_Product
 --
 -mainProduct_Id: string PK,FK
 -subProduct_Id: string PK,FK
@@ -490,10 +489,10 @@ fg=MAGENTA</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>872</x>
-      <y>424</y>
-      <w>168</w>
-      <h>120</h>
+      <x>1090</x>
+      <y>320</y>
+      <w>210</w>
+      <h>150</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 m1=1
@@ -504,10 +503,10 @@ fg=RED</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>680</x>
-      <y>272</y>
-      <w>192</w>
-      <h>64</h>
+      <x>850</x>
+      <y>130</y>
+      <w>240</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m1=1
@@ -518,10 +517,10 @@ fg=ORANGE</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>888</x>
-      <y>424</y>
-      <w>168</w>
-      <h>120</h>
+      <x>1110</x>
+      <y>320</y>
+      <w>210</w>
+      <h>150</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m1=m

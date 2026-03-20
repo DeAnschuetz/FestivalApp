@@ -1,12 +1,14 @@
 package com.ffb.app.api;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.ffb.app.validator.api.RequestValidator;
 import com.ffb.model.api.request.account.RegisterRequest;
 import com.ffb.model.api.response.account.AccountResponse;
+import com.ffb.model.api.response.account.LoginResponse;
 import com.ffb.model.api.response.error.ErrorResponse;
 import com.ffb.model.exception.ApiException;
 import com.ffb.model.exception.ServiceException;
@@ -50,15 +52,15 @@ public class AccountEndpointImpl {
 
 	@POST
 	@Path("login")
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@PermitAll
 	@Operation(summary = "Login")
 	@APIResponses({
 			@APIResponse(
 					responseCode = "200",
-					description = "Login succeeded; cookie set",
-					content = @Content(mediaType = MediaType.TEXT_PLAIN)
+					description = "Login succeeded; Token served",
+					content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = LoginResponse.class, type = SchemaType.OBJECT))
 			),
 			@APIResponse(
 					responseCode = "400",
@@ -78,26 +80,26 @@ public class AccountEndpointImpl {
 			throw new ApiException("The password must not be null or blank.", Response.Status.BAD_REQUEST);
 		}
 
-        String token;
+        LoginResponse data;
         try {
-            token = accountService.verifyAccount(loginRequest);
+            data = accountService.verifyAccount(loginRequest);
         } catch (ServiceException e) {
 			LOG.error("Could not verify account={{}}; Exception: ", loginNr, e);
             throw new ApiException(e);
         }
 
-		NewCookie cookie = new NewCookie.Builder("access_token")
-				.value(token)//
-				.path("/")//
-				.httpOnly(true)//
-				.secure(false)//
-				.sameSite(NewCookie.SameSite.LAX)//
-				.maxAge(2 * 60 * 60)//
-				.build()//
-		;
+//		NewCookie cookie = new NewCookie.Builder("access_token")
+//				.value(token)//
+//				.path("/")//
+//				.httpOnly(true)//
+//				.secure(false)//
+//				.sameSite(NewCookie.SameSite.LAX)//
+//				.maxAge(2 * 60 * 60)//
+//				.build()//
+//		;
 
 		LOG.info("login successful for loginNr={{}}", loginNr);
-		return Response.status(Response.Status.OK).entity("Successfully logged in: {" + loginNr +"}").cookie(cookie).build();
+		return Response.status(Response.Status.OK).entity(data).build();
 	}
 
 	@POST

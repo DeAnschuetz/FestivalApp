@@ -1,10 +1,4 @@
-//Dummydaten
-
-export type OrderStatus =
-  | "ready_for_pickup"
-  | "in_progress"
-  | "done"
-  | "canceled";
+export type OrderStatus = 'READY_FOR_PICKUP' | 'IN_PROGRESS';
 
 export interface Product {
   name: string;

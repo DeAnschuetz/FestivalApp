@@ -9,10 +9,7 @@ import com.ffb.model.api.response.credit.CreditResponse;
 import com.ffb.model.api.response.credit.CreditResponseFull;
 import com.ffb.model.api.response.food.court.FoodCourtResponse;
 import com.ffb.model.api.response.food.court.FoodCourtResponseFull;
-import com.ffb.model.api.response.food.order.FoodOrderHistoryResponse;
-import com.ffb.model.api.response.food.order.FoodOrderItemResponse;
-import com.ffb.model.api.response.food.order.FoodOrderResponse;
-import com.ffb.model.api.response.food.order.FoodOrderResponseFull;
+import com.ffb.model.api.response.food.order.*;
 import com.ffb.model.api.response.notification.FoodOrderNotificationResponse;
 import com.ffb.model.api.response.product.ProductResponse;
 import com.ffb.model.api.response.ticket.TicketResponse;
@@ -63,7 +60,9 @@ public interface ResponseMapper {
 
     CreditResponseFull getCreditResponseFull(Credit credit);
 
-    FoodOrderResponseFull getFoodOrderResponseFull(FoodOrder foodOrder);
+    FoodOrderResponseFull getFoodOrderResponseFullWithNotification(FoodOrder foodOrder);
+
+    FoodOrderResponseHistory FoodOrderResponseHistory(FoodOrder foodOrder);
 
     FoodOrderNotificationResponse getFoodOrderNotificationResponse(FoodOrderNotification notification);
 

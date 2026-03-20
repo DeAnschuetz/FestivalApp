@@ -32,7 +32,7 @@ import java.util.UUID;
 @ApplicationScoped
 public class FoodCourtServiceImpl implements FoodCourtService {
 
-    // TODO Logging fertig
+    // TODO Logging Example
     private static final Logger LOG = LoggerFactory.getLogger(FoodCourtServiceImpl.class);
 
     private final AccountDao accountDao;
@@ -192,6 +192,7 @@ public class FoodCourtServiceImpl implements FoodCourtService {
     }
 
     @Override
+    @Transactional
     public void addImage(@NonNull UUID id, PushbackInputStream inputData) throws ServiceException {
         LOG.trace("ENTER: addImage; id={{}}", id);
         FoodCourt foodCourt;

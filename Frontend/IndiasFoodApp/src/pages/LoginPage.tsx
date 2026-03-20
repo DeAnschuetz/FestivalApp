@@ -1,28 +1,18 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { Box, Button, FormControl, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import handleLoginSubmit from '../api-communication/login';
 
 import burgerImg from '../assets/burger.png';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const handleLoginSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // look for ticketnumber that starts with 3
-    const ticketNumber = (document.getElementById('ticketNumber') as HTMLInputElement | null)?.value || '';
-    if (ticketNumber.startsWith('V')) {
-      console.log('Ticket number starts with V');
-      setIsLoggedIn(true);
-      navigate('/home');
-    } else {
-      console.log('Ticket number does not start with V');
-      setIsLoggedIn(false);
-    }
-  }
+  const [ticketNumber, setTicketNumber] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   return (
     <Box
@@ -69,7 +59,7 @@ const LoginPage = () => {
         </Box>
 
         {/* Login-Formular */}
-        <Box component="form" sx={{ px: 3, pb: 3 }} onSubmit={handleLoginSubmit}>
+        <Box component="form" sx={{ px: 3, pb: 3 }} onSubmit={(e) => handleLoginSubmit({ ticketNumber, password, setError, setIsLoading, navigate }, e)}>
 
           <FormControl fullWidth>
             <TextField
@@ -80,6 +70,8 @@ const LoginPage = () => {
               placeholder="Ticketnummer"
               variant="outlined"
               name="ticketNumber"
+              value={ticketNumber}
+              onChange={(event) => setTicketNumber(event.target.value)}
             />
 
             <TextField
@@ -91,12 +83,14 @@ const LoginPage = () => {
               placeholder="Passwort"
               variant="outlined"
               name="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
             />
 
             <Button
               type="submit"
               fullWidth
-			        onSubmit={handleLoginSubmit}
+              disabled={isLoading}
               sx={{
                 mt: 2,
                 bgcolor: '#2e2e2e',
@@ -106,8 +100,21 @@ const LoginPage = () => {
                 borderRadius: '12px',
               }}
             >
-              Anmelden
+              {isLoading ? 'Anmeldung läuft...' : 'Anmelden'}
             </Button>
+
+            {error && (
+              <Typography
+                variant="body2"
+                sx={{
+                  textAlign: 'center',
+                  mt: 2,
+                  color: '#c62828',
+                }}
+              >
+                {error}
+              </Typography>
+            )}
 
             <Typography
               variant="body2"

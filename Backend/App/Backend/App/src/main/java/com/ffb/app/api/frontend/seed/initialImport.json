@@ -1,0 +1,3716 @@
+{
+  "version": 1,
+  "generatedAt": "2026-03-19T20:55:00Z",
+  "source": "Generated from dbDump.sql and ResponseMapperImpl.java",
+  "global": {
+    "foodCourts": [
+      {
+        "id": "a6caa51c-52e0-4ea8-80bc-bcf3d2c03efc",
+        "name": "Burger Palace",
+        "waitingTime": 30
+      },
+      {
+        "id": "e9b30a36-d946-4295-b934-9aec9014c8c1",
+        "name": "Pizza Palace",
+        "waitingTime": 15
+      }
+    ],
+    "products": [
+      {
+        "id": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+        "price": 11.0,
+        "displayName": "Burger Menü",
+        "symbolIdentifier": "TEST",
+        "minimalWarning": 10,
+        "productCount": 44,
+        "subProducts": []
+      },
+      {
+        "id": "88091439-2cc5-4e25-af0b-27fe6d393563",
+        "price": 12.0,
+        "displayName": "Burger Menü mit Cola",
+        "symbolIdentifier": "TEST",
+        "minimalWarning": 10,
+        "productCount": 54,
+        "subProducts": [
+          {
+            "id": "ea6e8266-b455-4136-9415-29ef8de05a15",
+            "price": 4.0,
+            "displayName": "Pommes",
+            "symbolIdentifier": "TEST",
+            "minimalWarning": 10,
+            "productCount": 0,
+            "subProducts": []
+          }
+        ]
+      },
+      {
+        "id": "ea6e8266-b455-4136-9415-29ef8de05a15",
+        "price": 4.0,
+        "displayName": "Pommes",
+        "symbolIdentifier": "TEST",
+        "minimalWarning": 10,
+        "productCount": 0,
+        "subProducts": []
+      },
+      {
+        "id": "039e2a08-83e7-481a-941b-a6df55e6d8ba",
+        "price": 4.0,
+        "displayName": "Pommes",
+        "symbolIdentifier": "TEST",
+        "minimalWarning": 2,
+        "productCount": 0,
+        "subProducts": []
+      },
+      {
+        "id": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+        "price": 4.0,
+        "displayName": "Antipasti",
+        "symbolIdentifier": "TEST",
+        "minimalWarning": 10,
+        "productCount": 0,
+        "subProducts": []
+      },
+      {
+        "id": "8df2fa53-75b6-42c7-8798-c4157e756c41",
+        "price": 1.5,
+        "displayName": "Fanta",
+        "symbolIdentifier": "TEST",
+        "minimalWarning": 10,
+        "productCount": 0,
+        "subProducts": []
+      },
+      {
+        "id": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+        "price": 7.5,
+        "displayName": "Pizza Margherita",
+        "symbolIdentifier": "TEST",
+        "minimalWarning": 10,
+        "productCount": 0,
+        "subProducts": []
+      },
+      {
+        "id": "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6",
+        "price": 11.0,
+        "displayName": "Pizza Margherita Menü",
+        "symbolIdentifier": "TEST",
+        "minimalWarning": 10,
+        "productCount": 0,
+        "subProducts": [
+          {
+            "id": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+            "price": 7.5,
+            "displayName": "Pizza Margherita",
+            "symbolIdentifier": "TEST",
+            "minimalWarning": 10,
+            "productCount": 0,
+            "subProducts": []
+          },
+          {
+            "id": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+            "price": 4.0,
+            "displayName": "Antipasti",
+            "symbolIdentifier": "TEST",
+            "minimalWarning": 10,
+            "productCount": 0,
+            "subProducts": []
+          }
+        ]
+      },
+      {
+        "id": "8d3cf1a0-7b8c-450f-8cdd-6714f672027c",
+        "price": 12.0,
+        "displayName": "Pizza Margherita Menü mit Fanta",
+        "symbolIdentifier": "TEST",
+        "minimalWarning": 10,
+        "productCount": 0,
+        "subProducts": [
+          {
+            "id": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+            "price": 7.5,
+            "displayName": "Pizza Margherita",
+            "symbolIdentifier": "TEST",
+            "minimalWarning": 10,
+            "productCount": 0,
+            "subProducts": []
+          },
+          {
+            "id": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+            "price": 4.0,
+            "displayName": "Antipasti",
+            "symbolIdentifier": "TEST",
+            "minimalWarning": 10,
+            "productCount": 0,
+            "subProducts": []
+          },
+          {
+            "id": "8df2fa53-75b6-42c7-8798-c4157e756c41",
+            "price": 1.5,
+            "displayName": "Fanta",
+            "symbolIdentifier": "TEST",
+            "minimalWarning": 10,
+            "productCount": 0,
+            "subProducts": []
+          }
+        ]
+      }
+    ],
+    "productAssignments": [
+      {
+        "id": "import-assignment-1",
+        "mainProductId": "88091439-2cc5-4e25-af0b-27fe6d393563",
+        "subProductId": "ea6e8266-b455-4136-9415-29ef8de05a15"
+      },
+      {
+        "id": "import-assignment-2",
+        "mainProductId": "8d3cf1a0-7b8c-450f-8cdd-6714f672027c",
+        "subProductId": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2"
+      },
+      {
+        "id": "import-assignment-3",
+        "mainProductId": "8d3cf1a0-7b8c-450f-8cdd-6714f672027c",
+        "subProductId": "fe099c8c-06da-48b9-9c36-7df26322fe94"
+      },
+      {
+        "id": "import-assignment-4",
+        "mainProductId": "8d3cf1a0-7b8c-450f-8cdd-6714f672027c",
+        "subProductId": "8df2fa53-75b6-42c7-8798-c4157e756c41"
+      },
+      {
+        "id": "import-assignment-5",
+        "mainProductId": "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6",
+        "subProductId": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2"
+      },
+      {
+        "id": "import-assignment-6",
+        "mainProductId": "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6",
+        "subProductId": "fe099c8c-06da-48b9-9c36-7df26322fe94"
+      }
+    ],
+    "productFoodCourtMap": {
+      "88091439-2cc5-4e25-af0b-27fe6d393563": "a6caa51c-52e0-4ea8-80bc-bcf3d2c03efc",
+      "dbcb35ab-0e7e-4af0-8517-c2ab45897f18": "a6caa51c-52e0-4ea8-80bc-bcf3d2c03efc",
+      "ea6e8266-b455-4136-9415-29ef8de05a15": "a6caa51c-52e0-4ea8-80bc-bcf3d2c03efc",
+      "8d3cf1a0-7b8c-450f-8cdd-6714f672027c": "e9b30a36-d946-4295-b934-9aec9014c8c1",
+      "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6": "e9b30a36-d946-4295-b934-9aec9014c8c1",
+      "17c5680e-22d5-4647-b5bb-b4a586f6c6d2": "e9b30a36-d946-4295-b934-9aec9014c8c1",
+      "8df2fa53-75b6-42c7-8798-c4157e756c41": "e9b30a36-d946-4295-b934-9aec9014c8c1",
+      "fe099c8c-06da-48b9-9c36-7df26322fe94": "e9b30a36-d946-4295-b934-9aec9014c8c1",
+      "039e2a08-83e7-481a-941b-a6df55e6d8ba": "a6caa51c-52e0-4ea8-80bc-bcf3d2c03efc"
+    },
+    "foodCourtImages": {}
+  },
+  "accounts": [
+    {
+      "accountId": "e5a6778b-8576-4b4c-a4a3-97c5a3ac2cf0",
+      "loginNr": "F-000-000-001",
+      "type": "FOOD_COURT_WORKER",
+      "ownFoodCourtId": "a6caa51c-52e0-4ea8-80bc-bcf3d2c03efc",
+      "cart": null,
+      "credit": null,
+      "creditHistory": [],
+      "visibleOrders": [
+        {
+          "id": "cb3f7335-057d-40ac-8e35-55d6619ef6ff",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 20,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "396c19bb-1b12-4c31-9c92-fcd5bd1e2b48",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 20,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "01084fea-e4c6-4796-a8d5-2d794edc6a27",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 10,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "223ca4f0-f944-4dd1-ac4f-67aa8b330c9c",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 10,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "16de2b77-78b3-4f56-9aa4-cf4094af2645",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 0,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b048e03c-0136-4e81-b868-b2b3a90525dc",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 0,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "visibleOrderHistory": [
+        {
+          "id": "cb3f7335-057d-40ac-8e35-55d6619ef6ff",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 20,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 10:07:22.504035"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-06 10:32:31.021764"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 11:26:16.562759"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-06 11:59:40.529607"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 12:06:40.887979"
+            }
+          ]
+        },
+        {
+          "id": "396c19bb-1b12-4c31-9c92-fcd5bd1e2b48",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 20,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 10:07:22.426638"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-06 10:32:30.98889"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 11:26:16.490465"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-06 11:59:40.511654"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 12:06:40.886981"
+            }
+          ]
+        },
+        {
+          "id": "01084fea-e4c6-4796-a8d5-2d794edc6a27",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 10,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-04 12:17:41.046587"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 08:58:16.323205"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:07:38.951708"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:08:52.876562"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:12:48.959739"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:18:12.463438"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:20:28.671697"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:20:39.325399"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:48:02.978039"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:48:20.437646"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:48:24.982019"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "CANCELED",
+              "statusChangeTime": "2026-03-05 10:53:36.440801"
+            },
+            {
+              "oldStatus": "CANCELED",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:53:45.421431"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 11:57:11.728302"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 12:22:33.688399"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 12:27:21.308784"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-06 10:32:30.899715"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-06 10:32:40.376316"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 11:26:16.536517"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-06 11:27:15.761595"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 11:27:22.729985"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-06 11:59:31.844515"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-06 11:59:40.562621"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 12:06:40.957001"
+            }
+          ]
+        },
+        {
+          "id": "223ca4f0-f944-4dd1-ac4f-67aa8b330c9c",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 10,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-04 12:17:41.001154"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:07:24.720891"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:07:38.951708"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:08:41.460306"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:12:48.960976"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:18:12.510399"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:20:28.629078"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:40:29.656667"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:48:02.930533"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:48:20.434615"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "CANCELED",
+              "statusChangeTime": "2026-03-05 10:53:36.3669"
+            },
+            {
+              "oldStatus": "CANCELED",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:53:45.390309"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 11:57:11.736416"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 12:22:33.657436"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 12:27:21.308784"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-06 10:32:30.838009"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-06 11:02:07.701129"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 11:26:16.490465"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-06 11:59:40.558547"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 12:06:40.886981"
+            }
+          ]
+        },
+        {
+          "id": "16de2b77-78b3-4f56-9aa4-cf4094af2645",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 0,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-04 12:13:31.435684"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:07:24.720891"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:07:38.979275"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:08:41.495982"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:12:48.962219"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:18:12.462014"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:20:28.626072"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:40:29.623178"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:48:02.930533"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:48:20.392274"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:48:24.944201"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "CANCELED",
+              "statusChangeTime": "2026-03-05 10:53:36.405201"
+            },
+            {
+              "oldStatus": "CANCELED",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:53:45.38723"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 11:57:11.670634"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 12:22:33.611196"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 12:27:21.373811"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-06 10:32:30.838009"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "CANCELED",
+              "statusChangeTime": "2026-03-06 10:32:44.612607"
+            },
+            {
+              "oldStatus": "CANCELED",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 11:26:16.532453"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-06 11:59:40.505526"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 12:06:40.918759"
+            }
+          ]
+        },
+        {
+          "id": "b048e03c-0136-4e81-b868-b2b3a90525dc",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 0,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-04 12:13:31.356241"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:07:24.759552"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:07:38.950704"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:08:41.461305"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:12:49.000203"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:18:12.461012"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:20:28.626072"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:40:29.668001"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:48:02.944822"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:48:20.392274"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "CANCELED",
+              "statusChangeTime": "2026-03-05 10:53:36.3669"
+            },
+            {
+              "oldStatus": "CANCELED",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:53:45.388309"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 11:57:11.670634"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 12:22:33.611196"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 12:27:21.447946"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-06 10:32:31.05326"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 11:26:16.491465"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-06 11:59:40.595805"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 12:06:40.887979"
+            }
+          ]
+        }
+      ],
+      "notifications": []
+    },
+    {
+      "accountId": "50c3ba6b-903e-4d00-81dd-2314c3ed478f",
+      "loginNr": "F-000-000-002",
+      "type": "FOOD_COURT_WORKER",
+      "ownFoodCourtId": "e9b30a36-d946-4295-b934-9aec9014c8c1",
+      "cart": null,
+      "credit": null,
+      "creditHistory": [],
+      "visibleOrders": [
+        {
+          "id": "bfe4ab75-ca02-4602-890d-0eaf91f770f2",
+          "status": "ORDERED",
+          "foodCourtName": "Pizza Palace",
+          "waitingTime": 10,
+          "orderItems": [
+            {
+              "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+              "displayName": "Pizza Margherita",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6",
+              "displayName": "Pizza Margherita Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": "mit extra Knoblauch",
+              "subItems": [
+                {
+                  "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+                  "displayName": "Pizza Margherita",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                },
+                {
+                  "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+                  "displayName": "Antipasti",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            },
+            {
+              "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+              "displayName": "Antipasti",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            }
+          ]
+        },
+        {
+          "id": "3303f0ab-d6b3-42cd-83cc-2520db3632fc",
+          "status": "ORDERED",
+          "foodCourtName": "Pizza Palace",
+          "waitingTime": 5,
+          "orderItems": [
+            {
+              "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+              "displayName": "Pizza Margherita",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6",
+              "displayName": "Pizza Margherita Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": "mit extra Knoblauch",
+              "subItems": [
+                {
+                  "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+                  "displayName": "Pizza Margherita",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                },
+                {
+                  "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+                  "displayName": "Antipasti",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            },
+            {
+              "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+              "displayName": "Antipasti",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            }
+          ]
+        },
+        {
+          "id": "3aa6985f-48a9-4c00-8eaa-b5d383d30e11",
+          "status": "ORDERED",
+          "foodCourtName": "Pizza Palace",
+          "waitingTime": 0,
+          "orderItems": [
+            {
+              "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+              "displayName": "Pizza Margherita",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6",
+              "displayName": "Pizza Margherita Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": "mit extra Knoblauch",
+              "subItems": [
+                {
+                  "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+                  "displayName": "Pizza Margherita",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                },
+                {
+                  "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+                  "displayName": "Antipasti",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            },
+            {
+              "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+              "displayName": "Antipasti",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            }
+          ]
+        }
+      ],
+      "visibleOrderHistory": [
+        {
+          "id": "bfe4ab75-ca02-4602-890d-0eaf91f770f2",
+          "status": "ORDERED",
+          "foodCourtName": "Pizza Palace",
+          "waitingTime": 10,
+          "orderItems": [
+            {
+              "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+              "displayName": "Pizza Margherita",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6",
+              "displayName": "Pizza Margherita Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": "mit extra Knoblauch",
+              "subItems": [
+                {
+                  "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+                  "displayName": "Pizza Margherita",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                },
+                {
+                  "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+                  "displayName": "Antipasti",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            },
+            {
+              "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+              "displayName": "Antipasti",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 10:07:22.494573"
+            }
+          ]
+        },
+        {
+          "id": "3303f0ab-d6b3-42cd-83cc-2520db3632fc",
+          "status": "ORDERED",
+          "foodCourtName": "Pizza Palace",
+          "waitingTime": 5,
+          "orderItems": [
+            {
+              "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+              "displayName": "Pizza Margherita",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6",
+              "displayName": "Pizza Margherita Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": "mit extra Knoblauch",
+              "subItems": [
+                {
+                  "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+                  "displayName": "Pizza Margherita",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                },
+                {
+                  "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+                  "displayName": "Antipasti",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            },
+            {
+              "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+              "displayName": "Antipasti",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-04 12:17:41.037673"
+            }
+          ]
+        },
+        {
+          "id": "3aa6985f-48a9-4c00-8eaa-b5d383d30e11",
+          "status": "ORDERED",
+          "foodCourtName": "Pizza Palace",
+          "waitingTime": 0,
+          "orderItems": [
+            {
+              "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+              "displayName": "Pizza Margherita",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6",
+              "displayName": "Pizza Margherita Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": "mit extra Knoblauch",
+              "subItems": [
+                {
+                  "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+                  "displayName": "Pizza Margherita",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                },
+                {
+                  "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+                  "displayName": "Antipasti",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            },
+            {
+              "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+              "displayName": "Antipasti",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-04 12:13:31.422842"
+            }
+          ]
+        }
+      ],
+      "notifications": []
+    },
+    {
+      "accountId": "484b61d1-064e-4f69-be9e-9cacd5a773f6",
+      "loginNr": "V-000-000-001",
+      "type": "GUEST",
+      "ownFoodCourtId": null,
+      "cart": {
+        "hasPrio": false,
+        "total": 0.0,
+        "cartItems": []
+      },
+      "credit": {
+        "credit": 30823.0
+      },
+      "creditHistory": [
+        {
+          "oldAmount": 0.0,
+          "newAmount": 1000.0,
+          "changeTime": "2026-03-04 12:13:30.271702"
+        },
+        {
+          "oldAmount": 1000.0,
+          "newAmount": 11000.0,
+          "changeTime": "2026-03-04 12:13:31.038549"
+        },
+        {
+          "oldAmount": 11000.0,
+          "newAmount": 10941.0,
+          "changeTime": "2026-03-04 12:13:31.360021"
+        },
+        {
+          "oldAmount": 10941.0,
+          "newAmount": 20941.0,
+          "changeTime": "2026-03-04 12:17:40.795818"
+        },
+        {
+          "oldAmount": 20941.0,
+          "newAmount": 20882.0,
+          "changeTime": "2026-03-04 12:17:41.00466"
+        },
+        {
+          "oldAmount": 20882.0,
+          "newAmount": 30882.0,
+          "changeTime": "2026-03-06 10:07:22.16491"
+        },
+        {
+          "oldAmount": 30882.0,
+          "newAmount": 30823.0,
+          "changeTime": "2026-03-06 10:07:22.430149"
+        }
+      ],
+      "visibleOrders": [
+        {
+          "id": "396c19bb-1b12-4c31-9c92-fcd5bd1e2b48",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 20,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "223ca4f0-f944-4dd1-ac4f-67aa8b330c9c",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 10,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b048e03c-0136-4e81-b868-b2b3a90525dc",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 0,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "visibleOrderHistory": [
+        {
+          "id": "396c19bb-1b12-4c31-9c92-fcd5bd1e2b48",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 20,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 10:07:22.426638"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-06 10:32:30.98889"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 11:26:16.490465"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-06 11:59:40.511654"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 12:06:40.886981"
+            }
+          ]
+        },
+        {
+          "id": "223ca4f0-f944-4dd1-ac4f-67aa8b330c9c",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 10,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-04 12:17:41.001154"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:07:24.720891"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:07:38.951708"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:08:41.460306"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:12:48.960976"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:18:12.510399"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:20:28.629078"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:40:29.656667"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:48:02.930533"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:48:20.434615"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "CANCELED",
+              "statusChangeTime": "2026-03-05 10:53:36.3669"
+            },
+            {
+              "oldStatus": "CANCELED",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:53:45.390309"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 11:57:11.736416"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 12:22:33.657436"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 12:27:21.308784"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-06 10:32:30.838009"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-06 11:02:07.701129"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 11:26:16.490465"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-06 11:59:40.558547"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 12:06:40.886981"
+            }
+          ]
+        },
+        {
+          "id": "b048e03c-0136-4e81-b868-b2b3a90525dc",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 0,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-04 12:13:31.356241"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:07:24.759552"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:07:38.950704"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:08:41.461305"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:12:49.000203"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:18:12.461012"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:20:28.626072"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:40:29.668001"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:48:02.944822"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:48:20.392274"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "CANCELED",
+              "statusChangeTime": "2026-03-05 10:53:36.3669"
+            },
+            {
+              "oldStatus": "CANCELED",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:53:45.388309"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 11:57:11.670634"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 12:22:33.611196"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 12:27:21.447946"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-06 10:32:31.05326"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 11:26:16.491465"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-06 11:59:40.595805"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 12:06:40.887979"
+            }
+          ]
+        }
+      ],
+      "notifications": [
+        {
+          "id": "3d9f2de6-196f-4c65-b876-70c0f9f9a7a3",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {396c19bb-1b12-4c31-9c92-fcd5bd1e2b48} was updated to ORDERED",
+          "creationTime": "2026-03-06 12:06:40.887979",
+          "pickupTime": "2026-03-06 10:07:22.425629"
+        },
+        {
+          "id": "a91933af-6fd7-497f-8f84-a1b209a35657",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to ORDERED",
+          "creationTime": "2026-03-06 12:06:40.887979",
+          "pickupTime": "2026-03-04 12:13:31.356241"
+        },
+        {
+          "id": "8e6bf64c-4c82-4201-a23a-117c3688912f",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to ORDERED",
+          "creationTime": "2026-03-06 12:06:40.887979",
+          "pickupTime": "2026-03-04 12:17:41.001154"
+        },
+        {
+          "id": "9b16d0a2-7c3b-4e40-8caf-af7042ce39ff",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to DONE",
+          "creationTime": "2026-03-06 11:59:40.598809",
+          "pickupTime": "2026-03-04 12:43:31.356241"
+        },
+        {
+          "id": "0386fbe5-6f11-489d-b3f9-ddb073177843",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to DONE",
+          "creationTime": "2026-03-06 11:59:40.562621",
+          "pickupTime": "2026-03-04 12:47:41.001154"
+        },
+        {
+          "id": "6c045325-5d0a-46e4-8db4-992d02ba5106",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {396c19bb-1b12-4c31-9c92-fcd5bd1e2b48} was updated to DONE",
+          "creationTime": "2026-03-06 11:59:40.511654",
+          "pickupTime": "2026-03-06 10:37:22.425629"
+        },
+        {
+          "id": "6642ea55-5b6e-414e-b778-e2df0de2fc91",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to ORDERED",
+          "creationTime": "2026-03-06 11:26:16.492466",
+          "pickupTime": "2026-03-04 12:23:31.356241"
+        },
+        {
+          "id": "cdadc313-62a3-489e-8b1f-39b5793d87ed",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to ORDERED",
+          "creationTime": "2026-03-06 11:26:16.491465",
+          "pickupTime": "2026-03-04 12:27:41.001154"
+        },
+        {
+          "id": "4a93add9-eb6d-4325-9d15-ac69c4a8d1b4",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {396c19bb-1b12-4c31-9c92-fcd5bd1e2b48} was updated to ORDERED",
+          "creationTime": "2026-03-06 11:26:16.491465",
+          "pickupTime": "2026-03-06 10:17:22.425629"
+        },
+        {
+          "id": "4f78561f-9257-46d9-b197-b44aee1c2305",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-06 11:02:07.702277",
+          "pickupTime": "2026-03-04 12:22:41.001154"
+        },
+        {
+          "id": "f7267069-4342-4357-bc69-e2bc7735b322",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-06 10:32:31.057524",
+          "pickupTime": "2026-03-06 10:32:31.057524"
+        },
+        {
+          "id": "ed817566-e86c-4e16-bbcf-db064a2ddb1b",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {396c19bb-1b12-4c31-9c92-fcd5bd1e2b48} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-06 10:32:30.992892",
+          "pickupTime": "2026-03-06 10:32:30.992892"
+        },
+        {
+          "id": "e6879cc6-56b1-4cf7-9c38-0b4e951d2e91",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-06 10:32:30.840008",
+          "pickupTime": "2026-03-06 10:32:30.840008"
+        },
+        {
+          "id": "47cc1112-ead5-4c10-8559-1b945ae86d6d",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {396c19bb-1b12-4c31-9c92-fcd5bd1e2b48} was placed",
+          "creationTime": "2026-03-06 10:07:22.425629",
+          "pickupTime": "2026-03-06 10:27:22.425629"
+        },
+        {
+          "id": "5bd0a81d-1fb7-4e66-9aad-d37777496423",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 12:27:21.447946",
+          "pickupTime": "2026-03-04 12:13:31.356241"
+        },
+        {
+          "id": "bbaa1392-3503-4d7e-ad9f-d4609ecc7d45",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 12:27:21.309783",
+          "pickupTime": "2026-03-04 12:17:41.001154"
+        },
+        {
+          "id": "80b3760f-a7bf-4185-93db-cde7d94d799b",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to DONE",
+          "creationTime": "2026-03-05 12:22:33.662389",
+          "pickupTime": "2026-03-04 12:37:41.001154"
+        },
+        {
+          "id": "63213c0c-7ad0-4a40-aac1-851e398165c7",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to DONE",
+          "creationTime": "2026-03-05 12:22:33.614201",
+          "pickupTime": "2026-03-04 12:33:31.356241"
+        },
+        {
+          "id": "ab5c238b-e370-465c-9a00-fb4b84cffded",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 11:57:11.741156",
+          "pickupTime": "2026-03-04 12:37:41.001154"
+        },
+        {
+          "id": "e83cd1d0-bcc6-4f26-98df-96ca10fad265",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 11:57:11.673332",
+          "pickupTime": "2026-03-04 12:33:31.356241"
+        },
+        {
+          "id": "4acfcb9a-0a7e-4a03-ab19-1ae1230d3c00",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to ORDERED",
+          "creationTime": "2026-03-05 10:53:45.390309",
+          "pickupTime": "2026-03-04 12:27:41.001154"
+        },
+        {
+          "id": "37d30c89-8205-41e9-b56a-8949218f46f1",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to ORDERED",
+          "creationTime": "2026-03-05 10:53:45.388309",
+          "pickupTime": "2026-03-04 12:23:31.356241"
+        },
+        {
+          "id": "f8ef23c0-0c7a-4fcf-9265-a8342f4f6e7c",
+          "type": "CANCELED",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to CANCELED",
+          "creationTime": "2026-03-05 10:53:36.367901",
+          "pickupTime": "2026-03-04 12:27:41.001154"
+        },
+        {
+          "id": "1f3cc947-b549-4858-9cb5-73de1c6ab7c2",
+          "type": "CANCELED",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to CANCELED",
+          "creationTime": "2026-03-05 10:53:36.367901",
+          "pickupTime": "2026-03-04 12:23:31.356241"
+        },
+        {
+          "id": "e495ba28-6c05-408e-8e35-afee54283e0d",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to ORDERED",
+          "creationTime": "2026-03-05 10:48:20.437646",
+          "pickupTime": "2026-03-04 12:17:41.001154"
+        },
+        {
+          "id": "63ac41cd-245b-4f39-83b4-15efae8f45e6",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to ORDERED",
+          "creationTime": "2026-03-05 10:48:20.392274",
+          "pickupTime": "2026-03-04 12:13:31.356241"
+        },
+        {
+          "id": "7625629b-649a-4dcf-a5a2-010405437400",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 10:48:02.944822",
+          "pickupTime": "2026-03-04 12:13:31.356241"
+        },
+        {
+          "id": "c098f75e-cb34-42b2-8c3f-52ea7cd32f02",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 10:48:02.931568",
+          "pickupTime": "2026-03-04 12:17:41.001154"
+        },
+        {
+          "id": "8d9044fc-5476-4d73-90d6-d7488490b37d",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to DONE",
+          "creationTime": "2026-03-05 10:40:29.670161",
+          "pickupTime": "2026-03-04 12:13:31.356241"
+        },
+        {
+          "id": "ed6708b2-3cef-4727-9c58-dddf8565baba",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to DONE",
+          "creationTime": "2026-03-05 10:40:29.656667",
+          "pickupTime": "2026-03-04 12:17:41.001154"
+        },
+        {
+          "id": "6e600832-f623-4fbd-86db-61bca43338ee",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-05 10:20:28.629078",
+          "pickupTime": "2026-03-05 10:20:28.629078"
+        },
+        {
+          "id": "09007956-6b2d-420c-920a-763bf24aed19",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-05 10:20:28.627074",
+          "pickupTime": "2026-03-05 10:20:28.627074"
+        },
+        {
+          "id": "95ec9e45-7b1c-49a7-a377-1f886b387224",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to DONE",
+          "creationTime": "2026-03-05 10:18:12.510399",
+          "pickupTime": "2026-03-04 12:37:41.001154"
+        },
+        {
+          "id": "9f946caf-ab1a-4e01-9b3d-f918ba2dcbe8",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to DONE",
+          "creationTime": "2026-03-05 10:18:12.462014",
+          "pickupTime": "2026-03-04 12:33:31.356241"
+        },
+        {
+          "id": "285c8dd4-70e6-4b23-b275-e786eab54a80",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-05 10:12:49.000203",
+          "pickupTime": "2026-03-05 10:12:49.000203"
+        },
+        {
+          "id": "80009e7a-5249-4c92-88e4-2f80e3aee2ec",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-05 10:12:48.960976",
+          "pickupTime": "2026-03-05 10:12:48.960976"
+        },
+        {
+          "id": "86599781-3074-47f7-96a7-dd891a1986c6",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 10:08:41.461305",
+          "pickupTime": "2026-03-04 12:28:31.356241"
+        },
+        {
+          "id": "f434b4f8-398f-4fec-8218-d09666bc0d3c",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 10:08:41.461305",
+          "pickupTime": "2026-03-04 12:32:41.001154"
+        },
+        {
+          "id": "53153055-4b1a-4d88-9f9f-d085380344eb",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to ORDERED",
+          "creationTime": "2026-03-05 10:07:38.952704",
+          "pickupTime": "2026-03-04 12:32:41.001154"
+        },
+        {
+          "id": "befdcb3a-ebf7-4e81-812c-ee21bc879260",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to ORDERED",
+          "creationTime": "2026-03-05 10:07:38.951708",
+          "pickupTime": "2026-03-04 12:28:31.356241"
+        },
+        {
+          "id": "ab8a114c-487a-477f-a311-42e4810a6068",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-05 10:07:24.759552",
+          "pickupTime": "2026-03-05 10:07:24.759552"
+        },
+        {
+          "id": "ec7d8ccd-12a4-463b-821d-65e1d25e9e50",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-05 10:07:24.720891",
+          "pickupTime": "2026-03-05 10:07:24.720891"
+        },
+        {
+          "id": "eb39f48c-c4c7-4bb1-baa9-adea0814a326",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {223ca4f0-f944-4dd1-ac4f-67aa8b330c9c} was placed",
+          "creationTime": "2026-03-04 12:17:41.001154",
+          "pickupTime": "2026-03-04 12:27:41.001154"
+        },
+        {
+          "id": "c5af998d-8277-41d1-b644-85cc731b8f8e",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {b048e03c-0136-4e81-b868-b2b3a90525dc} was placed",
+          "creationTime": "2026-03-04 12:13:31.356241",
+          "pickupTime": "2026-03-04 12:13:31.356241"
+        }
+      ]
+    },
+    {
+      "accountId": "dcddd091-cec9-4710-8cf2-c885d1b89e1f",
+      "loginNr": "V-000-000-002",
+      "type": "GUEST",
+      "ownFoodCourtId": null,
+      "cart": {
+        "hasPrio": false,
+        "total": 0.0,
+        "cartItems": []
+      },
+      "credit": {
+        "credit": 3676.0
+      },
+      "creditHistory": [
+        {
+          "oldAmount": 0.0,
+          "newAmount": 1000.0,
+          "changeTime": "2026-03-04 12:13:30.582147"
+        },
+        {
+          "oldAmount": 1000.0,
+          "newAmount": 2000.0,
+          "changeTime": "2026-03-04 12:13:31.065473"
+        },
+        {
+          "oldAmount": 2000.0,
+          "newAmount": 1951.0,
+          "changeTime": "2026-03-04 12:13:31.42584"
+        },
+        {
+          "oldAmount": 1951.0,
+          "newAmount": 1892.0,
+          "changeTime": "2026-03-04 12:13:31.475707"
+        },
+        {
+          "oldAmount": 1892.0,
+          "newAmount": 2892.0,
+          "changeTime": "2026-03-04 12:17:40.815476"
+        },
+        {
+          "oldAmount": 2892.0,
+          "newAmount": 2843.0,
+          "changeTime": "2026-03-04 12:17:41.039737"
+        },
+        {
+          "oldAmount": 2843.0,
+          "newAmount": 2784.0,
+          "changeTime": "2026-03-04 12:17:41.063166"
+        },
+        {
+          "oldAmount": 2784.0,
+          "newAmount": 3784.0,
+          "changeTime": "2026-03-06 10:07:22.225407"
+        },
+        {
+          "oldAmount": 3784.0,
+          "newAmount": 3735.0,
+          "changeTime": "2026-03-06 10:07:22.496583"
+        },
+        {
+          "oldAmount": 3735.0,
+          "newAmount": 3676.0,
+          "changeTime": "2026-03-06 10:07:22.517461"
+        }
+      ],
+      "visibleOrders": [
+        {
+          "id": "cb3f7335-057d-40ac-8e35-55d6619ef6ff",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 20,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bfe4ab75-ca02-4602-890d-0eaf91f770f2",
+          "status": "ORDERED",
+          "foodCourtName": "Pizza Palace",
+          "waitingTime": 10,
+          "orderItems": [
+            {
+              "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+              "displayName": "Pizza Margherita",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6",
+              "displayName": "Pizza Margherita Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": "mit extra Knoblauch",
+              "subItems": [
+                {
+                  "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+                  "displayName": "Pizza Margherita",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                },
+                {
+                  "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+                  "displayName": "Antipasti",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            },
+            {
+              "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+              "displayName": "Antipasti",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            }
+          ]
+        },
+        {
+          "id": "01084fea-e4c6-4796-a8d5-2d794edc6a27",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 10,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "3303f0ab-d6b3-42cd-83cc-2520db3632fc",
+          "status": "ORDERED",
+          "foodCourtName": "Pizza Palace",
+          "waitingTime": 5,
+          "orderItems": [
+            {
+              "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+              "displayName": "Pizza Margherita",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6",
+              "displayName": "Pizza Margherita Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": "mit extra Knoblauch",
+              "subItems": [
+                {
+                  "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+                  "displayName": "Pizza Margherita",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                },
+                {
+                  "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+                  "displayName": "Antipasti",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            },
+            {
+              "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+              "displayName": "Antipasti",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            }
+          ]
+        },
+        {
+          "id": "16de2b77-78b3-4f56-9aa4-cf4094af2645",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 0,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "3aa6985f-48a9-4c00-8eaa-b5d383d30e11",
+          "status": "ORDERED",
+          "foodCourtName": "Pizza Palace",
+          "waitingTime": 0,
+          "orderItems": [
+            {
+              "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+              "displayName": "Pizza Margherita",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6",
+              "displayName": "Pizza Margherita Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": "mit extra Knoblauch",
+              "subItems": [
+                {
+                  "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+                  "displayName": "Pizza Margherita",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                },
+                {
+                  "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+                  "displayName": "Antipasti",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            },
+            {
+              "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+              "displayName": "Antipasti",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            }
+          ]
+        }
+      ],
+      "visibleOrderHistory": [
+        {
+          "id": "cb3f7335-057d-40ac-8e35-55d6619ef6ff",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 20,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 10:07:22.504035"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-06 10:32:31.021764"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 11:26:16.562759"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-06 11:59:40.529607"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 12:06:40.887979"
+            }
+          ]
+        },
+        {
+          "id": "bfe4ab75-ca02-4602-890d-0eaf91f770f2",
+          "status": "ORDERED",
+          "foodCourtName": "Pizza Palace",
+          "waitingTime": 10,
+          "orderItems": [
+            {
+              "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+              "displayName": "Pizza Margherita",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6",
+              "displayName": "Pizza Margherita Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": "mit extra Knoblauch",
+              "subItems": [
+                {
+                  "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+                  "displayName": "Pizza Margherita",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                },
+                {
+                  "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+                  "displayName": "Antipasti",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            },
+            {
+              "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+              "displayName": "Antipasti",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 10:07:22.494573"
+            }
+          ]
+        },
+        {
+          "id": "01084fea-e4c6-4796-a8d5-2d794edc6a27",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 10,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-04 12:17:41.046587"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 08:58:16.323205"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:07:38.951708"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:08:52.876562"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:12:48.959739"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:18:12.463438"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:20:28.671697"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:20:39.325399"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:48:02.978039"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:48:20.437646"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:48:24.982019"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "CANCELED",
+              "statusChangeTime": "2026-03-05 10:53:36.440801"
+            },
+            {
+              "oldStatus": "CANCELED",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:53:45.421431"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 11:57:11.728302"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 12:22:33.688399"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 12:27:21.308784"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-06 10:32:30.899715"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-06 10:32:40.376316"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 11:26:16.536517"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-06 11:27:15.761595"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 11:27:22.729985"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-06 11:59:31.844515"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-06 11:59:40.562621"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 12:06:40.957001"
+            }
+          ]
+        },
+        {
+          "id": "3303f0ab-d6b3-42cd-83cc-2520db3632fc",
+          "status": "ORDERED",
+          "foodCourtName": "Pizza Palace",
+          "waitingTime": 5,
+          "orderItems": [
+            {
+              "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+              "displayName": "Pizza Margherita",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6",
+              "displayName": "Pizza Margherita Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": "mit extra Knoblauch",
+              "subItems": [
+                {
+                  "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+                  "displayName": "Pizza Margherita",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                },
+                {
+                  "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+                  "displayName": "Antipasti",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            },
+            {
+              "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+              "displayName": "Antipasti",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-04 12:17:41.037673"
+            }
+          ]
+        },
+        {
+          "id": "16de2b77-78b3-4f56-9aa4-cf4094af2645",
+          "status": "ORDERED",
+          "foodCourtName": "Burger Palace",
+          "waitingTime": 0,
+          "orderItems": [
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "dbcb35ab-0e7e-4af0-8517-c2ab45897f18",
+              "displayName": "Burger Menü",
+              "iconIdentifier": "TEST",
+              "count": 1,
+              "extra": "mit extra Käse",
+              "subItems": []
+            },
+            {
+              "productID": "88091439-2cc5-4e25-af0b-27fe6d393563",
+              "displayName": "Burger Menü mit Cola",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": [
+                {
+                  "productID": "ea6e8266-b455-4136-9415-29ef8de05a15",
+                  "displayName": "Pommes",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-04 12:13:31.435684"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:07:24.720891"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:07:38.979275"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:08:41.495982"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:12:48.962219"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:18:12.462014"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-05 10:20:28.626072"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:40:29.623178"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 10:48:02.930533"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:48:20.392274"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 10:48:24.944201"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "CANCELED",
+              "statusChangeTime": "2026-03-05 10:53:36.405201"
+            },
+            {
+              "oldStatus": "CANCELED",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-05 10:53:45.38723"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 11:57:11.670634"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-05 12:22:33.611196"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "IN_PROGRESS",
+              "statusChangeTime": "2026-03-05 12:27:21.373811"
+            },
+            {
+              "oldStatus": "IN_PROGRESS",
+              "newStatus": "READY_FOR_PICKUP",
+              "statusChangeTime": "2026-03-06 10:32:30.838009"
+            },
+            {
+              "oldStatus": "READY_FOR_PICKUP",
+              "newStatus": "CANCELED",
+              "statusChangeTime": "2026-03-06 10:32:44.612607"
+            },
+            {
+              "oldStatus": "CANCELED",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 11:26:16.532453"
+            },
+            {
+              "oldStatus": "ORDERED",
+              "newStatus": "DONE",
+              "statusChangeTime": "2026-03-06 11:59:40.505526"
+            },
+            {
+              "oldStatus": "DONE",
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-06 12:06:40.918759"
+            }
+          ]
+        },
+        {
+          "id": "3aa6985f-48a9-4c00-8eaa-b5d383d30e11",
+          "status": "ORDERED",
+          "foodCourtName": "Pizza Palace",
+          "waitingTime": 0,
+          "orderItems": [
+            {
+              "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+              "displayName": "Pizza Margherita",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            },
+            {
+              "productID": "a7dfc4a1-59f5-41d1-9cdd-c1e3ce8f0be6",
+              "displayName": "Pizza Margherita Menü",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": "mit extra Knoblauch",
+              "subItems": [
+                {
+                  "productID": "17c5680e-22d5-4647-b5bb-b4a586f6c6d2",
+                  "displayName": "Pizza Margherita",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                },
+                {
+                  "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+                  "displayName": "Antipasti",
+                  "iconIdentifier": "TEST",
+                  "count": 2,
+                  "extra": null,
+                  "subItems": []
+                }
+              ]
+            },
+            {
+              "productID": "fe099c8c-06da-48b9-9c36-7df26322fe94",
+              "displayName": "Antipasti",
+              "iconIdentifier": "TEST",
+              "count": 2,
+              "extra": null,
+              "subItems": []
+            }
+          ],
+          "history": [
+            {
+              "oldStatus": null,
+              "newStatus": "ORDERED",
+              "statusChangeTime": "2026-03-04 12:13:31.422842"
+            }
+          ]
+        }
+      ],
+      "notifications": [
+        {
+          "id": "cf52a6c2-a584-4c6c-9317-8ee92d16e1b3",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to ORDERED",
+          "creationTime": "2026-03-06 12:06:40.958007",
+          "pickupTime": "2026-03-04 12:17:41.046587"
+        },
+        {
+          "id": "093b8432-f5c8-4c03-8f05-7a5e0b523276",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to ORDERED",
+          "creationTime": "2026-03-06 12:06:40.919761",
+          "pickupTime": "2026-03-04 12:13:31.435684"
+        },
+        {
+          "id": "333902fd-c182-4a03-97c8-9f548a8e86cb",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {cb3f7335-057d-40ac-8e35-55d6619ef6ff} was updated to ORDERED",
+          "creationTime": "2026-03-06 12:06:40.889474",
+          "pickupTime": "2026-03-06 10:07:22.504035"
+        },
+        {
+          "id": "25bcea24-e673-4deb-9e30-afe7c2f6b44e",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to DONE",
+          "creationTime": "2026-03-06 11:59:40.56362",
+          "pickupTime": "2026-03-04 12:47:41.046587"
+        },
+        {
+          "id": "0c0c14bc-26e1-456c-9708-e3bc4bcfb32b",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {cb3f7335-057d-40ac-8e35-55d6619ef6ff} was updated to DONE",
+          "creationTime": "2026-03-06 11:59:40.530608",
+          "pickupTime": "2026-03-06 10:37:22.504035"
+        },
+        {
+          "id": "2971a754-f1f2-48a3-86a9-6f883239abf0",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to DONE",
+          "creationTime": "2026-03-06 11:59:40.507525",
+          "pickupTime": "2026-03-04 12:43:31.435684"
+        },
+        {
+          "id": "073d62c3-3d17-48bb-8a29-10b36bac039d",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-06 11:59:31.846524",
+          "pickupTime": "2026-03-04 12:47:41.046587"
+        },
+        {
+          "id": "dffaa400-84b9-4ec4-a0f9-f79dec7e6920",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to ORDERED",
+          "creationTime": "2026-03-06 11:27:22.730984",
+          "pickupTime": "2026-03-04 12:27:41.046587"
+        },
+        {
+          "id": "67931c70-c32d-4cb0-84aa-85d607a1bfac",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-06 11:27:15.761595",
+          "pickupTime": "2026-03-06 11:27:15.761595"
+        },
+        {
+          "id": "29cc09fe-8ca6-492b-8137-fd0b6faf629c",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {cb3f7335-057d-40ac-8e35-55d6619ef6ff} was updated to ORDERED",
+          "creationTime": "2026-03-06 11:26:16.565231",
+          "pickupTime": "2026-03-06 10:17:22.504035"
+        },
+        {
+          "id": "4ae81d60-fdc3-4fbf-afe5-1a4e7ab1dab9",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to ORDERED",
+          "creationTime": "2026-03-06 11:26:16.537517",
+          "pickupTime": "2026-03-04 12:27:41.046587"
+        },
+        {
+          "id": "c8dc0453-412f-472f-bfff-ea838883aae8",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to ORDERED",
+          "creationTime": "2026-03-06 11:26:16.535471",
+          "pickupTime": "2026-03-04 12:23:31.435684"
+        },
+        {
+          "id": "8ddab3f7-e92b-4072-a6ce-65e7851d1b48",
+          "type": "CANCELED",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to CANCELED",
+          "creationTime": "2026-03-06 10:32:44.613606",
+          "pickupTime": "2026-03-04 12:43:31.435684"
+        },
+        {
+          "id": "53a081d4-aae8-4cb2-a362-f70940b0aff7",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-06 10:32:40.376316",
+          "pickupTime": "2026-03-04 12:47:41.046587"
+        },
+        {
+          "id": "0440016f-d343-45d1-a7a7-96f6229c37dc",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {cb3f7335-057d-40ac-8e35-55d6619ef6ff} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-06 10:32:31.024735",
+          "pickupTime": "2026-03-06 10:32:31.024735"
+        },
+        {
+          "id": "84c5b8cd-a15f-46df-bb7f-e4b6f2e1ff92",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-06 10:32:30.900728",
+          "pickupTime": "2026-03-06 10:32:30.900728"
+        },
+        {
+          "id": "269162ff-1fad-48b9-997c-6ed4bc7b3617",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-06 10:32:30.840008",
+          "pickupTime": "2026-03-06 10:32:30.840008"
+        },
+        {
+          "id": "cf60fef1-ad81-43d9-b0ab-97b81691b281",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {cb3f7335-057d-40ac-8e35-55d6619ef6ff} was placed",
+          "creationTime": "2026-03-06 10:07:22.504035",
+          "pickupTime": "2026-03-06 10:27:22.504035"
+        },
+        {
+          "id": "0b2bdecc-31ae-4b55-9dea-e612e27f7dc1",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {bfe4ab75-ca02-4602-890d-0eaf91f770f2} was placed",
+          "creationTime": "2026-03-06 10:07:22.494573",
+          "pickupTime": "2026-03-06 10:17:22.494573"
+        },
+        {
+          "id": "bfddcc6f-0eac-4512-a0ae-6423de537754",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 12:27:21.373811",
+          "pickupTime": "2026-03-04 12:13:31.435684"
+        },
+        {
+          "id": "62099cce-9b1f-4a88-aa23-904cd5fea8d6",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 12:27:21.309783",
+          "pickupTime": "2026-03-04 12:17:41.046587"
+        },
+        {
+          "id": "a2720ee6-655d-487b-b68b-357f0bd39b17",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to DONE",
+          "creationTime": "2026-03-05 12:22:33.68975",
+          "pickupTime": "2026-03-04 12:37:41.046587"
+        },
+        {
+          "id": "b7299cf5-22ad-4d0f-b032-f06e915a364e",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to DONE",
+          "creationTime": "2026-03-05 12:22:33.614201",
+          "pickupTime": "2026-03-04 12:33:31.435684"
+        },
+        {
+          "id": "3358757e-07a4-458f-a2ef-998def2163d4",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 11:57:11.729306",
+          "pickupTime": "2026-03-04 12:37:41.046587"
+        },
+        {
+          "id": "fe20d20c-ddf0-49ea-aefa-db6237adb2e8",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 11:57:11.673332",
+          "pickupTime": "2026-03-04 12:33:31.435684"
+        },
+        {
+          "id": "99cce4a7-9f1d-4363-8623-4309ef988ad7",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to ORDERED",
+          "creationTime": "2026-03-05 10:53:45.42243",
+          "pickupTime": "2026-03-04 12:27:41.046587"
+        },
+        {
+          "id": "1125104d-4b8d-4cdc-bdcb-937884cd9dd5",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to ORDERED",
+          "creationTime": "2026-03-05 10:53:45.388309",
+          "pickupTime": "2026-03-04 12:23:31.435684"
+        },
+        {
+          "id": "9cd33fa9-6c4e-4bb5-a846-7550131f9409",
+          "type": "CANCELED",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to CANCELED",
+          "creationTime": "2026-03-05 10:53:36.44217",
+          "pickupTime": "2026-03-04 12:27:41.046587"
+        },
+        {
+          "id": "950fb7f4-38fb-4505-bb24-a99f867c53d1",
+          "type": "CANCELED",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to CANCELED",
+          "creationTime": "2026-03-05 10:53:36.405201",
+          "pickupTime": "2026-03-04 12:23:31.435684"
+        },
+        {
+          "id": "0dbc4b9d-5fc1-4467-a822-eb2826305663",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to DONE",
+          "creationTime": "2026-03-05 10:48:24.982019",
+          "pickupTime": "2026-03-04 12:17:41.046587"
+        },
+        {
+          "id": "ef3abe21-614c-48ce-a86a-8bb52bf88d77",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to DONE",
+          "creationTime": "2026-03-05 10:48:24.944201",
+          "pickupTime": "2026-03-04 12:13:31.435684"
+        },
+        {
+          "id": "cad40079-e185-445f-9e2e-d1ec9e81431f",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to ORDERED",
+          "creationTime": "2026-03-05 10:48:20.43886",
+          "pickupTime": "2026-03-04 12:17:41.046587"
+        },
+        {
+          "id": "5391dd92-8c9d-4c01-931e-0afa4718b3ec",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to ORDERED",
+          "creationTime": "2026-03-05 10:48:20.392274",
+          "pickupTime": "2026-03-04 12:13:31.435684"
+        },
+        {
+          "id": "27889914-7292-4a8a-a332-fd4e06ee9d48",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 10:48:02.978039",
+          "pickupTime": "2026-03-04 12:17:41.046587"
+        },
+        {
+          "id": "055d0735-ee35-4321-b80a-02be6a622f39",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 10:48:02.931568",
+          "pickupTime": "2026-03-04 12:13:31.435684"
+        },
+        {
+          "id": "65f0d75b-0881-468b-95d5-c4a33574bee5",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to DONE",
+          "creationTime": "2026-03-05 10:40:29.623686",
+          "pickupTime": "2026-03-04 12:13:31.435684"
+        },
+        {
+          "id": "7b8be66b-42bd-4df6-a3f0-e10fed053311",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to DONE",
+          "creationTime": "2026-03-05 10:20:39.325399",
+          "pickupTime": "2026-03-04 12:37:41.046587"
+        },
+        {
+          "id": "d8cfcde9-dedd-462d-9dde-b884d247edaa",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-05 10:20:28.672693",
+          "pickupTime": "2026-03-05 10:20:28.672693"
+        },
+        {
+          "id": "2a7f57ee-f806-4608-92ba-ba5f6f1f92b2",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-05 10:20:28.627074",
+          "pickupTime": "2026-03-05 10:20:28.627074"
+        },
+        {
+          "id": "25928630-fac5-4111-947f-aad5f5d7107b",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to DONE",
+          "creationTime": "2026-03-05 10:18:12.463438",
+          "pickupTime": "2026-03-04 12:37:41.046587"
+        },
+        {
+          "id": "08ed042c-37f7-448c-8147-dc0611227118",
+          "type": "DONE",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to DONE",
+          "creationTime": "2026-03-05 10:18:12.462014",
+          "pickupTime": "2026-03-04 12:33:31.435684"
+        },
+        {
+          "id": "309fcc03-b1af-4ea8-94e1-d023902fc67c",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-05 10:12:48.962219",
+          "pickupTime": "2026-03-05 10:12:48.962219"
+        },
+        {
+          "id": "0c730b85-386b-4a9f-89bf-7e52826ff9be",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-05 10:12:48.960976",
+          "pickupTime": "2026-03-05 10:12:48.960976"
+        },
+        {
+          "id": "1bcc8316-6910-49cb-8a86-d801221a882b",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 10:08:52.877741",
+          "pickupTime": "2026-03-04 12:32:41.046587"
+        },
+        {
+          "id": "1ff68503-992c-480b-9068-37b934272bc6",
+          "type": "IN_PROGRESS",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to IN_PROGRESS",
+          "creationTime": "2026-03-05 10:08:41.496998",
+          "pickupTime": "2026-03-04 12:28:31.435684"
+        },
+        {
+          "id": "1558dec4-ef27-4405-8ee1-e907398b968d",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to ORDERED",
+          "creationTime": "2026-03-05 10:07:38.979275",
+          "pickupTime": "2026-03-04 12:28:31.435684"
+        },
+        {
+          "id": "6edf5be8-7c9c-41f4-a5fa-0362b4e91f33",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to ORDERED",
+          "creationTime": "2026-03-05 10:07:38.951708",
+          "pickupTime": "2026-03-04 12:32:41.046587"
+        },
+        {
+          "id": "952cc81f-deb6-443b-b405-d148225b285d",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-05 10:07:24.720891",
+          "pickupTime": "2026-03-05 10:07:24.720891"
+        },
+        {
+          "id": "3e71e61c-d677-4204-ad83-79af123c3c06",
+          "type": "READY_FOR_PICKUP",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was updated to READY_FOR_PICKUP",
+          "creationTime": "2026-03-05 08:58:16.323205",
+          "pickupTime": "2026-03-05 08:58:16.323205"
+        },
+        {
+          "id": "1ba865e6-3a74-46c6-80a4-f8288477ebbf",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {01084fea-e4c6-4796-a8d5-2d794edc6a27} was placed",
+          "creationTime": "2026-03-04 12:17:41.046587",
+          "pickupTime": "2026-03-04 12:27:41.046587"
+        },
+        {
+          "id": "5c068fd2-9ff2-4ed5-88ac-e5b1122918cc",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {3303f0ab-d6b3-42cd-83cc-2520db3632fc} was placed",
+          "creationTime": "2026-03-04 12:17:41.037673",
+          "pickupTime": "2026-03-04 12:22:41.037673"
+        },
+        {
+          "id": "e630a8d0-09e5-474a-bb4b-a48766abfbf3",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {16de2b77-78b3-4f56-9aa4-cf4094af2645} was placed",
+          "creationTime": "2026-03-04 12:13:31.435684",
+          "pickupTime": "2026-03-04 12:13:31.435684"
+        },
+        {
+          "id": "85cbf28d-34d4-4097-b531-4452dd7aa3a5",
+          "type": "ORDERED",
+          "status": "NEW",
+          "message": "Order {3aa6985f-48a9-4c00-8eaa-b5d383d30e11} was placed",
+          "creationTime": "2026-03-04 12:13:31.422842",
+          "pickupTime": "2026-03-04 12:13:31.422842"
+        }
+      ]
+    }
+  ]
+}

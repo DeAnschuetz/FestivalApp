@@ -10,10 +10,7 @@ import com.ffb.model.api.response.credit.CreditResponse;
 import com.ffb.model.api.response.credit.CreditResponseFull;
 import com.ffb.model.api.response.food.court.FoodCourtResponse;
 import com.ffb.model.api.response.food.court.FoodCourtResponseFull;
-import com.ffb.model.api.response.food.order.FoodOrderHistoryResponse;
-import com.ffb.model.api.response.food.order.FoodOrderItemResponse;
-import com.ffb.model.api.response.food.order.FoodOrderResponse;
-import com.ffb.model.api.response.food.order.FoodOrderResponseFull;
+import com.ffb.model.api.response.food.order.*;
 import com.ffb.model.api.response.notification.FoodOrderNotificationResponse;
 import com.ffb.model.api.response.product.ProductResponse;
 import com.ffb.model.api.response.ticket.TicketResponse;
@@ -277,7 +274,7 @@ public class ResponseMapperImpl implements ResponseMapper {
     }
 
     @Override
-    public FoodOrderResponseFull getFoodOrderResponseFull(FoodOrder foodOrder) {
+    public FoodOrderResponseFull getFoodOrderResponseFullWithNotification(FoodOrder foodOrder) {
         if(foodOrder == null) {
             return null;
         }
@@ -293,6 +290,24 @@ public class ResponseMapperImpl implements ResponseMapper {
                         .toList(),
                 foodOrder.getNotifications().stream()//
                         .map(this::getFoodOrderNotificationResponse)
+                        .toList()
+        );
+    }
+
+    @Override
+    public FoodOrderResponseHistory FoodOrderResponseHistory(FoodOrder foodOrder) {
+        if(foodOrder == null) {
+            return null;
+        }
+        List<FoodOrderItemResponse> foodOrderItems = foodOrder.getItems().stream().map(this::getFoodOrderItemResponse).toList();
+        return new FoodOrderResponseHistory(
+                foodOrder.getId(),
+                foodOrder.getStatus(),
+                foodOrder.getFoodCourt().getDisplayName(),
+                foodOrder.getWaitingTime(),
+                foodOrderItems,
+                foodOrder.getHistory().stream()//
+                        .map(this::getFoodOrderHistoryResponse)
                         .toList()
         );
     }

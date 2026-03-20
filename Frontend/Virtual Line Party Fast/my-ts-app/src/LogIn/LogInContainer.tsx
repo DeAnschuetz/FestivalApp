@@ -7,6 +7,16 @@ import { useNavigate } from "react-router-dom";
 import { users } from "../Data";
 import { useAuth } from "../Auth/AuthContext";
 
+type AccountType = "ADMIN" | "FOOD_COURT_WORKER" | "GUEST";
+const API_BASE = "http://10.45.129.19:8080";
+
+interface AccountResponse {
+  id: string;
+  loginNr: string;
+  type?: AccountType;
+  role?: AccountType;
+}
+
 function LogInContainer() {
   const [loginNr, setLoginNr] = useState("");
   const [password, setPassword] = useState("");

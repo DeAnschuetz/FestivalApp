@@ -187,7 +187,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FoodOrderItemResponse"
-    FoodOrderResponseFull:
+    FoodOrderResponseHistory:
       type: object
       properties:
         id:
@@ -207,10 +207,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FoodOrderHistoryResponse"
-        notifications:
-          type: array
-          items:
-            $ref: "#/components/schemas/FoodOrderNotificationResponse"
     FoodOrderStatus:
       type: string
       enum:
@@ -376,9 +372,16 @@ paths:
         required: true
       responses:
         "200":
-          description: Login succeeded; cookie set
+          description: Login succeeded; Token served
           content:
-            text/plain: {}
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loginNr:
+                    type: string
+                  token:
+                    type: string
         "400":
           description: Invalid request
           content:
@@ -636,11 +639,11 @@ paths:
       security:
       - SecurityScheme:
         - GUEST
-  /cart/{newPrio}:
+  /cart/{newPriority}:
     put:
       summary: Change the Priority of the Cart for the currently logged-in Guest Account
       parameters:
-      - name: newPrio
+      - name: newPriority
         in: path
         required: true
         schema:
@@ -1425,7 +1428,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/FoodOrderResponseFull"
+                  $ref: "#/components/schemas/FoodOrderResponseHistory"
         "400":
           description: Invalid Status or unknown Account Type
           content:
@@ -1471,7 +1474,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/FoodOrderResponseFull"
+                  $ref: "#/components/schemas/FoodOrderResponseHistory"
         "400":
           description: Unknown account Type / Role mapping failed
           content:
@@ -2081,6 +2084,47 @@ paths:
         - GUEST
         - FOOD_COURT_WORKER
         - ADMIN
+  /product/update/count/{productId}/{newCount}:
+    put:
+      summary: Update the Count of a Product by its ID
+      parameters:
+      - name: newCount
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: productId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Count Updated
+          content:
+            text/plain: {}
+        "400":
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      tags:
+      - Product Endpoint Impl
+      security:
+      - SecurityScheme:
+        - ADMIN
+        - FOOD_COURT_WORKER
   /product/{id}:
     get:
       summary: Get a Product by ID
@@ -2338,4 +2382,4 @@ paths:
         - ADMIN
 info:
   title: App API
-  version: 0.1.0-SNAPSHOT
+  version: 1.0.0-SNAPSHOT
