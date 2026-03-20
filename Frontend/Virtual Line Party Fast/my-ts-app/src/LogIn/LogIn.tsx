@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import styles from "./Modules/LogIn.module.css";
 import VLPFLogo from "../VLPFLogo.png";
 import RegisterContainer from "./RegisterContainer";

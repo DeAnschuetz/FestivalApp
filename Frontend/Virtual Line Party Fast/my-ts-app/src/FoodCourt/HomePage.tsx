@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./HomePage.module.css";
-import { FoodCourt, Order, OrderStatus } from "../Types";
 import { useNavigate } from "react-router-dom";
 import HomePageFilterBar from "../Components/HomePageFilterBar";
 import HomePageBulkActions from "../Components/HomePageBulkActions";
@@ -8,7 +7,11 @@ import HomePageOrderCard from "../Components/HomePageOrderCard";
 import HeaderFoodCourt from "../Components/HeaderFoodCourt";
 type FilterKey = "ALL" | OrderStatus;
 
-const API_BASE = "http://10.45.129.4:8080";
+import { FoodOrderStatus as OrderStatus } from "../Api/generated/ffbAPI.schemas"
+import { FoodCourt, Order } from "../Api/ffb/types";
+import { getFoodCourtImageUrl, getOwnFoodCourt, getVisibleOrders, getVisibleOrdersByStatus, updateFoodOrderStatus } from "../Api/ffb";
+
+const API_BASE = "http://10.45.129.19:8080";
 
 const filterConfig: { key: FilterKey; label: string }[] = [
 	{ key: "ALL", label: "Alle" },
@@ -74,54 +77,37 @@ function HomePage() {
 	);
 
 	const fetchFoodCourt = useCallback(async () => {
-		const response = await fetch(`${API_BASE}/food_court`, {
-			method: "GET",
-			headers: authHeaders,
-			credentials: "include",
-		});
+		const data: FoodCourt = await getOwnFoodCourt();
 
-		if (!response.ok) {
-			throw new Error("Food Court konnte nicht geladen werden.");
-		}
-
-		const result = (await response.json()) as FoodCourt;
-		setFoodCourt(result);
-		setWaitingTime(result.waitingTime ?? 15);
-        console.log("Food Court Daten geladen:", result);
+		setFoodCourt(data);
+		setWaitingTime(data.waitingTime ?? 15);
+        console.log("Food Court Daten geladen:", data);
 	}, [authHeaders]);
 
 	const fetchOrders = useCallback(
 		async (filter: FilterKey) => {
-			const response = await fetch(`${API_BASE}/food_order/list_all`, {
-				method: "GET",
-				headers: authHeaders,
-				credentials: "include",
-			});
-
-			if (!response.ok) {
-				throw new Error("Bestellungen konnten nicht geladen werden.");
-			}
-
-			const allResult = (await response.json()) as Order[];
-			setAllOrders(allResult);
-			const filteredResult =
+			const data: Order[] =
 				filter === "ALL"
-					? allResult
-					: allResult.filter((order) => order.status === filter);
-			console.log("fetchOrders-Funktion erstellt mit Filter:", filter, "Ergebnis:", filteredResult);
-			setOrders(filteredResult);
+					? await getVisibleOrders()
+					: await getVisibleOrdersByStatus(filter);
+
+            console.log("fetchOrders-Funktion erstellt mit Filter:", filter, "Ergebnis:", data);
+			setOrders(data);
 			setSelectedOrderIds([]);
 			setStatusSelection(
-				filteredResult.reduce<Record<string, OrderStatus>>((accumulator, order) => {
+				data.reduce<Record<string, OrderStatus>>((accumulator, order) => {
 					accumulator[order.id] = order.status;
 					return accumulator;
 				}, {}),
 			);
 		},
 
-		[authHeaders],
+	const fetchAllOrders = useCallback(async () => {
+		const data: Order[] = await getVisibleOrders();
 
-	);
+		
+		setAllOrders(data);
+	}, [authHeaders]);
 
 	const loadPageData = useCallback(async () => {
 		setIsLoading(true);
@@ -152,6 +138,29 @@ function HomePage() {
 			window.clearTimeout(timeoutId);
 		};
 	}, [success]);
+
+	const loadFallbackImage = async () => {
+		if (!foodCourt?.id || !isUuid(foodCourt.id)) {
+			return;
+		}
+
+		const imageHeaders: Record<string, string> = {
+			Accept: "image/png",
+		};
+
+		if (token) {
+			imageHeaders.Authorization = `Bearer ${token}`;
+		}
+
+		try {
+			const data = await getFoodCourtImageUrl(foodCourt.id);
+
+			setFoodCourtImageUrl(data ?? "");
+			setUseFallbackImage(true);
+		} catch {
+			setFoodCourtImageUrl("");
+		}
+	};
 
 	const countsByStatus = useMemo(() => {
 		const initial: Record<OrderStatus, number> = {
@@ -204,15 +213,7 @@ function HomePage() {
 
 	const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
 		setError("");
-		const response = await fetch(`${API_BASE}/food_order/update/${orderId}/${newStatus}`, {
-			method: "PUT",
-			headers: authHeaders,
-			credentials: "include",
-		});
-
-		if (!response.ok) {
-			throw new Error("Status konnte nicht aktualisiert werden.");
-		}
+		await updateFoodOrderStatus(orderId, newStatus);
 	};
 
 	const applySingleStatus = async (orderId: string) => {

@@ -1,4 +1,13 @@
 package com.ffb.model.api.request.food.court;
 
-public record FoodCourtRequest(String loginNr, String displayName) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(requiredProperties = {
+        "loginNr",
+        "displayName"
+})
+public record FoodCourtRequest(
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) String loginNr,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) String displayName
+) {
 }

@@ -1,6 +1,17 @@
 package com.ffb.model.api.request.product;
 
-import java.math.BigDecimal;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-public record ProductRequestSimple(double price, String displayName, String symbolIdentifier, int minimalWarning) {
+@Schema(requiredProperties = {
+        "price",
+        "displayName",
+        "symbolIdentifier",
+        "minimalWarning"
+})
+public record ProductRequestSimple(
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) double price,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) String displayName,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) String symbolIdentifier,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) int minimalWarning
+) {
 }
