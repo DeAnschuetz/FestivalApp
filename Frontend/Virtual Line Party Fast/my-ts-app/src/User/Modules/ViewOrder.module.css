@@ -1,0 +1,58 @@
+.ViewOrder {
+  margin: 20px;
+}
+
+.HeaderContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.OrderBody {
+  margin: 0px 10px;
+}
+
+.OrderContainer {
+  background-color: #bdc3cb;
+  box-shadow: 0px 3px 6px 0px gray;
+  border: 1px solid #ede7dc;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 20px;
+}
+
+.ItemWrapper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+
+.FlexWrapper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.WaitingTime {
+  background-color: #ede7dc;
+  border: 2px solid black;
+  padding: 6px 3px;
+  display: flex;
+  align-items: center;
+}
+
+.TimeText {
+  margin-left: 3px;
+}
+
+.ShareBtn {
+  background-color: #bdc3cb;
+  border: 1px solid #ede7dc;
+  color: black;
+}
+
+.Extra {
+  padding-left: 6px;
+  font-style: italic;
+}

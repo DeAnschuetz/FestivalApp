@@ -31,6 +31,7 @@ export interface Credits {
 
 export interface Order {
   loginNr: string;
+  order_number: string;
   foodcourt: string;
   order_status: OrderStatus;
   waiting_time: number;

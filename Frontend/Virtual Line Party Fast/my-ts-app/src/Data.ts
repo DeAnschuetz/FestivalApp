@@ -33,6 +33,7 @@ const defaultCredits: Credits[] = [{ login_Nr: "V-000-000-001", credits: 10 }];
 const defaultOrders: Order[] = [
   {
     loginNr: "V-000-000-001",
+    order_number: "#12345",
     foodcourt: "Burger Palace",
     order_status: "ready_for_pickup",
     waiting_time: 2,
@@ -45,6 +46,7 @@ const defaultOrders: Order[] = [
   {
     loginNr: "V-000-000-002",
     foodcourt: "Let's Roll",
+    order_number: "#06789",
     order_status: "in_progress",
     waiting_time: 30,
     orderItems: [
@@ -55,6 +57,7 @@ const defaultOrders: Order[] = [
   {
     loginNr: "V-000-000-001",
     foodcourt: "Let's Roll",
+    order_number: "#12237",
     waiting_time: 0,
     order_status: "done",
     orderItems: [
@@ -65,12 +68,14 @@ const defaultOrders: Order[] = [
   {
     loginNr: "V-000-000-001",
     foodcourt: "Burger Palace",
+    order_number: "#12300",
     order_status: "canceled",
     waiting_time: 0,
     orderItems: [{ name: "Cheeseburger", count: 3, subItems: [], extra: "" }],
   },
   {
     loginNr: "V-000-000-001",
+    order_number: "#08746",
     foodcourt: "Burger Palace",
     order_status: "in_progress",
     waiting_time: 5,
@@ -82,6 +87,7 @@ const defaultOrders: Order[] = [
   {
     loginNr: "V-000-000-001",
     foodcourt: "Burger Palace",
+    order_number: "#12120",
     order_status: "ready_for_pickup",
     waiting_time: 15,
     orderItems: [

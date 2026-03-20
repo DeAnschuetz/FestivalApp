@@ -9,10 +9,11 @@ interface OrderProps {
   orders: Order[];
   isFoodCourtOpen: boolean;
   setIsOrdersOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setClickedCard: React.Dispatch<React.SetStateAction<string>>
 }
 
 function Orders(props: OrderProps) {
-  const { orders, isFoodCourtOpen, setIsOrdersOpen } = props;
+  const { orders, isFoodCourtOpen, setIsOrdersOpen, setClickedCard } = props;
 
   const [isOpen, setIsOpen] = useState(false);
   const [filter, setFilter] = useState<string>("");
@@ -52,7 +53,7 @@ function Orders(props: OrderProps) {
             className={`${styles.OrderContainer} ${isFoodCourtOpen ? styles.BiggerContainer : ""}`}
           >
             {filteredOrders.map((order) => (
-              <OrderCard order={order} status={order.order_status} />
+              <OrderCard order={order} status={order.order_status} setClickedCard={setClickedCard}/>
             ))}
           </div>
         </div>

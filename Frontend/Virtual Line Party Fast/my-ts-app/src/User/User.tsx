@@ -7,6 +7,7 @@ import Orders from "./Orders";
 import FoodCourtTab from "./FoodCourtTab";
 import { Order } from "../Types";
 import Pay from "./Pay";
+import ViewOrder from "./ViewOrder";
 
 interface UserProps {}
 
@@ -17,9 +18,9 @@ function User(props: UserProps) {
   const [isFoodCourtOpen, setIsFoodCourtOpen] = useState(true);
   const [payisOpen, setPayisOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState("");
-
   const [credits, setCredits] = useState<number>(0);
-  console.log('credits: ', credits);
+  const [clickedCrad, setClickedCard] = useState("");
+  console.log("clickedCrad: ", clickedCrad);
 
   useEffect(() => {
     const loginNr = localStorage.getItem("currentUser");
@@ -27,7 +28,6 @@ function User(props: UserProps) {
 
     setCurrentUser(loginNr);
 
-    // Credits laden
     const storedCredits = localStorage.getItem("credits");
     if (storedCredits) {
       const creditsArray: { login_Nr: string; credits: number }[] =
@@ -36,7 +36,6 @@ function User(props: UserProps) {
       setCredits(userCredit ? userCredit.credits : 0);
     }
 
-    // Orders laden
     const storedOrders = localStorage.getItem("orders");
     if (storedOrders) {
       const allOrders: Order[] = JSON.parse(storedOrders);
@@ -52,23 +51,36 @@ function User(props: UserProps) {
     (order: Order) => order.order_status === "in_progress",
   );
 
+  const currentOrder = orders.find(
+    (order: Order) => order.order_number === clickedCrad,
+  );
+
   return (
     <div className={styles.Container}>
-      <Header setPayisOpen={setPayisOpen} credits={credits}/>
+      <Header setPayisOpen={setPayisOpen} credits={credits} />
       {payisOpen ? (
         <Pay
           setPayisOpen={setPayisOpen}
           currentUser={currentUser}
           onCreditsUpdate={(newCredits) => setCredits(newCredits)}
         />
+      ) : clickedCrad !== "" ? (
+        <ViewOrder
+          currentOrder={currentOrder}
+          setClickedCard={setClickedCard}
+        />
       ) : (
         <>
-          <ReadyforPickUp readyForPickup={readyForPickup} />
-          <InProgress inProgress={inProgress} />
+          <ReadyforPickUp
+            readyForPickup={readyForPickup}
+            setClickedCard={setClickedCard}
+          />
+          <InProgress inProgress={inProgress} setClickedCard={setClickedCard} />
           <Orders
             orders={orders}
             isFoodCourtOpen={isFoodCourtOpen}
             setIsOrdersOpen={setIsOrdersOpen}
+            setClickedCard={setClickedCard}
           />
           <FoodCourtTab
             isOrdersOpen={isOrdersOpen}

@@ -5,10 +5,11 @@ import { Order } from "../Types";
 
 interface InProgressProps {
   inProgress: Order[];
+  setClickedCard: React.Dispatch<React.SetStateAction<string>>
 }
 
 function InProgress(props: InProgressProps) {
-  const { inProgress } = props;
+  const { inProgress, setClickedCard } = props;
 
   return (
     <div className={styles.AbholbereitContainer}>
@@ -17,7 +18,7 @@ function InProgress(props: InProgressProps) {
       </div>
       <div className={styles.OrderWrapper}>
         {inProgress.map((order) => (
-          <OrderCard order={order} status="in_progress" />
+          <OrderCard order={order} status="in_progress" setClickedCard={setClickedCard}/>
         ))}
       </div>
     </div>

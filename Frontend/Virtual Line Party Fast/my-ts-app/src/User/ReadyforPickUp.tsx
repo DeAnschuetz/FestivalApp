@@ -5,10 +5,11 @@ import { Order } from "../Types";
 
 interface Props {
   readyForPickup: Order[];
+  setClickedCard: React.Dispatch<React.SetStateAction<string>>
 }
 
 function ReadyforPickUp(props: Props) {
-  const { readyForPickup } = props;
+  const { readyForPickup, setClickedCard } = props;
 
   return (
     <div className={styles.AbholbereitContainer}>
@@ -18,7 +19,7 @@ function ReadyforPickUp(props: Props) {
       </div>
       <div className={styles.OrderWrapper}>
         {readyForPickup.map((order) => (
-          <OrderCard order={order} status="ready_for_pickup"/>
+          <OrderCard order={order} status="ready_for_pickup" setClickedCard = {setClickedCard}/>
         ))}
       </div>
     </div>

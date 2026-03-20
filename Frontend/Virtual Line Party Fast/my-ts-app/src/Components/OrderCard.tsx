@@ -5,13 +5,21 @@ import { Order } from "../Types";
 interface OrderCardProps {
   order: Order;
   status: string;
+  setClickedCard: React.Dispatch<React.SetStateAction<string>>;
 }
 
 function OrderCard(props: OrderCardProps) {
-  const { order, status } = props;
+  const { order, status, setClickedCard } = props;
+
+  const isClickable = status === "ready_for_pickup" || status === "in_progress";
 
   return (
-    <div className={styles.OrderContainer}>
+    <div
+      className={styles.OrderContainer}
+      onClick={
+        isClickable ? () => setClickedCard(order.order_number) : undefined
+      }
+    >
       <div className={styles.VerticalWrapper}>
         <div className={styles.FoodCourtName}>{order.foodcourt}</div>
         {status === "ready_for_pickup" && (
@@ -35,7 +43,7 @@ function OrderCard(props: OrderCardProps) {
           </div>
         )}
 
-          {status === "done" && (
+        {status === "done" && (
           <div className={styles.StatusWrapper}>
             <i className="fa fa-check-double"></i>
             <div className={styles.StatusText}>Abgeholt</div>
