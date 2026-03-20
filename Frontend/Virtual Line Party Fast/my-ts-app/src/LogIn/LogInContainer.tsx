@@ -4,8 +4,9 @@ import InputElement from "../Components/InputElement";
 import { Checkbox } from "@progress/kendo-react-inputs";
 import { Button } from "@progress/kendo-react-buttons";
 import { useNavigate } from "react-router-dom";
-import { users } from "../Data";
-import { useAuth } from "../Auth/AuthContext";
+import { login, LoginResult } from "../Api/ffb";
+import { LoginRequest } from "../Api/generated/ffbAPI.schemas";
+import { getAccountTypeForRouting } from "./loginHelpers";
 
 function LogInContainer() {
   const [loginNr, setLoginNr] = useState("");
@@ -15,7 +16,6 @@ function LogInContainer() {
   );
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   useEffect(() => {
     setLoginNr("");
@@ -25,7 +25,6 @@ function LogInContainer() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     setError("");
 
     const registeredUser = users.find((u) => u.login_Nr === loginNr);
@@ -94,6 +93,7 @@ function LogInContainer() {
           value={loginNr}
           onChange={(value) => {
             setLoginNr(value);
+            setError("");
 
             const saved = localStorage.getItem("rememberedPassword_" + value);
             setError("");
@@ -113,6 +113,7 @@ function LogInContainer() {
             border: error ? "1px solid red" : undefined,
           }}
         />
+
         <InputElement
           label="Password"
           editorId="password"
@@ -126,12 +127,13 @@ function LogInContainer() {
           }}
           type="password"
         />
+
         <div className={styles.Checkbox}>
           <Checkbox
             label="Remember me"
             checked={rememberMe}
             onChange={(e) => {
-              const checked = e.value;
+              const checked = !!e.value;
               setRememberMe(checked);
 
               localStorage.setItem("rememberMe", String(checked));
@@ -143,6 +145,7 @@ function LogInContainer() {
             }}
           />
         </div>
+
         <Button
           type="submit"
           style={{
@@ -157,6 +160,7 @@ function LogInContainer() {
           Login
         </Button>
       </form>
+
       <Button
         style={{
           margin: "6px 0px 16px 0px",

@@ -401,4 +401,40 @@ public class ProductEndpointImpl {
         LOG.info("created " + createdProducts.size() + " products");
         return Response.status(Response.Status.CREATED).entity(createdProducts).build();
     }
+
+    @PUT
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("update/count/{productId}/{newCount}")
+    @RolesAllowed({"ADMIN", "FOOD_COURT_WORKER"})
+    @Operation(summary = "Update the Count of a Product by its ID")
+    @APIResponses({
+            @APIResponse(
+                    responseCode = "200",
+                    description = "Count Updated",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN)
+            ),
+            @APIResponse(
+                    responseCode = "400",
+                    description = "Invalid Request",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class, type = SchemaType.OBJECT)
+                    )
+            ),
+            @APIResponse(responseCode = "401", description = "Not Authorized"),
+            @APIResponse(responseCode = "403", description = "Not Allowed")
+    })
+    public Response updateProductCount(@PathParam("productId") UUID productId, @PathParam("newCount") int newCount) throws ApiException {
+        LOG.info("updating productId={{}} with count={} ", productId, newCount);
+        try {
+            productService.updateProductCount(productId, newCount);
+        } catch (ServiceException e) {
+            throw new ApiException(e);
+        }
+
+        return Response.status(Response.Status.CREATED).entity("Product count was changed").build();
+
+    }
+
 }

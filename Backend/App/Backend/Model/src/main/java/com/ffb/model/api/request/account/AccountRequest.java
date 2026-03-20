@@ -1,6 +1,17 @@
 package com.ffb.model.api.request.account;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.UUID;
 
-public record AccountRequest(UUID id, String loginNr, String password) {
+@Schema(requiredProperties = {
+        "id",
+        "loginNr",
+        "password"
+})
+public record AccountRequest(
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) UUID id,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) String loginNr,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) String password
+) {
 }

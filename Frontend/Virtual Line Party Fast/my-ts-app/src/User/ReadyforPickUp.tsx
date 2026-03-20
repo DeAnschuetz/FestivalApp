@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "./Modules/ReadyforPickUp.module.css";
 import OrderCard from "../Components/OrderCard";
 import { Order } from "../Types";

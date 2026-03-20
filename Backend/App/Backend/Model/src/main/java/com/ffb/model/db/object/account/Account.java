@@ -25,9 +25,15 @@ public class Account extends PanacheEntityBase {
 	private UUID id;
 
 	@JsonIgnore
-	@JdbcTypeCode(SqlTypes.VARCHAR)
+	@JdbcTypeCode(SqlTypes.UUID)
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "login_nr", referencedColumnName = "login_nr", unique = true, nullable = false)
+	@JoinColumn(
+			name = "ticket_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_ticket"),
+			unique = true,
+			nullable = false
+	)
 	private Ticket ticket;
 
 	@JsonIgnore

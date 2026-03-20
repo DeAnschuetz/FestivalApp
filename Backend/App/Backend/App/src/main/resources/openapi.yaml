@@ -1,0 +1,2376 @@
+openapi: 3.1.0
+components:
+  schemas:
+    AccountResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        loginNr:
+          type: string
+        type:
+          $ref: '#/components/schemas/AccountType'
+      required:
+      - id
+      - loginNr
+      - type
+    AccountType:
+      type: string
+      enum:
+      - ADMIN
+      - FOOD_COURT_WORKER
+      - GUEST
+    CartItemCreationRequest:
+      type: object
+      properties:
+        productId:
+          $ref: '#/components/schemas/UUID'
+        itemCount:
+          type: integer
+          format: int32
+        extra:
+          type: string
+      required:
+      - productId
+      - itemCount
+    CartItemResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        displayName:
+          type: string
+        symbolIdentifier:
+          type: string
+        price:
+          type: number
+          format: double
+        count:
+          type: integer
+          format: int32
+        extra:
+          type: string
+        subItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItemResponse'
+      required:
+      - id
+      - displayName
+      - symbolIdentifier
+      - price
+      - count
+      - subItems
+    CartItemUpdateRequest:
+      type: object
+      properties:
+        cartItemId:
+          $ref: '#/components/schemas/UUID'
+        itemCount:
+          type: integer
+          format: int32
+        extra:
+          type: string
+      required:
+      - cartItemId
+      - itemCount
+    CartResponseFull:
+      type: object
+      properties:
+        account:
+          $ref: '#/components/schemas/AccountResponse'
+        hasPrio:
+          type: boolean
+        total:
+          type: number
+          format: double
+        cartItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItemResponse'
+      required:
+      - account
+      - hasPrio
+      - total
+      - cartItems
+    CreditAddRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+      required:
+      - amount
+    CreditHistoryRequest:
+      type: object
+      properties:
+        loginNr:
+          type: string
+        pageIndex:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+      required:
+      - loginNr
+      - pageIndex
+      - pageSize
+    CreditHistoryResponse:
+      type: object
+      properties:
+        oldAmount:
+          type: number
+          format: double
+        newAmount:
+          type: number
+          format: double
+        changeTime:
+          $ref: '#/components/schemas/LocalDateTime'
+      required:
+      - oldAmount
+      - newAmount
+      - changeTime
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+      - code
+      - message
+    FoodCourtRequest:
+      type: object
+      properties:
+        loginNr:
+          type: string
+        displayName:
+          type: string
+      required:
+      - loginNr
+      - displayName
+    FoodCourtRequestSimple:
+      type: object
+      properties:
+        displayName:
+          type: string
+      required:
+      - displayName
+    FoodCourtResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        waitingTime:
+          type: integer
+          format: int32
+      required:
+      - id
+      - name
+      - waitingTime
+    FoodOrderHistoryResponse:
+      type: object
+      properties:
+        oldStatus:
+          $ref: '#/components/schemas/FoodOrderStatus'
+        newStatus:
+          $ref: '#/components/schemas/FoodOrderStatus'
+        statusChangeTime:
+          $ref: '#/components/schemas/LocalDateTime'
+      required:
+      - oldStatus
+      - newStatus
+      - statusChangeTime
+    FoodOrderItemResponse:
+      type: object
+      properties:
+        productId:
+          $ref: '#/components/schemas/UUID'
+        displayName:
+          type: string
+        iconIdentifier:
+          type: string
+        count:
+          type: integer
+          format: int32
+        extra:
+          type: string
+        subItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/FoodOrderItemResponse'
+      required:
+      - productId
+      - displayName
+      - iconIdentifier
+      - count
+      - subItems
+    FoodOrderNotificationResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        type:
+          $ref: '#/components/schemas/FoodOrderStatus'
+        status:
+          $ref: '#/components/schemas/NotificationStatus'
+        message:
+          type: string
+        creationTime:
+          $ref: '#/components/schemas/LocalDateTime'
+        pickupTime:
+          $ref: '#/components/schemas/LocalDateTime'
+      required:
+      - id
+      - type
+      - status
+      - message
+      - creationTime
+    FoodOrderResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        status:
+          $ref: '#/components/schemas/FoodOrderStatus'
+        foodCourtName:
+          type: string
+        waitingTime:
+          type: integer
+          format: int32
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/FoodOrderItemResponse'
+      required:
+      - id
+      - status
+      - foodCourtName
+      - waitingTime
+      - orderItems
+    FoodOrderResponseHistory:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        status:
+          $ref: '#/components/schemas/FoodOrderStatus'
+        foodCourtName:
+          type: string
+        waitingTime:
+          type: integer
+          format: int32
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/FoodOrderItemResponse'
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/FoodOrderHistoryResponse'
+      required:
+      - id
+      - status
+      - foodCourtName
+      - waitingTime
+      - orderItems
+      - history
+    FoodOrderStatus:
+      type: string
+      enum:
+      - ORDERED
+      - IN_PROGRESS
+      - READY_FOR_PICKUP
+      - DONE
+      - CANCELED
+    LocalDateTime:
+      type: string
+      format: date-time
+      examples:
+      - 2022-03-10 12:15:50
+    LoginRequest:
+      type: object
+      properties:
+        loginNr:
+          type: string
+        password:
+          type: string
+      required:
+      - loginNr
+      - password
+    NotificationStatus:
+      type: string
+      enum:
+      - NEW
+      - READ
+      - REMOVED
+    ProductLinkRequest:
+      type: object
+      properties:
+        mainProductId:
+          $ref: '#/components/schemas/UUID'
+        subProductId:
+          $ref: '#/components/schemas/UUID'
+      required:
+      - mainProductId
+      - subProductId
+    ProductRequest:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        price:
+          type: number
+          format: double
+        displayName:
+          type: string
+        symbolIdentifier:
+          type: string
+        minimalWarning:
+          type: integer
+          format: int32
+      required:
+      - id
+      - price
+      - displayName
+      - symbolIdentifier
+      - minimalWarning
+    ProductRequestSimple:
+      type: object
+      properties:
+        price:
+          type: number
+          format: double
+        displayName:
+          type: string
+        symbolIdentifier:
+          type: string
+        minimalWarning:
+          type: integer
+          format: int32
+      required:
+      - price
+      - displayName
+      - symbolIdentifier
+      - minimalWarning
+    ProductResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        price:
+          type: number
+          format: double
+        displayName:
+          type: string
+        symbolIdentifier:
+          type: string
+        minimalWarning:
+          type: integer
+          format: int32
+        productCount:
+          type: integer
+          format: int32
+        subProducts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductResponse'
+      required:
+      - id
+      - price
+      - displayName
+      - symbolIdentifier
+      - minimalWarning
+      - productCount
+      - subProducts
+    RegisterRequest:
+      type: object
+      properties:
+        loginNr:
+          type: string
+        password:
+          type: string
+      required:
+      - loginNr
+      - password
+    ShareOrderRequest:
+      type: object
+      properties:
+        orderId:
+          $ref: '#/components/schemas/UUID'
+        loginNr:
+          type: string
+      required:
+      - orderId
+      - loginNr
+    TicketRequest:
+      type: object
+      properties:
+        loginNrs:
+          type: array
+          items:
+            type: string
+      required:
+      - loginNrs
+    TicketResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        loginNr:
+          type: string
+      required:
+      - id
+      - loginNr
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    AccountLoginResponse:
+      type: object
+      required:
+      - loginNr
+      - token
+      properties:
+        loginNr:
+          type: string
+        token:
+          type: string
+    AccountRegisterResponse:
+      type: object
+      required:
+      - id
+      - loginNr
+      - type
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        loginNr:
+          type: string
+        type:
+          $ref: '#/components/schemas/AccountType'
+    CartResponse:
+      type: object
+      required:
+      - hasPrio
+      - total
+      - cartItems
+      properties:
+        hasPrio:
+          type: boolean
+        total:
+          type: number
+          format: double
+        cartItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItemResponse'
+    CreditResponse:
+      type: object
+      required:
+      - credit
+      properties:
+        credit:
+          type: number
+          format: double
+    FoodOrderUpdateResponse:
+      type: object
+      required:
+      - id
+      - status
+      - foodCourtName
+      - waitingTime
+      - orderItems
+      - history
+      - notifications
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        status:
+          $ref: '#/components/schemas/FoodOrderStatus'
+        foodCourtName:
+          type: string
+        waitingTime:
+          type: integer
+          format: int32
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/FoodOrderItemResponse'
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/FoodOrderHistoryResponse'
+        notifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/FoodOrderNotificationResponse'
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication
+paths:
+  /account/list_all:
+    get:
+      summary: List all Accounts
+      responses:
+        '200':
+          description: List of Accounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Account Endpoint Impl
+      security:
+      - SecurityScheme:
+        - ADMIN
+  /account/login:
+    post:
+      summary: Login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        '200':
+          description: Login succeeded; Token served
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountLoginResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+      tags:
+      - Account Endpoint Impl
+  /account/logout:
+    post:
+      summary: Logout
+      responses:
+        '204':
+          description: Logout succeeded; access token cleared
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Account Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+        - FOOD_COURT_WORKER
+        - ADMIN
+  /account/register:
+    post:
+      summary: Register a new Account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountRegisterResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+      tags:
+      - Account Endpoint Impl
+  /cart:
+    get:
+      summary: Get the Cart for the currently logged-in Guest Account
+      responses:
+        '200':
+          description: The Cart for the currently logged-in Guest Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Cart Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+  /cart/add_cart_item:
+    put:
+      summary: Add a Item to the Cart of the currently logged-in Guest Account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItemCreationRequest'
+        required: true
+      responses:
+        '200':
+          description: The Cart for the currently logged-in Guest Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Cart Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+  /cart/list_all:
+    get:
+      summary: Get all the Carts
+      responses:
+        '200':
+          description: All the Carts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CartResponseFull'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Cart Endpoint Impl
+      security:
+      - SecurityScheme:
+        - ADMIN
+  /cart/update:
+    put:
+      summary: Update the Amount or Extra of a Cart Item for the currently logged-in
+        Guest Account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItemUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: The Cart for the currently logged-in Guest Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Cart Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+  /cart/{id}:
+    delete:
+      summary: Remove a Item from the Cart for the currently logged-in Guest Account
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: The Cart for the currently logged-in Guest Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Cart Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+  /cart/{newPriority}:
+    put:
+      summary: Change the Priority of the Cart for the currently logged-in Guest Account
+      parameters:
+      - name: newPriority
+        in: path
+        required: true
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: The Cart for the currently logged-in Guest Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Cart Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+  /credit:
+    get:
+      summary: Get the Credit for the currently logged-in Guest Account
+      responses:
+        '200':
+          description: The Credit for the currently logged-in Guest Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Credit Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+  /credit/add:
+    put:
+      summary: Add a Amount to the Credit for the currently logged-in Guest Account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditAddRequest'
+        required: true
+      responses:
+        '200':
+          description: The Credit for the currently logged-in Guest Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Credit Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+  /credit/history:
+    get:
+      summary: Get the Credit History for the given LoginNr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditHistoryRequest'
+        required: true
+      responses:
+        '200':
+          description: The Credit History for the given LoginNr
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreditHistoryResponse'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Credit Endpoint Impl
+      security:
+      - SecurityScheme:
+        - ADMIN
+  /food_court:
+    put:
+      summary: Update the Food Court of the currently logged-in Food Court Worker
+        Account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FoodCourtRequestSimple'
+        required: true
+      responses:
+        '200':
+          description: Updated Food Court
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoodCourtResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Court Endpoint Impl
+      security:
+      - SecurityScheme:
+        - FOOD_COURT_WORKER
+    get:
+      summary: Get the Food Court of the currently logged-in Food Court Worker Account
+      responses:
+        '200':
+          description: The Food Court of the currently logged-in Food Court Worker
+            Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoodCourtResponse'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Court Endpoint Impl
+      security:
+      - SecurityScheme:
+        - FOOD_COURT_WORKER
+    post:
+      summary: Create a Food Court for the currently logged-in Food Court Worker Account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FoodCourtRequestSimple'
+        required: true
+      responses:
+        '201':
+          description: Created Food Court
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoodCourtResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '409':
+          description: Already exists / conflict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Court Endpoint Impl
+      security:
+      - SecurityScheme:
+        - FOOD_COURT_WORKER
+  /food_court/by_id/{foodCourtId}:
+    get:
+      summary: Get a Food Court By its ID
+      parameters:
+      - name: foodCourtId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: The Food Court with the given ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoodCourtResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Food Court not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Court Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+        - ADMIN
+  /food_court/by_id/{id}:
+    put:
+      summary: Update a Food Court by ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FoodCourtRequest'
+        required: true
+      responses:
+        '200':
+          description: Updated Food Court
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoodCourtResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '404':
+          description: Food Court not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Court Endpoint Impl
+      security:
+      - SecurityScheme:
+        - ADMIN
+    delete:
+      summary: Delete a Food Court by ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: Deleted
+          content:
+            text/plain: {}
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '404':
+          description: Food Court not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Court Endpoint Impl
+      security:
+      - SecurityScheme:
+        - ADMIN
+    post:
+      summary: Create a Food Court
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FoodCourtRequest'
+        required: true
+      responses:
+        '200':
+          description: Created Food Court
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoodCourtResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '409':
+          description: Already exists / conflict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Court Endpoint Impl
+      security:
+      - SecurityScheme:
+        - ADMIN
+  /food_court/image:
+    post:
+      summary: Upload/replace the Food Court Image (PNG) for the logged-in Food Court
+        Worker Account
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              file:
+                contentType: image/png
+        required: true
+      responses:
+        '200':
+          description: Image uploaded
+          content:
+            text/plain: {}
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '415':
+          description: Unsupported Media Type
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Court Endpoint Impl
+      security:
+      - SecurityScheme:
+        - FOOD_COURT_WORKER
+  /food_court/image/by_id/{id}:
+    post:
+      summary: Upload/replace the Food Court Image (PNG) for the Food Court based
+        on its ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              file:
+                contentType: image/png
+        required: true
+      responses:
+        '200':
+          description: Image uploaded
+          content:
+            text/plain: {}
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '415':
+          description: Unsupported Media Type
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Court Endpoint Impl
+      security:
+      - SecurityScheme:
+        - ADMIN
+  /food_court/image/{foodCourtId}:
+    get:
+      summary: Get the Food Court Image by Food Court ID (PNG)
+      parameters:
+      - name: foodCourtId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: PNG image bytes
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid Request
+          content:
+            image/png:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '404':
+          description: Image not found
+          content:
+            image/png:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Court Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+        - FOOD_COURT_WORKER
+        - ADMIN
+  /food_court/list_all:
+    get:
+      summary: Lists all Food Courts
+      responses:
+        '200':
+          description: List of all Food Courts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FoodCourtResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Court Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+        - ADMIN
+  /food_order/list_all:
+    get:
+      summary: List all Food Orders visible to the currently logged-in Account (Role-Based)
+      responses:
+        '200':
+          description: Orders returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FoodOrderResponse'
+        '400':
+          description: Unknown Account Type / Role mapping failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '404':
+          description: Some required Resource was not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Order Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+        - FOOD_COURT_WORKER
+        - ADMIN
+  /food_order/list_all/by_status/{status}:
+    get:
+      summary: List all Food Orders visible to the currently logged-in Account (Role-Based)
+        filtered by Status
+      parameters:
+      - name: status
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/FoodOrderStatus'
+      responses:
+        '200':
+          description: Orders returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FoodOrderResponse'
+        '400':
+          description: Unknown Account Type / Role mapping failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '404':
+          description: Some required Resource was not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Order Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+        - FOOD_COURT_WORKER
+        - ADMIN
+  /food_order/list_all/by_status/{status}/history:
+    get:
+      summary: List all Food Orders visible to the currently logged-in Account (Role-Based)
+        filtered by Status with History
+      parameters:
+      - name: status
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/FoodOrderStatus'
+      responses:
+        '200':
+          description: Orders returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FoodOrderResponseHistory'
+        '400':
+          description: Invalid Status or unknown Account Type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '404':
+          description: Some required Resource was not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Order Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+        - FOOD_COURT_WORKER
+        - ADMIN
+  /food_order/list_all/history:
+    get:
+      summary: List all Food Orders, History included visible to the currently logged-in
+        Account (Role-Based)
+      responses:
+        '200':
+          description: Orders returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FoodOrderResponseHistory'
+        '400':
+          description: Unknown account Type / Role mapping failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '404':
+          description: Some required Resource was not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Order Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+        - FOOD_COURT_WORKER
+        - ADMIN
+  /food_order/order:
+    post:
+      summary: Create a new Food Order for the currently logged-in Guest Account
+      responses:
+        '200':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FoodOrderResponse'
+        '404':
+          description: Some required Resource was not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '500':
+          description: Service Error while creating the Order
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Order Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+  /food_order/share:
+    put:
+      summary: Share an existing Food Order with another Guest Account (by loginNr)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShareOrderRequest'
+        required: true
+      responses:
+        '200':
+          description: Order shared successfully
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '404':
+          description: Some required Resource was not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Order Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+  /food_order/update/{orderId}/{status}:
+    put:
+      summary: Update the Status of an Food Order by its ID
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      - name: status
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/FoodOrderStatus'
+      responses:
+        '200':
+          description: Order Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoodOrderUpdateResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '404':
+          description: Some required resource was not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Food Order Endpoint Impl
+      security:
+      - SecurityScheme:
+        - FOOD_COURT_WORKER
+  /master:
+    get:
+      summary: get all data
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      tags:
+      - Master Endpoint Impl
+    post:
+      summary: create initial data
+      responses:
+        '200':
+          description: Initial Data Created or already existing
+          content:
+            application/json:
+              schema: {}
+      tags:
+      - Master Endpoint Impl
+  /master/simmulation/pause:
+    post:
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+      summary: Pause
+      tags:
+      - Master Endpoint Impl
+  /master/simmulation/resume:
+    post:
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+      summary: Resume
+      tags:
+      - Master Endpoint Impl
+  /notification/list_all:
+    get:
+      summary: List all Notifications visible to the currently logged-in Account (Role-Based)
+      responses:
+        '200':
+          description: Notifications returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FoodOrderNotificationResponse'
+        '400':
+          description: Unknown Account Type / Role mapping failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '404':
+          description: Some required Resource was not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Notification Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+        - ADMIN
+  /notification/update/{notificationId}/{newStatus}:
+    put:
+      summary: Update the Status of the Notification for the given ID
+      parameters:
+      - name: newStatus
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/NotificationStatus'
+      - name: notificationId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: Notifications returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FoodOrderNotificationResponse'
+        '404':
+          description: Some required Resource was not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Notification Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+  /product:
+    post:
+      summary: Create a Product for the currently logged-in Food Court Worker Account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequestSimple'
+        required: true
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Product Endpoint Impl
+      security:
+      - SecurityScheme:
+        - FOOD_COURT_WORKER
+  /product/admin/by_food_court_id/many/{foodCourtId}:
+    post:
+      summary: Create multiple Products for a given Food Court
+      parameters:
+      - name: foodCourtId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductRequest'
+        required: true
+      responses:
+        '201':
+          description: Products created (invalid items are skipped)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Product Endpoint Impl
+      security:
+      - SecurityScheme:
+        - ADMIN
+  /product/admin/by_food_court_id/{foodCourtId}:
+    post:
+      summary: Create a Product for a given Food Court
+      parameters:
+      - name: foodCourtId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+        required: true
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Product Endpoint Impl
+      security:
+      - SecurityScheme:
+        - ADMIN
+  /product/by_id/{id}:
+    delete:
+      summary: Delete a Product by its ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: Product deleted
+          content:
+            text/plain: {}
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Product Endpoint Impl
+      security:
+      - SecurityScheme:
+        - FOOD_COURT_WORKER
+        - ADMIN
+  /product/list:
+    get:
+      summary: List Products for the currently logged-in Food Court Worker Account
+      responses:
+        '200':
+          description: Products found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductResponse'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Product Endpoint Impl
+      security:
+      - SecurityScheme:
+        - FOOD_COURT_WORKER
+  /product/list/by_food_court_id/{foodCourtId}:
+    get:
+      summary: List Products by Food Court ID
+      parameters:
+      - name: foodCourtId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: Products found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Product Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+  /product/list_all:
+    get:
+      summary: List all Products
+      responses:
+        '200':
+          description: Products found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductResponse'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Product Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+        - FOOD_COURT_WORKER
+        - ADMIN
+  /product/update/count/{productId}/{newCount}:
+    put:
+      summary: Update the Count of a Product by its ID
+      parameters:
+      - name: newCount
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: productId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: Count Updated
+          content:
+            text/plain: {}
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Product Endpoint Impl
+      security:
+      - SecurityScheme:
+        - ADMIN
+        - FOOD_COURT_WORKER
+  /product/{id}:
+    get:
+      summary: Get a Product by ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Product Endpoint Impl
+      security:
+      - SecurityScheme:
+        - GUEST
+  /products/assignments:
+    delete:
+      summary: Delete an assignment by Main/Sub-ProductIds
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductLinkRequest'
+        required: true
+      responses:
+        '200':
+          description: Assignment deleted
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '404':
+          description: Assignment not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Product Assignment Api
+      security:
+      - SecurityScheme:
+        - FOOD_COURT_WORKER
+        - ADMIN
+    post:
+      summary: Create a Main/Sub-Product Assignment (by IDs)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductLinkRequest'
+        required: true
+      responses:
+        '201':
+          description: Assignment created
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Product Assignment Api
+      security:
+      - SecurityScheme:
+        - FOOD_COURT_WORKER
+        - ADMIN
+  /products/assignments/by_id/{id}:
+    delete:
+      summary: Delete an Assignment by its ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: Assignment deleted
+          content:
+            text/plain: {}
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '404':
+          description: Assignment not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Product Assignment Api
+      security:
+      - SecurityScheme:
+        - FOOD_COURT_WORKER
+        - ADMIN
+  /ticket/admin/list_all:
+    get:
+      summary: List all Tickets
+      responses:
+        '200':
+          description: List of Tickets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TicketResponse'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Ticket Endpoint Impl
+      security:
+      - SecurityScheme:
+        - ADMIN
+  /ticket/admin/register:
+    post:
+      summary: Register Tickets which were sold
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketRequest'
+        required: true
+      responses:
+        '201':
+          description: Tickets created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TicketResponse'
+        '400':
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Ticket Endpoint Impl
+      security:
+      - SecurityScheme:
+        - ADMIN
+info:
+  title: App API
+  version: 1.0.0-SNAPSHOT

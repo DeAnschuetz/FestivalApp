@@ -1,60 +1,101 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
-interface OverViewCardProps {
+import { Box, Typography, Button } from '@mui/material';
+import { useCart } from '../../context/CartContext';
+
+interface DetailViewCardProps {
+    id: string;
     MenuDetailViewImage: string;
     MenuTitle?: string;
-    cardWidth?: number | string;
     imgWidth?: number;
-    cardHeight?: number | string;
+    price?: string;
+    priceNumber?: number;
+    showControls?: boolean;
 }
 
-const OverViewCard: React.FC<OverViewCardProps> = ({ MenuDetailViewImage, MenuTitle, cardWidth, imgWidth, cardHeight = 140 }) => {
+const DetailViewCard: React.FC<DetailViewCardProps> = ({ id, MenuDetailViewImage, MenuTitle, imgWidth = 80, price = '$8.09', priceNumber = 8.09, showControls = true }) => {
+  const { getCount, updateCount, addToCart } = useCart();
+  const itemCount = getCount(id);
+
+  // Register item in cart on first render
+  React.useEffect(() => {
+    addToCart({ id, title: MenuTitle || '', img: MenuDetailViewImage, price: priceNumber });
+  }, [id]);
+
+  const handleIncrement = () => updateCount(id, itemCount + 1);
+  const handleDecrement = () => updateCount(id, Math.max(0, itemCount - 1));
   return (
     <Box
       sx={{
-        backgroundColor: '#ffffffff',
-        p: 2,
-        m:1,
-        borderRadius: 4,
+        backgroundColor: '#fff',
+        p: { xs: 1, sm: 1.5 },
+        mx: 0,
+        mb: { xs: 1, sm: 1.5 },
+        borderRadius: { xs: 2.5, sm: 3 },
         display: 'flex',
-        justifyContent: 'space-between',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: { xs: 1.5, sm: 2 },
       }}
     >
+      {/* Image */}
       <Box
         sx={{
-          width: cardWidth,
-          minHeight: cardHeight,
           bgcolor: '#F0ECE9',
           borderRadius: 2,
+          p: { xs: 0.75, sm: 1 },
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
-          p: 1,
           justifyContent: 'center',
+          minWidth: { xs: imgWidth * 0.75 + 12, sm: imgWidth + 16 },
+          flexShrink: 0,
         }}
       >
         <Box
           component="img"
           src={MenuDetailViewImage}
           alt={MenuTitle || ''}
-          sx={{ width: imgWidth, height: 'auto', mb: 1 }}
+          sx={{ width: { xs: imgWidth * 0.75, sm: imgWidth }, height: 'auto' }}
         />
-        
       </Box>
-      <Box>
-        <Typography variant="subtitle1" fontWeight="bold" sx={{ fontSize: { xs: 16, sm: 18 } }}>
+
+      {/* Content */}
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 0.5, minWidth: 0 }}>
+        <Typography variant="subtitle2" fontWeight="bold" sx={{ fontSize: { xs: 12, sm: 14 }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {MenuTitle}
         </Typography>
-        <Typography variant="body2" sx={{ mt: 1 }}>
-          $8.04        
+        <Typography variant="body2" fontWeight="bold" sx={{ fontSize: { xs: 14, sm: 16 } }}>
+          {price}
         </Typography>
-        <Box sx={{borderRadius: '20px', border: '2px solid black', height: '40px'}}>
-
-        </Box>
         
+        {/* Quantity Controls */}
+        <Box sx={{ 
+          borderRadius: '20px', 
+          border: '1px solid #E3DCD5', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          mt: 0.5,
+          maxWidth: { xs: 100, sm: 120 },
+        }}>
+          <Button 
+            size="small" 
+            sx={{ minWidth: { xs: 28, sm: 32 }, color: '#000', fontSize: { xs: 12, sm: 14 }, p: 0.5 }}
+            onClick={handleDecrement}
+          >
+            —
+          </Button>
+          <Typography sx={{ fontSize: { xs: 12, sm: 14 }, fontWeight: 'bold' }}>{itemCount}</Typography>
+          <Button 
+            size="small" 
+            sx={{ minWidth: { xs: 28, sm: 32 }, color: '#000', fontSize: { xs: 12, sm: 14 }, p: 0.5 }}
+            onClick={handleIncrement}
+          >
+            +
+          </Button>
+        </Box>
       </Box>
     </Box>
   );
 };
 
-export default OverViewCard;
+export default DetailViewCard;

@@ -45,13 +45,25 @@ public class FoodOrderNotification extends PanacheEntityBase {
 	@JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "order_id", referencedColumnName = "id")
+	@JoinColumn(
+			name = "order_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_food_order"),
+			unique = false,
+			nullable = false
+	)
 	private FoodOrder order;
 
     @JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @JoinColumn(
+			name = "account_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_account"),
+			unique = false,
+			nullable = false
+	)
     private Account account;
     
     protected FoodOrderNotification() {}

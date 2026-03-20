@@ -11,6 +11,41 @@ function RegisterContainer() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+
+    const loginRequest: LoginRequest = {
+      loginNr,
+      password,
+    };
+
+    try {
+      const loggedInUser = await login(loginRequest);
+      const userType = getAccountTypeForRouting(loggedInUser.loginNr ?? loginNr);
+
+      switch (userType) {
+        case "ADMIN":
+          navigate("/admin_view");
+          break;
+
+        case "FOOD_COURT_WORKER":
+          navigate("/foodcourt_view");
+          break;
+
+        case "GUEST":
+        default:
+          navigate("/user_view");
+          break;
+      }
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Login failed. Please try again.";
+      setError(message);
+    }
+  };
 
   useEffect(() => {
     setLoginNr("");

@@ -189,6 +189,9 @@ public class MasterEndpointImpl {
             new CartItemCreationRequest(BURGER_MENU_MIT_COLA_ID, 2, "")
     );
 
+    /*
+        CART ITEMS FOR DIFFERENT FOOD COURTS
+     */
     private static final List<CartItemCreationRequest> SECOND_CART_ITEM_CREATION_REQUESTS = List.of(
             new CartItemCreationRequest(BURGER_MENU_ID, 2, ""),
             new CartItemCreationRequest(BURGER_MENU_ID, 1, "mit extra Käse"),
@@ -282,7 +285,8 @@ public class MasterEndpointImpl {
     @Consumes(MediaType.APPLICATION_JSON)
     @PermitAll
     @Operation(summary = "get all data")
-    public Response getALLData() {
+    public Response getALLData(@HeaderParam("Authorization") String auth) {
+        System.out.println("Authorization header: " + auth);
         DatabaseResponse data = accountService.getDatabaseResponse();
         return Response.status(Response.Status.OK).entity(data).build();
     }

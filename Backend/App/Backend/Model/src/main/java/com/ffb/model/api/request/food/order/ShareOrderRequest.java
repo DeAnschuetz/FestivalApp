@@ -1,7 +1,16 @@
 package com.ffb.model.api.request.food.order;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.UUID;
 
-public record ShareOrderRequest(UUID orderId, String loginNr) {
+@Schema(requiredProperties = {
+        "orderId",
+        "loginNr"
+})
+public record ShareOrderRequest(
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) UUID orderId,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED) String loginNr
+) {
 
 }

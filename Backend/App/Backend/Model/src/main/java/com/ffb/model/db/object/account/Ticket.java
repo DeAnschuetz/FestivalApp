@@ -14,7 +14,7 @@ public class Ticket extends PanacheEntityBase {
 
     @Id
     @JdbcTypeCode(SqlTypes.UUID)
-    @Column(name = "ticket_id", unique = true, nullable = false)
+    @Column(name = "id", unique = true, nullable = false)
     private UUID id;
 
     @JdbcTypeCode(SqlTypes.VARCHAR)
