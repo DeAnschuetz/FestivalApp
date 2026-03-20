@@ -6,6 +6,7 @@
   border-top: 1px solid black;
   border-bottom: 1px solid black;
   padding-left: 10%;
+  margin-top: 10px;
 }
 
 .BtnLabel {
@@ -17,18 +18,18 @@
   text-decoration: underline;
 }
 
-.OrderContainer{
-  max-height: 90px;
-  margin: 0px 20px 12px 20px;
+.FoodCourtContainer{
+  margin: 20px;
+   margin: 12px 20px 12px 20px;
   overflow: auto;
-  margin: 0px 20px;
-  padding: 6px 12px 0px 0px;
+  padding: 12px 0px 0px 0px;
 }
 
 .BiggerContainer{
-  max-height: 290px;
+  max-height: 140px;
+  overflow: auto;
 }
 
-.OrderContainer::-webkit-scrollbar {
+.FoodCourtContainer::-webkit-scrollbar {
   display: none;
 }

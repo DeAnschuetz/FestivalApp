@@ -1,22 +1,33 @@
-import React, { useState } from "react";
-import { Order } from "../Types";
+import React, { useEffect, useState } from "react";
 import styles from "./Modules/Orders.module.css";
 import { Button } from "@progress/kendo-react-buttons";
 import BtnBar from "../Components/BtnBar";
+import { Order } from "../Types";
+import OrderCard from "../Components/OrderCard";
 
-interface Props {
+interface OrderProps {
   orders: Order[];
+  isFoodCourtOpen: boolean;
+  setIsOrdersOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function Orders(props: Props) {
-  const { orders } = props;
-  console.log("orders: ", orders);
+function Orders(props: OrderProps) {
+  const { orders, isFoodCourtOpen, setIsOrdersOpen } = props;
 
   const [isOpen, setIsOpen] = useState(false);
+  const [filter, setFilter] = useState<string>("");
 
   const showOpen = () => {
     setIsOpen(!isOpen);
+    setIsOrdersOpen(!isOpen);
   };
+
+  useEffect(() => {}, [isFoodCourtOpen]);
+
+  const filteredOrders = orders.filter((order) => {
+    if (filter === "") return true;
+    return order.order_status === filter;
+  });
 
   return (
     <div>
@@ -35,8 +46,15 @@ function Orders(props: Props) {
         </div>
       </div>
       {isOpen && (
-        <div className={styles.Content}>
-          <BtnBar />
+        <div>
+          <BtnBar filter={filter} setFilter={setFilter} />
+          <div
+            className={`${styles.OrderContainer} ${isFoodCourtOpen ? styles.BiggerContainer : ""}`}
+          >
+            {filteredOrders.map((order) => (
+              <OrderCard order={order} status={order.order_status} />
+            ))}
+          </div>
         </div>
       )}
     </div>

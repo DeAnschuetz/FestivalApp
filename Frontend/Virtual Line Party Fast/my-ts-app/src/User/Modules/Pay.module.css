@@ -1,0 +1,113 @@
+.Pay {
+  margin: 20px;
+}
+
+.CloseBtnContainer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.Header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.Banner {
+  background-color: #ccafa5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60%;
+  height: 40px;
+  border-radius: 6px;
+  font-size: 20px;
+  box-shadow: 0px 4px 6px 0px gray;
+}
+
+.Icon {
+  margin-top: -20px;
+  display: flex;
+  justify-content: flex-end;
+  width: 69%;
+  font-size: 30px;
+}
+
+.Line {
+  border: 1px solid gray;
+  margin-bottom: 20px;
+}
+
+.MarginWrapper {
+  margin: 0px 0px;
+}
+
+.ZahlungsmethodeText {
+  font-style: italic;
+}
+
+.RadioGroup {
+  margin-top: 12px;
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.IconRadio {
+  font-size: 24px;
+  margin-right: 10px;
+  width: 40px;
+  padding: 3px;
+  border: 1px solid black;
+  border-radius: 4px;
+  margin-left: 6px;
+}
+
+.Label {
+  font-size: 16px;
+}
+
+.RadioOption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Text {
+  margin: 12px 0px 12px 0px;
+}
+
+.FlexWrapper {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.PayBtnContainer {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.PayBtn {
+  width: 70%;
+  height: 40px;
+  border-radius: 10px;
+  font-size: large !important;
+  background-color: #BDC3CB !important;
+  box-shadow: 0px 4px 6px 0px gray;
+  color: black !important
+}
+
+.ErrorText{
+    margin-left: 6px;
+    font-style: italic;
+    color: red;
+}
+
+.Active{
+    border: 2px solid rgb(44, 172, 215)
+}
+
+.InavlidPayment{
+    border: 1px solid red;
+}

@@ -30,3 +30,27 @@
     margin: 0px 0px 0px 6px;
     text-decoration: underline;
 }
+
+.UserWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+
+
+.DropdownMenu {
+  position: absolute;
+  top: 34px;
+  left: 0;
+  margin-left: 12px;
+  background-color: #CCAFA5;
+  border: 1px solid black;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 100;
+}
+
+.ButtonContent{
+  font-size: 14px;
+}

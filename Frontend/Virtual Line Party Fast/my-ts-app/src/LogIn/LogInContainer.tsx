@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Modules/LogInContainer.module.css";
 import InputElement from "../Components/InputElement";
 import { Checkbox } from "@progress/kendo-react-inputs";
@@ -16,6 +16,12 @@ function LogInContainer() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  useEffect(() => {
+    setLoginNr("");
+    setPassword("");
+    setError("");
+  }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -37,6 +43,8 @@ function LogInContainer() {
       setError("Login number or password is incorrect.");
       return;
     }
+
+    localStorage.setItem("currentUser", user.login_Nr);
 
     if (rememberMe) {
       localStorage.setItem("rememberedPassword_" + loginNr, password);
@@ -71,15 +79,15 @@ function LogInContainer() {
             margin: "3px 0px 16px 0px",
             fontSize: "14px",
             whiteSpace: "pre-line",
-            lineHeight: '1.3',
-            display: 'flex',
-            padding: '0px 0px 0px 6px'
+            lineHeight: "1.3",
+            display: "flex",
+            padding: "0px 0px 0px 6px",
           }}
         >
           {error}
         </div>
       )}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} autoComplete="off">
         <InputElement
           label="Login-Nr."
           editorId="login_nr"
@@ -88,7 +96,7 @@ function LogInContainer() {
             setLoginNr(value);
 
             const saved = localStorage.getItem("rememberedPassword_" + value);
-             setError("");
+            setError("");
 
             if (saved) {
               setPassword(saved);
@@ -100,7 +108,10 @@ function LogInContainer() {
           }}
           wrapperStyle={{ marginBottom: "10px" }}
           labelStyle={{ width: "100%" }}
-          inputStyle={{ height: "36px",  border: error ? "1px solid red" : undefined, }}
+          inputStyle={{
+            height: "36px",
+            border: error ? "1px solid red" : undefined,
+          }}
         />
         <InputElement
           label="Password"
@@ -109,7 +120,10 @@ function LogInContainer() {
           onChange={setPassword}
           wrapperStyle={{ marginBottom: "16px" }}
           labelStyle={{ width: "100%" }}
-          inputStyle={{ height: "36px", border: error ? "1px solid red" : undefined, }}
+          inputStyle={{
+            height: "36px",
+            border: error ? "1px solid red" : undefined,
+          }}
           type="password"
         />
         <div className={styles.Checkbox}>

@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider } from "./Auth/AuthContext";
 import ProtectedRoute from "./Auth/ProtectedRoute";
 import User from "./User/User";
-import FoodCourt from "./User/FoodCourt";
+import FoodCourt from "./FoodCourt/FoodCourt";
 import Admin from "./Admin/Admin";
 import LogIn from "./LogIn/LogIn";
 
