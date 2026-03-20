@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./HomePage.module.css";
 import { useNavigate } from "react-router-dom";
-import FoodCourtDropDown from "../Components/FoodCourtDropDown";
 import HomePageFilterBar from "../Components/HomePageFilterBar";
 import HomePageBulkActions from "../Components/HomePageBulkActions";
 import HomePageOrderCard from "../Components/HomePageOrderCard";
+import HeaderFoodCourt from "../Components/HeaderFoodCourt";
 type FilterKey = "ALL" | OrderStatus;
 
 import { FoodOrderStatus as OrderStatus } from "../Api/generated/ffbAPI.schemas"
@@ -37,9 +37,6 @@ const isOrderStatus = (value: string): value is OrderStatus =>
 	value === "DONE" ||
 	value === "CANCELED";
 
-const isUuid = (value: string) =>
-	/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/.test(value);
-
 function HomePage() {
 	const token = localStorage.getItem("token");
 	const navigate = useNavigate();
@@ -51,15 +48,8 @@ function HomePage() {
 	const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
 	const [activeFilter, setActiveFilter] = useState<FilterKey>("ALL");
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [foodCourtImageUrl, setFoodCourtImageUrl] = useState<string>("");
-	const [useFallbackImage, setUseFallbackImage] = useState<boolean>(false);
-	const [menuOpen, setMenuOpen] = useState<boolean>(false);
 	const [error, setError] = useState<string>("");
 	const [success, setSuccess] = useState<string>("");
-	const menuRef = useRef<HTMLDivElement | null>(null);
-
-	const directImageUrl =
-		foodCourt?.id && isUuid(foodCourt.id) ? `${API_BASE}/food_court/image/${foodCourt.id}` : "";
 	const loginLabel = localStorage.getItem("loginNr") ?? "1234WP56-ZY09";
 
 	const handleLogout = () => {
@@ -68,7 +58,6 @@ function HomePage() {
 	};
 
 	const handleOpenStand = () => {
-		setMenuOpen(false);
 		navigate("/food_court/stand");
 	};
 
@@ -112,10 +101,6 @@ function HomePage() {
 				}, {}),
 			);
 		},
-       
-		[authHeaders],
-        
-	);
 
 	const fetchAllOrders = useCallback(async () => {
 		const data: Order[] = await getVisibleOrders();
@@ -128,35 +113,17 @@ function HomePage() {
 		setIsLoading(true);
 		setError("");
 		try {
-			await Promise.all([fetchFoodCourt(), fetchOrders(activeFilter), fetchAllOrders()]);
+			await Promise.all([fetchFoodCourt(), fetchOrders(activeFilter)]);
 		} catch (fetchError) {
 			setError(fetchError instanceof Error ? fetchError.message : "Unbekannter Fehler");
 		} finally {
 			setIsLoading(false);
 		}
-	}, [activeFilter, fetchAllOrders, fetchFoodCourt, fetchOrders]);
+	}, [activeFilter, fetchFoodCourt, fetchOrders]);
 
 	useEffect(() => {
 		loadPageData();
 	}, [loadPageData]);
-
-	useEffect(() => {
-		setUseFallbackImage(false);
-		setFoodCourtImageUrl("");
-	}, [foodCourt?.id]);
-
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-				setMenuOpen(false);
-			}
-		};
-
-		document.addEventListener("mousedown", handleClickOutside);
-		return () => {
-			document.removeEventListener("mousedown", handleClickOutside);
-		};
-	}, []);
 
 	useEffect(() => {
 		if (!success) {
@@ -210,13 +177,13 @@ function HomePage() {
 		}, initial);
 		}, [allOrders]);
 
-		const getFilterCount = (filterKey: FilterKey) => {
-			if (filterKey === "ALL") {
-				return allOrders.length;
-			}
+	const getFilterCount = (filterKey: FilterKey) => {
+		if (filterKey === "ALL") {
+			return allOrders.length;
+		}
 
-			return countsByStatus[filterKey];
-		};
+		return countsByStatus[filterKey];
+	};
 
 	const allVisibleOrdersSelected =
 		orders.length > 0 && orders.every((order) => selectedOrderIds.includes(order.id));
@@ -258,7 +225,7 @@ function HomePage() {
 		try {
 			setSuccess("");
 			await updateOrderStatus(orderId, selectedStatus);
-			await Promise.all([fetchOrders(activeFilter), fetchAllOrders()]);
+			await fetchOrders(activeFilter);
 		} catch (updateError) {
 			setSuccess("");
 			setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
@@ -277,7 +244,7 @@ function HomePage() {
 			await Promise.all(
 				selectedOrderIds.map((orderId) => updateOrderStatus(orderId, statusForUpdate)),
 			);
-			await Promise.all([fetchOrders(activeFilter), fetchAllOrders()]);
+			await fetchOrders(activeFilter);
 			setSelectedOrderIds([]);
 			setSuccess(
 				`Status für ${updatedCount} Bestellung${updatedCount === 1 ? "" : "en"} aktualisiert.`,
@@ -320,36 +287,15 @@ function HomePage() {
 	return (
 		<div className={styles.Page}>
 			<div className={styles.Container}>
-				<div className={styles.TopHeader}>
-					<div className={styles.TopLeft}>
-						<div className={styles.MenuAnchor} ref={menuRef}>
-							<button className={styles.MenuButton} onClick={() => setMenuOpen((open) => !open)}>
-								<i className="fa fa-bars" />
-							</button>
-							<div className={styles.LoginTag}>{loginLabel}</div>
-							{menuOpen && (
-								<FoodCourtDropDown onOpenStand={handleOpenStand} onLogout={handleLogout} />
-							)}
-						</div>
-						<div className={styles.TopTitle}>{foodCourt?.name ?? "Food Court"}</div>
-					</div>
-					<div className={styles.TopRight}>
-						{(directImageUrl || foodCourtImageUrl) ? (
-							<img
-								className={styles.FoodImage}
-								src={useFallbackImage ? foodCourtImageUrl : directImageUrl}
-								alt="Food Court"
-								onError={() => {
-									if (!useFallbackImage) {
-										loadFallbackImage();
-									}
-								}}
-							/>
-						) : (
-							<div className={styles.FoodImage} />
-						)}
-					</div>
-				</div>
+				<HeaderFoodCourt
+					title={foodCourt?.name ?? "Food Court"}
+					loginLabel={loginLabel}
+					foodCourtId={foodCourt?.id}
+					apiBase={API_BASE}
+					token={token}
+					onOpenStand={handleOpenStand}
+					onLogout={handleLogout}
+				/>
 				<div className={styles.ControlsRow}>
 					<div className={styles.WaitingGroup}>
 						<i className="fa-regular fa-clock" />
@@ -380,14 +326,16 @@ function HomePage() {
 					getFilterCount={(filterKey) => getFilterCount(filterKey as FilterKey)}
 				/>
 
-				<HomePageBulkActions
-					hasOrders={orders.length > 0}
-					allVisibleOrdersSelected={allVisibleOrdersSelected}
-					selectedCount={selectedOrderIds.length}
-					statusLabels={statusLabels}
-					onToggleAll={toggleAllSelectedOrders}
-					onApplyBulk={applyBulkStatusUpdate}
-				/>
+				{orders.length > 0 && (
+					<HomePageBulkActions
+						hasOrders={orders.length > 0}
+						allVisibleOrdersSelected={allVisibleOrdersSelected}
+						selectedCount={selectedOrderIds.length}
+						statusLabels={statusLabels}
+						onToggleAll={toggleAllSelectedOrders}
+						onApplyBulk={applyBulkStatusUpdate}
+					/>
+				)}
 
 				{error && <div className={styles.Error}>{error}</div>}
 				{success && <div className={styles.Success}>{success}</div>}

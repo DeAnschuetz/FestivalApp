@@ -84,6 +84,39 @@
   border-radius: 50%;
 }
 
+.CreateForm {
+  display: grid;
+  grid-template-columns: 1fr 84px 84px 84px auto;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid #b2aaa4;
+  background: #e8e1dc;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.CreateInput,
+.CreateInputWide {
+  height: 28px;
+  border: 1px solid #727272;
+  background: #f3f3f3;
+  padding: 0 8px;
+  font-size: 12px;
+}
+
+.CreateInput {
+  min-width: 0;
+}
+
+.CreateInputWide {
+  min-width: 0;
+}
+
+.CreateActions {
+  display: inline-flex;
+  gap: 6px;
+}
+
 .ProductList {
   display: flex;
   flex-direction: column;
@@ -187,6 +220,14 @@
   .ProductRow {
     grid-template-columns: minmax(0, 1fr) auto 40px auto auto;
     gap: 8px;
+  }
+
+  .CreateForm {
+    grid-template-columns: 1fr;
+  }
+
+  .CreateActions {
+    justify-content: flex-end;
   }
 
   .WaitingSection {
