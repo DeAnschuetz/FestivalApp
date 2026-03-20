@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./StandPage.module.css";
-import { FoodCourt } from "../Types";
+import { FoodCourtResponse } from "../Api/generated/ffbAPI.schemas";
+import { updateProductCount } from "../Api/ffb/productApi";
 
 const API_BASE = "http://10.45.129.19:8080";
 
@@ -19,7 +20,7 @@ function StandPage() {
   const loginLabel = localStorage.getItem("loginNr") ?? "1234WP56-ZY09";
   const navigate = useNavigate();
 
-  const [foodCourt, setFoodCourt] = useState<FoodCourt | null>(null);
+  const [foodCourt, setFoodCourt] = useState<FoodCourtResponse | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [waitingTime, setWaitingTime] = useState<number>(15);
   const [editedCounts, setEditedCounts] = useState<Record<string, number>>({});
@@ -65,7 +66,7 @@ function StandPage() {
         throw new Error("Produkte konnten nicht geladen werden.");
       }
 
-      const foodCourtResult = (await foodCourtResponse.json()) as FoodCourt;
+      const foodCourtResult = (await foodCourtResponse.json()) as FoodCourtResponse;
       const productResult = (await productsResponse.json()) as Product[];
 
       setFoodCourt(foodCourtResult);
@@ -114,7 +115,7 @@ function StandPage() {
         throw new Error(responseText || "Wartezeit konnte nicht gespeichert werden.");
       }
 
-      const updatedFoodCourt = (await response.json()) as FoodCourt;
+      const updatedFoodCourt = (await response.json()) as FoodCourtResponse;
       setFoodCourt(updatedFoodCourt);
       setWaitingTime(updatedFoodCourt.waitingTime ?? safeWaitingTime);
     } catch (updateError) {
@@ -122,22 +123,13 @@ function StandPage() {
     }
   };
 
-  const updateProductCount = async (productId: string) => {
+  const updateProductCountLocal = async (productId: string) => {
     try {
       setError("");
       const rawCount = editedCounts[productId] ?? 0;
       const newCount = Number.isFinite(rawCount) ? Math.max(0, Math.trunc(rawCount)) : 0;
-      const response = await fetch(`${API_BASE}/product/update/count/${productId}/${newCount}`, {
-        method: "PUT",
-        headers: authHeaders,
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error("Produktbestand konnte nicht aktualisiert werden.");
-      }
-
-      await loadData();
+      const data: Product = await updateProductCount(productId, newCount);
+        await loadData();
     } catch (updateError) {
       setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
     }
@@ -151,17 +143,7 @@ function StandPage() {
 
     try {
       setError("");
-      const response = await fetch(`${API_BASE}/product/by_id/${productId}`, {
-        method: "DELETE",
-        headers: authHeaders,
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        const responseText = await response.text();
-        throw new Error(responseText || "Produkt konnte nicht gelöscht werden.");
-      }
-
+      await deleteProduct(productId);
       await loadData();
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "Unbekannter Fehler");
@@ -224,7 +206,7 @@ function StandPage() {
                 }}
               />
 
-              <button className={styles.IconBtn} onClick={() => updateProductCount(product.id)}>
+              <button className={styles.IconBtn} onClick={() => updateProductCountLocal(product.id)}>
                 <i className="fa-regular fa-pen-to-square" />
               </button>
               <button className={styles.IconBtn} onClick={() => deleteProduct(product.id)}>

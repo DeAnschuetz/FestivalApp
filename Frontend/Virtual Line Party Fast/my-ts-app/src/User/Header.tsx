@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@progress/kendo-react-buttons";
 import styles from "./Modules/Header.module.css";
-import { CreditResponse } from "../Types";
+import { getCredit } from "../Api/ffb/creditApi";
+import { Credit } from "../Api/ffb";
 
 interface Props {}
 
@@ -13,23 +14,9 @@ function Header(props: Props) {
   useEffect(() => {
     const fetchCredit = async () => {
       try {
-        const token = localStorage.getItem("token");
 
-        const response = await fetch("http://10.45.129.19:8080/credit", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          console.log('response: ', response);
-          throw new Error("Fehler beim Laden des Credits");
-        }
-
-        const data: CreditResponse = await response.json();
-        console.log('data: ', data);
+        const data: Credit = await getCredit();
+        console.log('Credit data: ', data);
         setCredit(data.credit);
       } catch (error) {
         console.error("Credit konnte nicht geladen werden:", error);

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Order } from "../Types";
 import styles from "./Modules/Orders.module.css";
 import { Button } from "@progress/kendo-react-buttons";
 import BtnBar from "../Components/BtnBar";
+import { Order } from "../Api/ffb/types";
 
 interface Props {
   orders: Order[];

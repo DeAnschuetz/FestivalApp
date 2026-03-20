@@ -2,7 +2,7 @@ import { defineConfig } from "orval";
 
 export default defineConfig({
     myApi: {
-        input: { target: "http://localhost:8080/q/openapi" },
+        input: { target: "src/main/resources/openapi.yaml" },
         output: {
             target: "src/main/java/com/ffb/app/api/frontend/generated/ffbAPI.ts",
             client: "fetch",

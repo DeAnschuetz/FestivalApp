@@ -5,8 +5,15 @@ import User from "./User/User";
 import FoodCourt from "./User/FoodCourt";
 import Admin from "./Admin/Admin";
 import LogIn from "./LogIn/LogIn";
+import { useEffect } from "react";
+import { bootstrapOfflineDemo } from "./Api/ffb/initialImportBootstrap";
 
 function App() {
+
+  useEffect(() => {
+    bootstrapOfflineDemo();
+  }, []);
+  
   return (
     <AuthProvider>
       <Router>

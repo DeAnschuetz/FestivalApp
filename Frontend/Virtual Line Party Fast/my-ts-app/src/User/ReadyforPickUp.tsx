@@ -1,6 +1,5 @@
-import React from "react";
 import styles from "./Modules/ReadyforPickUp.module.css";
-import { Order } from "../Types";
+import { Order } from "../Api/ffb/types";
 
 interface Props {
   readyForPickup: Order[];
