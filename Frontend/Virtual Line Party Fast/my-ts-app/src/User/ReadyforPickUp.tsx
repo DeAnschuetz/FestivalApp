@@ -26,18 +26,27 @@ function ReadyforPickUp(props: Props) {
               </div>
             </div>
             <div className={styles.ItemContainer}>
-              {Object.entries(
-                order.orderItems.reduce(
-                  (acc, item) => {
-                    acc[item.displayName] = (acc[item.displayName] || 0) + 1;
-                    return acc;
-                  },
-                  {} as Record<string, number>,
-                ),
-              ).map(([name, count]) => (
-                <div key={name} className={styles.ItemWrapper}>
-                  <div className={styles.ItemName}>{name}</div>
-                  <div>x {count}</div>
+              {order.orderItems.map((item, index) => (
+                <div key={index} className={styles.ItemWrapper}>
+                  <div className={styles.FlexWrapper}>
+                    <div className={styles.ItemName}>{item.displayName}</div>
+                    <div>x {item.count}</div>
+                  </div>
+                  <div className={styles.ItemExtra}>{item.extra}</div>
+
+                  {item.subItems && item.subItems.length > 0 && (
+                    <div className={styles.SubItemContainer}>
+                      {item.subItems.map((subItem, subIndex) => (
+                        <div key={subIndex} >
+                          <div className={styles.FlexWrapper}>
+                            <div>- {subItem.displayName}</div>
+                            <div> x {subItem.count}</div>
+                          </div>
+                          <div className={styles.Extra}>{subItem.extra}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

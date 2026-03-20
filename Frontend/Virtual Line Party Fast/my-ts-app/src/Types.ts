@@ -22,8 +22,19 @@ export interface Order {
   orderItems: OrderItem[];
 }
 
-export interface FoodCourt {
+export interface CreditResponse{
+  credit: number
+}
+
+//Dummydaten
+
+export interface User{
+  login_Nr:string;
+  password: string;
+  type: "GUEST" | "FOOD_COURT_WORKER" | "ADMIN"
+}
+
+export interface Ticket{
   id: string;
-  name: string;
-  waitingTime: number;
+  login_Nr: string
 }

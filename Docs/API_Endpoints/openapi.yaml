@@ -378,7 +378,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  lgoinNr:
+                  loginNr:
                     type: string
                   token:
                     type: string
