@@ -8,7 +8,7 @@ import { users } from "../Data";
 import { useAuth } from "../Auth/AuthContext";
 
 type AccountType = "ADMIN" | "FOOD_COURT_WORKER" | "GUEST";
-const API_BASE = "http://10.45.129.19:8080";
+const API_BASE = "http://10.45.129.4:8080";
 
 interface AccountResponse {
   id: string;
