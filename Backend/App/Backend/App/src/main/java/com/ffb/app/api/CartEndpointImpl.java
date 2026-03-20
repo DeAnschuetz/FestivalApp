@@ -122,7 +122,7 @@ public class CartEndpointImpl {
 			@APIResponse(responseCode = "401", description = "Not Authorized"),
 			@APIResponse(responseCode = "403", description = "Not Allowed")
 	})
-	public Response addItemToCart( CartItemCreationRequest request ) throws ApiException {
+	public Response addItemToCart(CartItemCreationRequest request ) throws ApiException {
 		String loginNr;
 		try {
 			loginNr = validator.validateAndGetLoginNr(webToken);

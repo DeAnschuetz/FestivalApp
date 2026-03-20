@@ -1,0 +1,195 @@
+.Page {
+  min-height: 100vh;
+  background: #d8d1cc;
+  color: #1f1f1f;
+  font-family: Arial, sans-serif;
+}
+
+.Container {
+  max-width: 380px;
+  margin: 0 auto;
+  padding: 14px;
+}
+
+.HeaderTop {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.StandTitle {
+  font-size: 22px;
+  font-weight: 700;
+  border-bottom: 1px solid #333;
+}
+
+.HeaderRow {
+  border-top: 1px solid #5e5e5e;
+  border-bottom: 1px solid #5e5e5e;
+  padding: 10px 0;
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.LoginLabel {
+  color: #545454;
+  border-bottom: 1px solid #717171;
+  width: max-content;
+}
+
+.ImageWrap {
+  justify-self: end;
+}
+
+.FoodImage {
+  width: 72px;
+  height: 72px;
+  border: 1px solid #6f6f6f;
+  object-fit: cover;
+  background: #efefef;
+}
+
+.SectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #545454;
+  padding: 12px 0;
+  margin-bottom: 10px;
+}
+
+.BackBtn,
+.AddBtn,
+.IconBtn {
+  border: 1px solid #666;
+  background: #e8e1dc;
+  cursor: pointer;
+}
+
+.BackBtn {
+  border: none;
+  background: transparent;
+  font-weight: 700;
+  font-size: 20px;
+  padding: 0;
+}
+
+.AddBtn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.ProductList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ProductRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 44px auto auto;
+  gap: 10px;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #b2aaa4;
+}
+
+.ProductMain {
+  min-width: 0;
+}
+
+.ProductName {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.Warning {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #4f4f4f;
+}
+
+.Price {
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.CountInput {
+  height: 26px;
+  width: 44px;
+  border: 1px solid #727272;
+  background: #f3f3f3;
+  text-align: center;
+  font-size: 12px;
+}
+
+.IconBtn {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.WaitingSection {
+  border-top: 1px solid #555;
+  margin-top: 18px;
+  padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.WaitingControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.WaitingInput {
+  width: 48px;
+  height: 26px;
+  border: 1px solid #727272;
+  text-align: center;
+  font-size: 12px;
+}
+
+.Error {
+  margin: 8px 0;
+  border: 1px solid #b26161;
+  background: #f8e2e2;
+  color: #7a2f2f;
+  padding: 8px;
+}
+
+@media (max-width: 640px) {
+  .Container {
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  .StandTitle {
+    font-size: 18px;
+  }
+
+  .BackBtn {
+    font-size: 18px;
+  }
+
+  .ProductRow {
+    grid-template-columns: minmax(0, 1fr) auto 40px auto auto;
+    gap: 8px;
+  }
+
+  .WaitingSection {
+    font-size: 13px;
+  }
+}

@@ -1,4 +1,9 @@
-export type OrderStatus = 'READY_FOR_PICKUP' | 'IN_PROGRESS';
+export type OrderStatus =
+  | 'ORDERED'
+  | 'IN_PROGRESS'
+  | 'READY_FOR_PICKUP'
+  | 'DONE'
+  | 'CANCELED';
 
 export interface OrderItem {
   productID: string;

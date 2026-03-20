@@ -12,17 +12,7 @@ import com.ffb.model.db.object.food_court.FoodCourt;
 import com.ffb.model.db.object.notification.FoodOrderNotification;
 import com.ffb.model.db.object.notification.NotificationStatus;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -73,19 +63,34 @@ public class FoodOrder extends PanacheEntityBase {
     @JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @JoinColumn(
+			name = "account_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_account"),
+			nullable = false
+	)
     private Account account;
 
 	@JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "shared_account_id", referencedColumnName = "id")
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@JoinColumn(
+			name = "shared_account_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_shared_account"),
+			nullable = true
+	)
 	private Account sharedAccount;
     
     @JsonIgnore
 	@JdbcTypeCode(SqlTypes.UUID)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "food_court_id", referencedColumnName = "id")
+    @JoinColumn(
+			name = "food_court_id",
+			referencedColumnName = "id",
+			foreignKey = @ForeignKey(name = "fk_food_court"),
+			nullable = false
+	)
     private FoodCourt foodCourt;
 
     protected FoodOrder() {}
@@ -124,7 +129,7 @@ public class FoodOrder extends PanacheEntityBase {
 		);
 	}
 
-	public FoodOrder(UUID id, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime, LocalDateTime orderTime, List<FoodOrderItem> items, FoodCourt foodCourt) {
+	public FoodOrder(UUID id, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime, List<FoodOrderItem> items, FoodCourt foodCourt) {
 		this.id = id;
 		this.status = status;
 		this.hasPrio = hasPrio;
@@ -133,9 +138,10 @@ public class FoodOrder extends PanacheEntityBase {
 		this.isHidden = false;
 		this.items = items;
 		this.foodCourt = foodCourt;
+		this.orderTime = LocalDateTime.now();
 	}
 
-	public FoodOrder(UUID id, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime, LocalDateTime orderTime, List<FoodOrderItem> items) {
+	public FoodOrder(UUID id, FoodOrderStatus status, boolean hasPrio, double total, int waitingTime,List<FoodOrderItem> items) {
 		super();
 		this.id = id;
 		this.status = status;
@@ -144,6 +150,7 @@ public class FoodOrder extends PanacheEntityBase {
 		this.waitingTime = waitingTime;
 		this.isHidden = false;
 		this.items = items;
+		this.orderTime = LocalDateTime.now();
 	}
 
 	public UUID getId() {

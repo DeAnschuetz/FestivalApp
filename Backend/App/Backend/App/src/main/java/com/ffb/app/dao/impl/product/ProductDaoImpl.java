@@ -1,13 +1,10 @@
 package com.ffb.app.dao.impl.product;
 
 import com.ffb.app.dao.api.product.ProductDao;
-import com.ffb.app.repository.api.product.MainProductRepository;
 import com.ffb.app.repository.api.product.MainSubProductLinkRepository;
 import com.ffb.app.repository.api.product.ProductRepository;
-import com.ffb.model.db.view.MainProduct;
 import com.ffb.model.db.object.product.MainSubProductLink;
 import com.ffb.model.db.object.product.Product;
-import com.ffb.model.exception.DaoException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 

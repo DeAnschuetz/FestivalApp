@@ -8,13 +8,14 @@ import com.ffb.model.api.request.account.RegisterRequest;
 import com.ffb.model.api.request.ticket.TicketRequest;
 import com.ffb.model.api.response.DatabaseResponse;
 import com.ffb.model.api.response.account.AccountResponse;
+import com.ffb.model.api.response.account.LoginResponse;
 import com.ffb.model.api.response.ticket.TicketResponse;
 import com.ffb.model.exception.ServiceException;
 import jakarta.transaction.Transactional;
 
 public interface AccountService {
 
-	String verifyAccount(LoginRequest loginRequest) throws ServiceException;
+	LoginResponse verifyAccount(LoginRequest loginRequest) throws ServiceException;
 
 	List<AccountResponse> getAllAccounts();
 
