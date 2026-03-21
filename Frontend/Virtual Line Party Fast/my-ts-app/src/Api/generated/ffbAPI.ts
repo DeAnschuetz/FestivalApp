@@ -2598,7 +2598,6 @@ export const getGetProductListByFoodCourtIdFoodCourtIdUrl = (foodCourtId: Uuid,)
 }
 
 export const getProductListByFoodCourtIdFoodCourtId = async (foodCourtId: Uuid, options?: RequestInit): Promise<getProductListByFoodCourtIdFoodCourtIdResponse> => {
-  
   const res = await fetch(getGetProductListByFoodCourtIdFoodCourtIdUrl(foodCourtId),
   {      
     ...options,

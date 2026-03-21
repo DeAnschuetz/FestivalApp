@@ -22,8 +22,8 @@ function User(props: UserProps) {
   const [payisOpen, setPayisOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState("");
   const [credits, setCredits] = useState<number>(0);
-  const [clickedCrad, setClickedCard] = useState("");
-  console.log("clickedCrad: ", clickedCrad);
+  const [clickedCard, setClickedCard] = useState("");
+  console.log("clickedCard: ", clickedCard);
 
 
   useEffect(() => {
@@ -51,7 +51,7 @@ function User(props: UserProps) {
   );
 
   const currentOrder = orders.find(
-    (order: Order) => order.id === clickedCrad,
+    (order: Order) => order.id === clickedCard,
   );
 
   return (
@@ -63,7 +63,7 @@ function User(props: UserProps) {
           currentUser={currentUser}
           onCreditsUpdate={(newCredits) => setCredits(newCredits)}
         />
-      ) : clickedCrad !== "" ? (
+      ) : clickedCard !== "" ? (
         <ViewOrder
           currentOrder={currentOrder}
           setClickedCard={setClickedCard}

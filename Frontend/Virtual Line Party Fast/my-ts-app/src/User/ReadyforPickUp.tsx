@@ -1,6 +1,7 @@
 import styles from "./Modules/ReadyforPickUp.module.css";
 import OrderCard from "../Components/OrderCard";
 import { Order } from "../Api/ffb/types";
+import { FoodOrderStatus as OrderStatus} from "../Api/generated/ffbAPI.schemas";
 
 interface Props {
   readyForPickup: Order[];
@@ -18,7 +19,7 @@ function ReadyforPickUp(props: Props) {
       </div>
       <div className={styles.OrderWrapper}>
         {readyForPickup.map((order) => (
-          <OrderCard order={order} status="ready_for_pickup" setClickedCard = {setClickedCard}/>
+          <OrderCard order={order} status={OrderStatus.READY_FOR_PICKUP} setClickedCard = {setClickedCard}/>
         ))}
       </div>
     </div>

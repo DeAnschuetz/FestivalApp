@@ -28,13 +28,6 @@ function FoodCourtTab(props: FoodCourtTabProps) {
       };
   
       void loadFoodCourtData();
-    }, []);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("foodcourts");
-    if (stored) {
-      setFoodCourts(JSON.parse(stored));
-    }
   }, []);
 
   return (

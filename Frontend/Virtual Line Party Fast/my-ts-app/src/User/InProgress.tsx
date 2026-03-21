@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./Modules/ReadyforPickUp.module.css";
 import OrderCard from "../Components/OrderCard";
 import { Order } from "../Api/ffb/types";
+import { FoodOrderStatus as OrderStatus} from "../Api/generated/ffbAPI.schemas";
 
 interface InProgressProps {
   inProgress: Order[];
@@ -18,7 +19,7 @@ function InProgress(props: InProgressProps) {
       </div>
       <div className={styles.OrderWrapper}>
         {inProgress.map((order) => (
-          <OrderCard order={order} status="in_progress" setClickedCard={setClickedCard}/>
+          <OrderCard order={order} status={OrderStatus.IN_PROGRESS}setClickedCard={setClickedCard}/>
         ))}
       </div>
     </div>

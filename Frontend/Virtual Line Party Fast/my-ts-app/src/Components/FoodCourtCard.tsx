@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { FoodCourt, Product } from "../Api/ffb/types";
 import styles from "./Modules/FoodCourtCard.module.css";
-import { getProductListByFoodCourtIdFoodCourtId } from "../Api/generated/ffbAPI";
 import { getProductsByFoodCourtId } from "../Api/ffb/productApi";
 import { getFoodCourtImageUrl } from "../Api/ffb/foodCourtApi";
 
@@ -12,21 +11,21 @@ interface FoodCourtCardProps {
 
 function FoodCourtCard(props: FoodCourtCardProps) {
   const [products, setProducts] = useState([] as Product[]) ;
-  const [foodCourtImageUrl, setFoodCourtImageUrl] = useState("") ;
+  const [foodCourtImageUrl, setFoodCourtImageUrl] = useState("noImage") ;
   const { foodCourt } = props;
-
+  console.log(foodCourt.id);
   useEffect(() => {
       const loadProductData = async () => {
         const loginNr = localStorage.getItem("currentUser");
         if (!loginNr) return;
-  
+        console.log(foodCourt);
         const products: Product[] = await getProductsByFoodCourtId(foodCourt.id);
-        const foodCourtImageUrl: string = await getFoodCourtImageUrl(foodCourt.id) ?? "";
         setProducts(products);
+        const foodCourtImageUrl: string = await getFoodCourtImageUrl(foodCourt.id) ?? "noImage";
         setFoodCourtImageUrl(foodCourtImageUrl);
       };
       
-
+      void loadProductData();
     }, []);
 
 
