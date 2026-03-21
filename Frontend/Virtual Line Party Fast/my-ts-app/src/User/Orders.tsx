@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import styles from "./Modules/Orders.module.css";
 import { Button } from "@progress/kendo-react-buttons";
 import BtnBar from "../Components/BtnBar";
-import { Order } from "../Types";
 import OrderCard from "../Components/OrderCard";
+import { Order } from "../Api/ffb/types";
 
 interface OrderProps {
   orders: Order[];
@@ -27,7 +27,7 @@ function Orders(props: OrderProps) {
 
   const filteredOrders = orders.filter((order) => {
     if (filter === "") return true;
-    return order.order_status === filter;
+    return order.status === filter;
   });
 
   return (
@@ -53,7 +53,7 @@ function Orders(props: OrderProps) {
             className={`${styles.OrderContainer} ${isFoodCourtOpen ? styles.BiggerContainer : ""}`}
           >
             {filteredOrders.map((order) => (
-              <OrderCard order={order} status={order.order_status} setClickedCard={setClickedCard}/>
+              <OrderCard order={order} status={order.status} setClickedCard={setClickedCard}/>
             ))}
           </div>
         </div>

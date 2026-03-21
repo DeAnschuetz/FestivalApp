@@ -5,7 +5,7 @@ import { Checkbox } from "@progress/kendo-react-inputs";
 import { Button } from "@progress/kendo-react-buttons";
 import { useNavigate } from "react-router-dom";
 import { login, LoginResult } from "../Api/ffb";
-import { LoginRequest } from "../Api/generated/ffbAPI.schemas";
+import { AccountType } from "../Api/generated/ffbAPI.schemas";
 import { getAccountTypeForRouting } from "./loginHelpers";
 
 function LogInContainer() {
@@ -23,46 +23,32 @@ function LogInContainer() {
     setError("");
   }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
-    const registeredUser = users.find((u) => u.login_Nr === loginNr);
+    const data: LoginResult = await login({loginNr, password});
 
-    if (!registeredUser) {
-      setError("Not registered yet. \nPlease Register first.");
-      return;
-    }
 
-    const user = users.find(
-      (u) => u.login_Nr === loginNr && u.password === password,
-    );
-
-    if (!user) {
-      setError("Login number or password is incorrect.");
-      return;
-    }
-
-    localStorage.setItem("currentUser", user.login_Nr);
+    localStorage.setItem("currentUser", data.loginNr);
 
     if (rememberMe) {
       localStorage.setItem("rememberedPassword_" + loginNr, password);
     } else {
       localStorage.removeItem("rememberedPassword_" + loginNr);
     }
-
-    login(user.type);
-
-    switch (user.type) {
-      case "ADMIN":
+    const type: AccountType = getAccountTypeForRouting(data.loginNr);
+  
+    switch (type) {
+      case AccountType.ADMIN:
         navigate("/admin_view");
         break;
 
-      case "GUEST":
+      case AccountType.GUEST:
         navigate("/user_view");
         break;
 
-      case "FOOD_COURT_WORKER":
+      case AccountType.FOOD_COURT_WORKER:
         navigate("/foodcourt_view");
         break;
     }

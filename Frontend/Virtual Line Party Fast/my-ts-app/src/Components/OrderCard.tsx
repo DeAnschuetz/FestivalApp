@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Modules/OrderCard.module.css";
-import { Order } from "../Types";
+import { Order } from "../Api/ffb/types";
 
 interface OrderCardProps {
   order: Order;
@@ -17,11 +17,11 @@ function OrderCard(props: OrderCardProps) {
     <div
       className={styles.OrderContainer}
       onClick={
-        isClickable ? () => setClickedCard(order.order_number) : undefined
+        isClickable ? () => setClickedCard(order.id) : undefined
       }
     >
       <div className={styles.VerticalWrapper}>
-        <div className={styles.FoodCourtName}>{order.foodcourt}</div>
+        <div className={styles.FoodCourtName}>{order.foodCourtName}</div>
         {status === "ready_for_pickup" && (
           <div className={styles.StatusWrapper}>
             <i className="fa-regular fa-circle-check"></i>
@@ -32,7 +32,7 @@ function OrderCard(props: OrderCardProps) {
         {status === "in_progress" && (
           <div className={styles.StatusWrapper}>
             <i className="fa-regular fa-hourglass"></i>
-            <div className={styles.StatusText}>{order.waiting_time} Min</div>
+            <div className={styles.StatusText}>{order.waitingTime} Min</div>
           </div>
         )}
 
@@ -54,7 +54,7 @@ function OrderCard(props: OrderCardProps) {
         {order.orderItems.map((item, index) => (
           <div key={index} className={styles.ItemWrapper}>
             <div className={styles.FlexWrapper}>
-              <div className={styles.ItemName}>{item.name}</div>
+              <div className={styles.ItemName}>{item.displayName}</div>
               <div>x {item.count}</div>
             </div>
             <div className={styles.ItemExtra}>{item.extra}</div>
@@ -64,7 +64,7 @@ function OrderCard(props: OrderCardProps) {
                 {item.subItems.map((subItem, subIndex) => (
                   <div key={subIndex}>
                     <div className={styles.FlexWrapper}>
-                      <div>- {subItem.name}</div>
+                      <div>- {subItem.displayName}</div>
                       <div> x {subItem.count}</div>
                     </div>
                     <div className={styles.Extra}>{subItem.extra}</div>

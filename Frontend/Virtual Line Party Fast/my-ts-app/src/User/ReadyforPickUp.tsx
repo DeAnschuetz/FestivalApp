@@ -1,6 +1,6 @@
 import styles from "./Modules/ReadyforPickUp.module.css";
 import OrderCard from "../Components/OrderCard";
-import { Order } from "../Types";
+import { Order } from "../Api/ffb/types";
 
 interface Props {
   readyForPickup: Order[];

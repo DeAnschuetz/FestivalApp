@@ -4,12 +4,14 @@ import InputElement from "../Components/InputElement";
 import { Button } from "@progress/kendo-react-buttons";
 import { useNavigate } from "react-router-dom";
 import { users, tickets, saveUsers, saveTickets } from "../Data";
+import { LoginRequest } from "../Api/generated/ffbAPI.schemas";
+import { getAccountTypeForRouting } from "./loginHelpers";
+import { login } from "../Api/ffb/accountApi";
 
 function RegisterContainer() {
   const [loginNr, setLoginNr] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
   const [error, setError] = useState("");
 

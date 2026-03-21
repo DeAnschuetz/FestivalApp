@@ -37,6 +37,9 @@ const isOrderStatus = (value: string): value is OrderStatus =>
 	value === "DONE" ||
 	value === "CANCELED";
 
+const isUuid = (value: string) =>
+	/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/.test(value);
+
 function HomePage() {
 	const token = localStorage.getItem("token");
 	const navigate = useNavigate();
@@ -51,6 +54,8 @@ function HomePage() {
 	const [error, setError] = useState<string>("");
 	const [success, setSuccess] = useState<string>("");
 	const loginLabel = localStorage.getItem("loginNr") ?? "1234WP56-ZY09";
+	const [foodCourtImageUrl, setFoodCourtImageUrl] = useState<string>("");
+	const [useFallbackImage, setUseFallbackImage] = useState<boolean>(false);
 
 	const handleLogout = () => {
 		localStorage.removeItem("token");
@@ -100,13 +105,6 @@ function HomePage() {
 					return accumulator;
 				}, {}),
 			);
-		},
-
-	const fetchAllOrders = useCallback(async () => {
-		const data: Order[] = await getVisibleOrders();
-
-		
-		setAllOrders(data);
 	}, [authHeaders]);
 
 	const loadPageData = useCallback(async () => {

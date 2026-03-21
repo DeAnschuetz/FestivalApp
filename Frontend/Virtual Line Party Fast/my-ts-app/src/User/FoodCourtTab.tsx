@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Modules/FoodCourtTab.module.css";
 import { Button } from "@progress/kendo-react-buttons";
-import { FoodCourt, Order } from "../Types";
 import FoodCourtCard from "../Components/FoodCourtCard";
+import { FoodCourt } from "../Api/ffb/types";
+import { getAllFoodCourts } from "../Api/ffb/foodCourtApi";
 
 interface FoodCourtTabProps {
   setIsFoodCourtOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -19,6 +20,15 @@ function FoodCourtTab(props: FoodCourtTabProps) {
     setIsOpen(!isOpen);
     setIsFoodCourtOpen(isOpen);
   };
+
+  useEffect(() => {
+    const loadFoodCourtData = async () => {
+        const foodCourts: FoodCourt[] = await getAllFoodCourts();
+        setFoodCourts(foodCourts);
+      };
+  
+      void loadFoodCourtData();
+    }, []);
 
   useEffect(() => {
     const stored = localStorage.getItem("foodcourts");

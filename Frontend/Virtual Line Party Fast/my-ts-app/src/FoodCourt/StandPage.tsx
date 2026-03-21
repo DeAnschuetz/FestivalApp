@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./StandPage.module.css";
 import { FoodCourtResponse } from "../Api/generated/ffbAPI.schemas";
 import { updateProductCount } from "../Api/ffb/productApi";
+import HeaderFoodCourt from "../Components/HeaderFoodCourt";
 
 const API_BASE = "http://10.45.129.4:8080";
 
@@ -132,7 +133,7 @@ function StandPage() {
   const updateProductCountLocal = async (productId: string) => {
     try {
       setError("");
-      const rawCount = nextCount ?? editedCounts[productId] ?? 0;
+      const rawCount = editedCounts[productId] ?? 0;
       const newCount = Number.isFinite(rawCount) ? Math.max(0, Math.trunc(rawCount)) : 0;
       const data: Product = await updateProductCount(productId, newCount);
         await loadData();
@@ -360,7 +361,7 @@ function StandPage() {
                   }}
                   onKeyDown={(event) => {
                     if (event.key === "Enter") {
-                      updateProductCount(product.id);
+                      updateProductCount(product.id, editedCounts[product.id]);
                     }
                   }}
                 />

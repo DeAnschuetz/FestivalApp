@@ -760,24 +760,24 @@ export const getPutCreditAddUrl = () => {
   return `/credit/add`
 }
 
-export const putCreditAdd = async (creditAddRequest: CreditAddRequest, options?: RequestInit): Promise<putCreditAddResponse> => {
-  
-  const res = await fetch(getPutCreditAddUrl(),
-  {      
+export const putCreditAdd = async (
+  creditAddRequest: CreditAddRequest,
+  options?: RequestInit
+): Promise<putCreditAddResponse> => {
+  const headers = new Headers(options?.headers);
+  headers.set("Content-Type", "application/json");
+
+  const res = await fetch(getPutCreditAddUrl(), {
     ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      creditAddRequest,)
-  }
-)
+    method: "PUT",
+    headers,
+    body: JSON.stringify(creditAddRequest),
+  });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: putCreditAddResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as putCreditAddResponse
-}
-  
+  const data: putCreditAddResponse["data"] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as putCreditAddResponse;
+}; 
 
 
 /**

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styles from "../FoodCourt/HomePage.module.css";
-import { OrderStatus } from "../Types";
+import { FoodOrderStatus as OrderStatus} from "../Api/generated/ffbAPI.schemas";
+
 
 interface HomePageBulkActionsProps {
 	hasOrders: boolean;

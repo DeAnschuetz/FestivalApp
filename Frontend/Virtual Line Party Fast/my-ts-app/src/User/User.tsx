@@ -3,11 +3,14 @@ import styles from "./Modules/User.module.css";
 import Header from "./Header";
 import ReadyforPickUp from "./ReadyforPickUp";
 import InProgress from "./InProgress";
-import Orders from "./Orders";
 import FoodCourtTab from "./FoodCourtTab";
-import { Order } from "../Types";
 import Pay from "./Pay";
 import ViewOrder from "./ViewOrder";
+import { Credit, Order } from "../Api/ffb/types";
+import { getCredit } from "../Api/ffb/creditApi";
+import { getVisibleOrders } from "../Api/ffb/foodOrderApi";
+import { FoodOrderStatus as OrderStatus  } from "../Api/generated/ffbAPI.schemas";
+import Orders from "./Orders";
 
 interface UserProps {}
 
@@ -22,37 +25,33 @@ function User(props: UserProps) {
   const [clickedCrad, setClickedCard] = useState("");
   console.log("clickedCrad: ", clickedCrad);
 
+
   useEffect(() => {
-    const loginNr = localStorage.getItem("currentUser");
-    if (!loginNr) return;
+    const loadUserData = async () => {
+      const loginNr = localStorage.getItem("currentUser");
+      if (!loginNr) return;
+      setCurrentUser(loginNr);
 
-    setCurrentUser(loginNr);
+      const credit: Credit = await getCredit();
+      setCredits(credit.credit);
 
-    const storedCredits = localStorage.getItem("credits");
-    if (storedCredits) {
-      const creditsArray: { login_Nr: string; credits: number }[] =
-        JSON.parse(storedCredits);
-      const userCredit = creditsArray.find((c) => c.login_Nr === loginNr);
-      setCredits(userCredit ? userCredit.credits : 0);
-    }
+      const order: Order[] = await getVisibleOrders();
+      setOrders(order);
+    };
 
-    const storedOrders = localStorage.getItem("orders");
-    if (storedOrders) {
-      const allOrders: Order[] = JSON.parse(storedOrders);
-      setOrders(allOrders.filter((order) => order.loginNr === loginNr));
-    }
+    void loadUserData();
   }, []);
 
   const readyForPickup = orders.filter(
-    (order: Order) => order.order_status === "ready_for_pickup",
+    (order: Order) => order.status === OrderStatus.READY_FOR_PICKUP,
   );
 
   const inProgress = orders.filter(
-    (order: Order) => order.order_status === "in_progress",
+    (order: Order) => order.status === OrderStatus.IN_PROGRESS,
   );
 
   const currentOrder = orders.find(
-    (order: Order) => order.order_number === clickedCrad,
+    (order: Order) => order.id === clickedCrad,
   );
 
   return (

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import styles from "./Modules/ViewOrder.module.css";
 import { Button } from "@progress/kendo-react-buttons";
-import { Order } from "../Types";
 import { QRCodeCanvas } from "qrcode.react";
 import ShareOrderDialog from "./ShareOrderDialog";
+import { Order } from "../Api/ffb/types";
 
 interface ViewOrderProps {
   currentOrder?: Order;
@@ -16,7 +16,7 @@ function ViewOrder({ currentOrder, setClickedCard }: ViewOrderProps) {
   return (
     <div className={styles.ViewOrder}>
       <div className={styles.HeaderContainer}>
-        <div>Order {currentOrder?.order_number}</div>
+        <div>Order {currentOrder?.id}</div>
         <Button
           type="button"
           fillMode="flat"
@@ -32,7 +32,7 @@ function ViewOrder({ currentOrder, setClickedCard }: ViewOrderProps) {
           {currentOrder?.orderItems?.map((item, index) => (
             <div className={styles.ItemWrapper}>
               <div key={index} className={styles.OrderItem}>
-                <div>{item.name}</div>
+                <div>{item.displayName}</div>
                 <div className={styles.Extra}>{item.extra}</div>
               </div>
               <div>x {item.count}</div>
@@ -44,7 +44,7 @@ function ViewOrder({ currentOrder, setClickedCard }: ViewOrderProps) {
           <div className={styles.WaitingTime}>
             <i className="fa-regular fa-clock"></i>
             <div className={styles.TimeText}>
-              {currentOrder?.waiting_time} Min
+              {currentOrder?.waitingTime} Min
             </div>
           </div>
           <Button
@@ -57,7 +57,7 @@ function ViewOrder({ currentOrder, setClickedCard }: ViewOrderProps) {
         </div>
         <div>
           {currentOrder && (
-            <QRCodeCanvas value={currentOrder.order_number} size={220} />
+            <QRCodeCanvas value={currentOrder.id} size={220} />
           )}
         </div>
       </div>
