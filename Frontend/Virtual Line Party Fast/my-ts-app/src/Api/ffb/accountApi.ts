@@ -81,7 +81,7 @@ export function clearSession(): void {
   clearStoredSession();
 }
 
-export async function login(loginRequest: LoginRequest): Promise<LoginResult> {
+export async function apiLogin(loginRequest: LoginRequest): Promise<LoginResult> {
   return mutateWithOfflineFallback<LoginResult>({
     apiCall: () => postAccountLogin(loginRequest, createRequestOptions()),
     expectedStatuses: [200],

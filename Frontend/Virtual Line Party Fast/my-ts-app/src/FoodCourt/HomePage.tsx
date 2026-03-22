@@ -1,25 +1,27 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./HomePage.module.css";
-import { useNavigate } from "react-router-dom";
+import { Route, useNavigate } from "react-router-dom";
 import HomePageFilterBar from "../Components/HomePageFilterBar";
 import HomePageBulkActions from "../Components/HomePageBulkActions";
 import HomePageOrderCard from "../Components/HomePageOrderCard";
 import HeaderFoodCourt from "../Components/HeaderFoodCourt";
-type FilterKey = "ALL" | OrderStatus;
 
-import { FoodOrderStatus as OrderStatus } from "../Api/generated/ffbAPI.schemas"
+import { AccountType, FoodOrderStatus as OrderStatus } from "../Api/generated/ffbAPI.schemas"
 import { FoodCourt, Order } from "../Api/ffb/types";
 import { getFoodCourtImageUrl, getOwnFoodCourt, getVisibleOrders, getVisibleOrdersByStatus, updateFoodOrderStatus } from "../Api/ffb";
+import ProtectedRoute from "../Auth/ProtectedRoute";
+import StandPage from "./StandPage";
+type FilterKey = "ALL" | OrderStatus;
 
 const API_BASE = "http://0.0.0.0:8080";
 
 const filterConfig: { key: FilterKey; label: string }[] = [
 	{ key: "ALL", label: "Alle" },
-	{ key: "ORDERED", label: "Bestellt" },
-	{ key: "IN_PROGRESS", label: "In Arbeit" },
-	{ key: "READY_FOR_PICKUP", label: "Abholbereit" },
-	{ key: "DONE", label: "Abgeschlossen" },
-	{ key: "CANCELED", label: "Storniert" },
+	{ key: OrderStatus.ORDERED, label: "Bestellt" },
+	{ key: OrderStatus.IN_PROGRESS, label: "In Arbeit" },
+	{ key: OrderStatus.READY_FOR_PICKUP, label: "Abholbereit" },
+	{ key: OrderStatus.DONE, label: "Abgeschlossen" },
+	{ key: OrderStatus.CANCELED, label: "Storniert" },
 ];
 
 const statusLabels: Record<OrderStatus, string> = {
@@ -31,11 +33,11 @@ const statusLabels: Record<OrderStatus, string> = {
 };
 
 const isOrderStatus = (value: string): value is OrderStatus =>
-	value === "ORDERED" ||
-	value === "IN_PROGRESS" ||
-	value === "READY_FOR_PICKUP" ||
-	value === "DONE" ||
-	value === "CANCELED";
+	value === OrderStatus.ORDERED ||
+	value === OrderStatus.IN_PROGRESS ||
+	value === OrderStatus.READY_FOR_PICKUP ||
+	value === OrderStatus.DONE ||
+	value === OrderStatus.CANCELED;
 
 const isUuid = (value: string) =>
 	/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/.test(value);
@@ -56,14 +58,14 @@ function HomePage() {
 	const loginLabel = localStorage.getItem("loginNr") ?? "1234WP56-ZY09";
 	const [foodCourtImageUrl, setFoodCourtImageUrl] = useState<string>("");
 	const [useFallbackImage, setUseFallbackImage] = useState<boolean>(false);
-
+	console.log("FoodCourtView")
 	const handleLogout = () => {
 		localStorage.removeItem("token");
 		navigate("/login");
 	};
 
 	const handleOpenStand = () => {
-		navigate("/food_court/stand");
+		navigate("/food_court_view/stand");
 	};
 
 	const authHeaders = useMemo(
@@ -98,6 +100,9 @@ function HomePage() {
 
             console.log("fetchOrders-Funktion erstellt mit Filter:", filter, "Ergebnis:", data);
 			setOrders(data);
+			if (filter == "ALL") {
+				setAllOrders(data);
+			}
 			setSelectedOrderIds([]);
 			setStatusSelection(
 				data.reduce<Record<string, OrderStatus>>((accumulator, order) => {
@@ -168,6 +173,7 @@ function HomePage() {
 			DONE: 0,
 			CANCELED: 0,
 		};
+		console.log("AllOrders",allOrders);
 
 		return allOrders.reduce<Record<OrderStatus, number>>((accumulator, order) => {
 			accumulator[order.status] += 1;

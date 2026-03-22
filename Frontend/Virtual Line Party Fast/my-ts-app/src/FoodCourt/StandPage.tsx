@@ -2,10 +2,11 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./StandPage.module.css";
 import { FoodCourtResponse } from "../Api/generated/ffbAPI.schemas";
-import { updateProductCount } from "../Api/ffb/productApi";
+import { apiCreateProduct, apiDeleteProduct, getOwnFoodCourtProducts, updateProductCount } from "../Api/ffb/productApi";
 import HeaderFoodCourt from "../Components/HeaderFoodCourt";
+import { getOwnFoodCourt } from "../Api/ffb/foodCourtApi";
 
-const API_BASE = "http://0.0.0.0:8080";
+const API_BASE = "http://0.0.0.0:8080/ffb";
 
 interface Product {
   id: string;
@@ -53,34 +54,15 @@ function StandPage() {
 
     try {
       const [foodCourtResponse, productsResponse] = await Promise.all([
-        fetch(`${API_BASE}/food_court`, {
-          method: "GET",
-          headers: authHeaders,
-          credentials: "include",
-        }),
-        fetch(`${API_BASE}/product/list`, {
-          method: "GET",
-          headers: authHeaders,
-          credentials: "include",
-        }),
+        await getOwnFoodCourt(),
+        await getOwnFoodCourtProducts(),
       ]);
 
-      if (!foodCourtResponse.ok) {
-        throw new Error("Food Court konnte nicht geladen werden.");
-      }
-
-      if (!productsResponse.ok) {
-        throw new Error("Produkte konnten nicht geladen werden.");
-      }
-
-      const foodCourtResult = (await foodCourtResponse.json()) as FoodCourtResponse;
-      const productResult = (await productsResponse.json()) as Product[];
-
-      setFoodCourt(foodCourtResult);
-      setWaitingTime(foodCourtResult.waitingTime ?? 15);
-      setProducts(productResult);
+      setFoodCourt(foodCourtResponse);
+      setWaitingTime(foodCourtResponse.waitingTime ?? 15);
+      setProducts(productsResponse);
       setEditedCounts(
-        productResult.reduce<Record<string, number>>((accumulator, product) => {
+        productsResponse.reduce<Record<string, number>>((accumulator, product) => {
           accumulator[product.id] = product.productCount;
           return accumulator;
         }, {}),
@@ -162,7 +144,7 @@ function StandPage() {
 
     try {
       setError("");
-      await deleteProduct(productId);
+      await apiDeleteProduct(productId);
       await loadData();
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "Unbekannter Fehler");
@@ -207,35 +189,8 @@ function StandPage() {
     try {
       setIsCreatingProduct(true);
       setError("");
-      const response = await fetch(`${API_BASE}/ffb/product`, {
-        method: "POST",
-        headers: authHeaders,
-        credentials: "include",
-        body: JSON.stringify({
-          price,
-          displayName,
-          symbolIdentifier,
-          minimalWarning,
-        }),
-      });
-
-      if (!response.ok) {
-        let errorMessage = "Produkt konnte nicht erstellt werden.";
-
-        try {
-          const errorData = (await response.json()) as { message?: string };
-          if (errorData.message) {
-            errorMessage = errorData.message;
-          }
-        } catch {
-          const responseText = await response.text();
-          if (responseText) {
-            errorMessage = responseText;
-          }
-        }
-
-        throw new Error(errorMessage);
-      }
+      console.log("hallop")
+      const product = await apiCreateProduct({ price: price, displayName: displayName, symbolIdentifier: symbolIdentifier, minimalWarning: minimalWarning });
 
       setNewDisplayName("");
       setNewPrice("");
@@ -256,7 +211,7 @@ function StandPage() {
   };
 
   const handleOpenStand = () => {
-    navigate("/food_court/stand");
+    navigate("/food_court_view/stand");
   };
 
   return (
@@ -273,7 +228,7 @@ function StandPage() {
         />
 
         <div className={styles.SectionHeader}>
-          <button className={styles.BackBtn} onClick={() => navigate("/food_court")}>
+          <button className={styles.BackBtn} onClick={() => navigate("/food_court_view")}>
             <i className="fa-solid fa-arrow-left" /> Produkte
           </button>
           <button className={styles.AddBtn} onClick={() => setIsCreateFormOpen((open) => !open)}>
@@ -342,7 +297,12 @@ function StandPage() {
               <div>
                 <button
                   className={styles.IconBtn}
-                  onClick={() => adjustProductCount(product.id, -1)}
+                  onClick={() => {
+                    setEditedCounts((current) => ({
+                      ...current,
+                      [product.id]: Number.isFinite(current) ? Math.max(0, editedCounts[product.id] + 1) : 0,
+                    }));
+                  }}
                   disabled={(editedCounts[product.id] ?? 0) <= 0}
                 >
                   —
@@ -367,7 +327,12 @@ function StandPage() {
                 />
                 <button
                   className={styles.IconBtn}
-                  onClick={() => adjustProductCount(product.id, 1)}
+                  onClick={() => {
+                    setEditedCounts((current) => ({
+                      ...current,
+                      [product.id]: Number.isFinite(current) ? Math.max(0, editedCounts[product.id] - 1) : 0,
+                    }));
+                  }}
                 >
                   +
                 </button>

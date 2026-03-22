@@ -43,12 +43,18 @@ function FoodCourtCard(props: FoodCourtCardProps) {
         <div className={styles.ProductContainer}>
           <div className={styles.Text}>Verfügbar</div>
           <div className={styles.ProductWrapper}>
-            {products.map((product) => (
-              <div className={styles.ItemContainer}>
-                <i className={product.symbolIdentifier}></i>
-                <div className={styles.ProductCount}>{product.productCount}</div>
-              </div>
-            ))}
+            {products
+                .filter((product) => {
+                  console.log(product);
+                  return product.subProducts.length == 0
+                })
+                .map((product) => (
+                  <div className={styles.ItemContainer}>
+                    <i className={product.symbolIdentifier}></i>
+                    <div className={styles.ProductCount}>{product.productCount}</div>
+                  </div>
+                ))
+            }
           </div>
         </div>
       </div>

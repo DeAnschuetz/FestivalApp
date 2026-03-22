@@ -12,7 +12,6 @@ interface OrderCardProps {
 function OrderCard(props: OrderCardProps) {
   const { order, status, setClickedCard } = props;
   const isClickable = status === OrderStatus.READY_FOR_PICKUP || status === OrderStatus.IN_PROGRESS;
-
   return (
     <div
       className={styles.OrderContainer}

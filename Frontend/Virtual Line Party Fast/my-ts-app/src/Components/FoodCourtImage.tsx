@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { getFoodCourtImageUrl } from "../Api/ffb/foodCourtApi";
 
 interface FoodCourtImageProps {
   foodCourtId?: string;
@@ -55,18 +56,8 @@ function FoodCourtImage({ foodCourtId, apiBase, token, className, alt = "Food Co
     }
 
     try {
-      const response = await fetch(`${apiBase}/ffb/food_court/image/${foodCourtId}`, {
-        method: "GET",
-        headers,
-        credentials: "include",
-      });
+      const objectUrl = await getFoodCourtImageUrl(foodCourtId) ?? "no-Image";
 
-      if (!response.ok) {
-        return;
-      }
-
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
       setFallbackImageUrl((currentUrl) => {
         if (currentUrl) {
           URL.revokeObjectURL(currentUrl);

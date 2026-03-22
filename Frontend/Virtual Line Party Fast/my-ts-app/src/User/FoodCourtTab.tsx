@@ -50,8 +50,9 @@ function FoodCourtTab(props: FoodCourtTabProps) {
           <div
             className={`${styles.FoodCourtContainer} ${isOrdersOpen ? styles.BiggerContainer : ""}`}
           >
-            {foodCourts.map((foodCourt) => (
-              <FoodCourtCard foodCourt={foodCourt} />
+            {foodCourts
+                .map((foodCourt) => (
+                <FoodCourtCard foodCourt={foodCourt} />
             ))}
           </div>
         </div>

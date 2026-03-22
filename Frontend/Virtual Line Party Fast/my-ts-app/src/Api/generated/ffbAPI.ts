@@ -2311,23 +2311,25 @@ export const getPostProductUrl = () => {
   return `/ffb/product`
 }
 
-export const postProduct = async (productRequestSimple: ProductRequestSimple, options?: RequestInit): Promise<postProductResponse> => {
-  
-  const res = await fetch(getPostProductUrl(),
-  {      
+export const postProduct = async (
+  productRequestSimple: ProductRequestSimple,
+  options?: RequestInit
+): Promise<postProductResponse> => {
+  const headers = new Headers(options?.headers);
+  headers.set("Content-Type", "application/json");
+
+  const res = await fetch(getPostProductUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      productRequestSimple,)
-  }
-)
+    method: "POST",
+    headers,
+    body: JSON.stringify(productRequestSimple),
+  });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: postProductResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as postProductResponse
-}
+  const data: postProductResponse["data"] = body ? JSON.parse(body) : {};
+
+  return { data, status: res.status, headers: res.headers } as postProductResponse;
+};
   
 
 

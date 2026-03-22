@@ -1,16 +1,12 @@
-import { getSession } from "../Api/ffb";
 import { AccountType } from "../Api/generated/ffbAPI.schemas";
 
 export function getAccountTypeForRouting(loginNr: string,): AccountType {
-  const storedType = getSession()?.accountType;
+  console.log(loginNr);
 
-  if (storedType) {
-    return storedType;
+  if (loginNr.startsWith("F")) {
+    console.log("WORKER")
+    return AccountType.FOOD_COURT_WORKER;
   }
 
-  if (loginNr.startsWith("F-")) {
-    return "FOOD_COURT_WORKER";
-  }
-
-  return "GUEST";
+  return AccountType.GUEST;
 }

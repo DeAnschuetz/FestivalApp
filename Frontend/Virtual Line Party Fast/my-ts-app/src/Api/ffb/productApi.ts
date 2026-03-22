@@ -184,7 +184,7 @@ export async function getProductById(id: Uuid): Promise<Product> {
   });
 }
 
-export async function createProduct(
+export async function apiCreateProduct(
   request: ProductRequestSimple,
 ): Promise<Product> {
   return mutateWithOfflineFallback<Product>({
@@ -261,7 +261,7 @@ export async function updateProductCount(
   });
 }
 
-export async function deleteProduct(productId: Uuid): Promise<void> {
+export async function apiDeleteProduct(productId: Uuid): Promise<void> {
   await mutateWithOfflineFallback<void>({
     apiCall: () => deleteProductByIdId(productId, createRequestOptions()),
     expectedStatuses: [200],

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { users, tickets, saveUsers, saveTickets } from "../Data";
 import { LoginRequest } from "../Api/generated/ffbAPI.schemas";
 import { getAccountTypeForRouting } from "./loginHelpers";
-import { login } from "../Api/ffb/accountApi";
+import { apiLogin } from "../Api/ffb/accountApi";
 
 function RegisterContainer() {
   const [loginNr, setLoginNr] = useState("");
@@ -25,7 +25,7 @@ function RegisterContainer() {
     };
 
     try {
-      const loggedInUser = await login(loginRequest);
+      const loggedInUser = await apiLogin(loginRequest);
       const userType = getAccountTypeForRouting(loggedInUser.loginNr ?? loginNr);
 
       switch (userType) {

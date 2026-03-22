@@ -4,9 +4,10 @@ import InputElement from "../Components/InputElement";
 import { Checkbox } from "@progress/kendo-react-inputs";
 import { Button } from "@progress/kendo-react-buttons";
 import { useNavigate } from "react-router-dom";
-import { login, LoginResult } from "../Api/ffb";
+import { apiLogin, LoginResult } from "../Api/ffb";
 import { AccountType } from "../Api/generated/ffbAPI.schemas";
 import { getAccountTypeForRouting } from "./loginHelpers";
+import { useAuth } from "../Auth/AuthContext";
 
 const formatLoginNr = (value: string): string => {
   const upper = value.toUpperCase();
@@ -36,6 +37,7 @@ function LogInContainer() {
   );
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
   
   useEffect(() => {
     setLoginNr("");
@@ -53,7 +55,7 @@ function LogInContainer() {
     e.preventDefault();
     setError("");
 
-    const data: LoginResult = await login({loginNr, password});
+    const data: LoginResult = await apiLogin({loginNr, password});
 
 
     localStorage.setItem("currentUser", data.loginNr);
@@ -64,18 +66,21 @@ function LogInContainer() {
       localStorage.removeItem("rememberedPassword_" + loginNr);
     }
     const type: AccountType = getAccountTypeForRouting(data.loginNr);
-  
+    login(type);
     switch (type) {
       case AccountType.ADMIN:
+        console.log(type)
         navigate("/admin_view");
         break;
 
       case AccountType.GUEST:
+        console.log(type)
         navigate("/user_view");
         break;
 
       case AccountType.FOOD_COURT_WORKER:
-        navigate("/foodcourt_view");
+        console.log(type)
+        navigate("/food_court_view");
         break;
     }
   };
