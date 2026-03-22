@@ -7,11 +7,12 @@ import { getAllFoodCourts } from "../Api/ffb/foodCourtApi";
 
 interface FoodCourtTabProps {
   setIsFoodCourtOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setClickedFoodCourt: React.Dispatch<React.SetStateAction<string>>;
   isOrdersOpen: boolean;
 }
 
 function FoodCourtTab(props: FoodCourtTabProps) {
-  const { isOrdersOpen, setIsFoodCourtOpen } = props;
+  const { isOrdersOpen, setClickedFoodCourt, setIsFoodCourtOpen } = props;
   const [isOpen, setIsOpen] = useState(true);
   const [foodCourts, setFoodCourts] = useState<FoodCourt[]>([]);
 
@@ -22,8 +23,12 @@ function FoodCourtTab(props: FoodCourtTabProps) {
 
   useEffect(() => {
     const loadFoodCourtData = async () => {
-        const foodCourts: FoodCourt[] = await getAllFoodCourts();
-        setFoodCourts(foodCourts);
+        try {
+          const foodCourts: FoodCourt[] = await getAllFoodCourts();
+          setFoodCourts(foodCourts); 
+        } catch (error) {
+          
+        }
       };
   
       void loadFoodCourtData();
@@ -52,7 +57,10 @@ function FoodCourtTab(props: FoodCourtTabProps) {
           >
             {foodCourts
                 .map((foodCourt) => (
-                <FoodCourtCard foodCourt={foodCourt} />
+                <FoodCourtCard
+                  foodCourt={foodCourt}
+                  setClickedFoodCourt={setClickedFoodCourt}
+                />
             ))}
           </div>
         </div>

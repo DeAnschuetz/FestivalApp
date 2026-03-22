@@ -4,15 +4,16 @@ import Header from "./Header";
 import ReadyforPickUp from "./ReadyforPickUp";
 import InProgress from "./InProgress";
 import FoodCourtTab from "./FoodCourtTab";
-import { BasketItem, FoodCourt, Order } from "../Types";
+import { BasketItem } from "../Types";
 import Pay from "./Pay";
 import ViewOrder from "./ViewOrder";
-import { Credit, Order } from "../Api/ffb/types";
+import { Credit, FoodCourt, Order } from "../Api/ffb/types";
 import { getCredit } from "../Api/ffb/creditApi";
 import { getVisibleOrders } from "../Api/ffb/foodOrderApi";
 import { FoodOrderStatus as OrderStatus  } from "../Api/generated/ffbAPI.schemas";
 import Orders from "./Orders";
 import FoodCourtProducts from "./FoodCourtProducts";
+import { getAllFoodCourts } from "../Api/ffb/foodCourtApi";
 
 interface UserProps {}
 
@@ -34,32 +35,38 @@ function User(props: UserProps) {
     foodcourt_name: "",
     Items: [],
   });
-  console.log("orderBasket: ", orderBasket);
-  const [clickedCard, setClickedCard] = useState("");
-  console.log("clickedCard: ", clickedCard);
-
 
   useEffect(() => {
     const loadUserData = async () => {
-      const loginNr = localStorage.getItem("currentUser");
-      if (!loginNr) return;
-      setCurrentUser(loginNr);
-
-      const credit: Credit = await getCredit();
-      setCredits(credit.credit);
-
-      const order: Order[] = await getVisibleOrders();
-      setOrders(order);
+      try {
+        const loginNr = localStorage.getItem("currentUser");
+        if (!loginNr) return;
+        setCurrentUser(loginNr);
+  
+        const credit: Credit = await getCredit();
+        setCredits(credit.credit);
+  
+        const order: Order[] = await getVisibleOrders();
+        setOrders(order);
+      } catch (error) {
+        
+      }
     };
 
     void loadUserData();
   }, []);
 
   useEffect(() => {
-    const stored = localStorage.getItem("foodcourts");
-    if (stored) {
-      setFoodCourts(JSON.parse(stored));
-    }
+    const loadFoodCourtData = async () => {
+      try {
+        const foodCourts: FoodCourt[] = await getAllFoodCourts();
+        setFoodCourts(foodCourts);
+      } catch (error) {
+        
+      }
+      };
+  
+      void loadFoodCourtData();
   }, []);
 
   const readyForPickup = orders.filter(
@@ -75,7 +82,7 @@ function User(props: UserProps) {
   );
 
   const currentFoodcourt = foodCourts.find(
-    (court: FoodCourt) => court.name === clickedFoodCourt,
+    (court: FoodCourt) => court.id === clickedFoodCourt,
   );
 
   return (
@@ -115,7 +122,6 @@ function User(props: UserProps) {
           <FoodCourtTab
             isOrdersOpen={isOrdersOpen}
             setIsFoodCourtOpen={setIsFoodCourtOpen}
-            foodCourts={foodCourts}
             setClickedFoodCourt={setClickedFoodCourt}
           />
         </>

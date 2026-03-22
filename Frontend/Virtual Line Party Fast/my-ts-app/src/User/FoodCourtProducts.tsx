@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Modules/FoodCourtProducts.module.css";
-import { BasketItem, FoodCourt } from "../Types";
+import { BasketItem  } from "../Types";
 import { Button } from "@progress/kendo-react-buttons";
 import AddOrderItem from "./AddOrderItem";
+import { FoodCourt, Product } from "../Api/ffb/types";
+import { getProductsByFoodCourtId } from "../Api/ffb/productApi";
 
 interface FoodCourtProductsProps {
   currentFoodCourt: FoodCourt | undefined;
@@ -18,6 +20,7 @@ function FoodCourtProducts(props: FoodCourtProductsProps) {
   const [openAddItemDialog, setOpenAddItemDialog] = useState(false);
   const [clickedItem, setClickedItem] = useState({});
   const [errorText, setErrorText] = useState("");
+  const [products, setProducts] = useState<Product[]>([]);
 
   const onAddClick = (item: any) => {
     if (
@@ -35,6 +38,22 @@ function FoodCourtProducts(props: FoodCourtProductsProps) {
       setErrorText(""); // Fehler zurücksetzen, falls vorher gesetzt
     }
   };
+
+  useEffect(() => {
+      const loadFoodCourtData = async () => {
+        try {
+          if (currentFoodCourt) {
+            const products: Product[] = await getProductsByFoodCourtId(currentFoodCourt?.id);
+            setProducts(products);
+          }
+        } catch (error) {
+          
+        } 
+        };
+    
+        void loadFoodCourtData();
+  }, []);
+
   return (
     <div className={styles.FoodCourtProducts}>
       <div className={styles.FlexWrapper}>
@@ -49,12 +68,12 @@ function FoodCourtProducts(props: FoodCourtProductsProps) {
         />
       </div>
       <div className={styles.ProductsContainer}>
-        {currentFoodCourt?.products.map((product) => (
+        {products.map((product) => (
           <div>
             <div className={styles.ProductRow}>
               <div className={styles.Wrapper}>
-                <i className={product.icon}></i>
-                <div className={styles.Name}>{product.name}</div>
+                <i className={product.symbolIdentifier}></i>
+                <div className={styles.Name}>{product.displayName}</div>
               </div>
               <div className={styles.Wrapper}>
                 <div className={styles.Price}>{product.price} €</div>
@@ -69,8 +88,8 @@ function FoodCourtProducts(props: FoodCourtProductsProps) {
               </div>
             </div>
             <div className={styles.SubItemsWrapper}>
-              {product.subItems?.map((item) => (
-                <div>- {item.name}</div>
+              {product.subProducts?.map((item) => (
+                <div>- {item.displayName}</div>
               ))}
             </div>
           </div>
@@ -87,7 +106,7 @@ function FoodCourtProducts(props: FoodCourtProductsProps) {
         <div className={styles.WaitingTime}>
           <i className="fa-regular fa-clock"></i>
           <div className={styles.Time}>
-            {currentFoodCourt?.avg_waiting_time} Min
+            {currentFoodCourt?.waitingTime} Min
           </div>
         </div>
       </div>
@@ -95,7 +114,7 @@ function FoodCourtProducts(props: FoodCourtProductsProps) {
         <AddOrderItem
           clickedItem={clickedItem}
           setOpenAddItemDialog={setOpenAddItemDialog}
-          currentFoodcourt={currentFoodCourt}
+          currentFoodCourt={currentFoodCourt}
           setOrderBasket={setOrderBasket}
         />
       )}

@@ -50,9 +50,7 @@ function RegisterContainer() {
       await register(registerRequest);
 
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Registration failed. Please try again.";
-      setError(message);
+      
     }
   };
 

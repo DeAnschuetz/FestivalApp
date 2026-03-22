@@ -7,23 +7,29 @@ import { getFoodCourtImageUrl } from "../Api/ffb/foodCourtApi";
 
 interface FoodCourtCardProps {
   foodCourt: FoodCourt;
+  setClickedFoodCourt: React.Dispatch<React.SetStateAction<string>>;
+  
 }
 
 function FoodCourtCard(props: FoodCourtCardProps) {
+  const { foodCourt, setClickedFoodCourt } = props;
   const [products, setProducts] = useState([] as Product[]) ;
   const [foodCourtImageUrl, setFoodCourtImageUrl] = useState("") ;
-  const { foodCourt } = props;
   
   useEffect(() => {
       const loadProductData = async () => {
-        const loginNr = localStorage.getItem("currentUser");
-        if (!loginNr) return;
-        console.log(foodCourt);
-        const products: Product[] = await getProductsByFoodCourtId(foodCourt.id);
-        console.log("products: ", products);
-        setProducts(products);
-        const foodCourtImageUrl: string = await getFoodCourtImageUrl(foodCourt.id) ?? "";
-        setFoodCourtImageUrl(foodCourtImageUrl);
+        try {
+          const loginNr = localStorage.getItem("currentUser");
+          if (!loginNr) return;
+          console.log(foodCourt);
+          const products: Product[] = await getProductsByFoodCourtId(foodCourt.id);
+          console.log("products: ", products);
+          setProducts(products);
+          const foodCourtImageUrl: string = await getFoodCourtImageUrl(foodCourt.id) ?? "";
+          setFoodCourtImageUrl(foodCourtImageUrl);
+        } catch (error) {
+          
+        }
       };
       
       void loadProductData();
@@ -31,7 +37,10 @@ function FoodCourtCard(props: FoodCourtCardProps) {
 
 
   return (
-    <div className={styles.FoodCourtContainer}>
+    <div
+      className={styles.FoodCourtContainer}
+      onClick={() => setClickedFoodCourt(foodCourt.id)}
+    >
       <div className={styles.FoodCourtName}>{foodCourt.name}</div>
       <div className={styles.WaitingTime}>
         <i className="fa-regular fa-clock"></i>

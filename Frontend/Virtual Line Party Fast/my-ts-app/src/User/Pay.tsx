@@ -36,21 +36,24 @@ const [betrag, setBetrag] = useState<number | "">("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    
-    e.preventDefault();
-    setSubmitted(true);
-
-    const isValid =
-      selectedPayment &&
-      betrag &&
-      (!isCardPayment || (blz && iban));
-    if (!isValid) return;
-
-    const credit: Credit = await addCredit({amount: betrag} as CreditAddRequest);
-    console.log(credit);
-    onCreditsUpdate?.(credit.credit);
-
-    setPayisOpen(false);
+    try {
+      e.preventDefault();
+      setSubmitted(true);
+  
+      const isValid =
+        selectedPayment &&
+        betrag &&
+        (!isCardPayment || (blz && iban));
+      if (!isValid) return;
+  
+      const credit: Credit = await addCredit({amount: betrag} as CreditAddRequest);
+      console.log(credit);
+      onCreditsUpdate?.(credit.credit);
+  
+      setPayisOpen(false);
+    } catch (error) {
+      
+    }
   };
   const getIconClasses = (optionId: string) => {
     return [

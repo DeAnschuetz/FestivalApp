@@ -54,34 +54,35 @@ function LogInContainer() {
     }
     e.preventDefault();
     setError("");
-
-    const data: LoginResult = await apiLogin({loginNr, password});
-
-
-    localStorage.setItem("currentUser", data.loginNr);
-
-    if (rememberMe) {
-      localStorage.setItem("rememberedPassword_" + loginNr, password);
-    } else {
-      localStorage.removeItem("rememberedPassword_" + loginNr);
-    }
-    const type: AccountType = getAccountTypeForRouting(data.loginNr);
-    login(type);
-    switch (type) {
-      case AccountType.ADMIN:
-        console.log(type)
-        navigate("/admin_view");
-        break;
-
-      case AccountType.GUEST:
-        console.log(type)
-        navigate("/user_view");
-        break;
-
-      case AccountType.FOOD_COURT_WORKER:
-        console.log(type)
-        navigate("/food_court_view");
-        break;
+    try {
+      const data: LoginResult = await apiLogin({loginNr, password});
+      localStorage.setItem("currentUser", data.loginNr);
+  
+      if (rememberMe) {
+        localStorage.setItem("rememberedPassword_" + loginNr, password);
+      } else {
+        localStorage.removeItem("rememberedPassword_" + loginNr);
+      }
+      const type: AccountType = getAccountTypeForRouting(data.loginNr);
+      login(type);
+      switch (type) {
+        case AccountType.ADMIN:
+          console.log(type)
+          navigate("/admin_view");
+          break;
+  
+        case AccountType.GUEST:
+          console.log(type)
+          navigate("/user_view");
+          break;
+  
+        case AccountType.FOOD_COURT_WORKER:
+          console.log(type)
+          navigate("/food_court_view");
+          break;
+      }
+    } catch (error) {
+      
     }
   };
 
