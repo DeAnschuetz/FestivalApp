@@ -4,6 +4,7 @@ import Header from "./Header";
 import ReadyforPickUp from "./ReadyforPickUp";
 import InProgress from "./InProgress";
 import FoodCourtTab from "./FoodCourtTab";
+import { BasketItem, FoodCourt, Order } from "../Types";
 import Pay from "./Pay";
 import ViewOrder from "./ViewOrder";
 import { Credit, Order } from "../Api/ffb/types";
@@ -11,6 +12,7 @@ import { getCredit } from "../Api/ffb/creditApi";
 import { getVisibleOrders } from "../Api/ffb/foodOrderApi";
 import { FoodOrderStatus as OrderStatus  } from "../Api/generated/ffbAPI.schemas";
 import Orders from "./Orders";
+import FoodCourtProducts from "./FoodCourtProducts";
 
 interface UserProps {}
 
@@ -22,6 +24,17 @@ function User(props: UserProps) {
   const [payisOpen, setPayisOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState("");
   const [credits, setCredits] = useState<number>(0);
+  const [clickedCard, setClickedCard] = useState("");
+  const [foodCourts, setFoodCourts] = useState<FoodCourt[]>([]);
+  const [clickedFoodCourt, setClickedFoodCourt] = useState("");
+  const [orderBasket, setOrderBasket] = useState<{
+    foodcourt_name: string;
+    Items: BasketItem[];
+  }>({
+    foodcourt_name: "",
+    Items: [],
+  });
+  console.log("orderBasket: ", orderBasket);
   const [clickedCard, setClickedCard] = useState("");
   console.log("clickedCard: ", clickedCard);
 
@@ -42,6 +55,13 @@ function User(props: UserProps) {
     void loadUserData();
   }, []);
 
+  useEffect(() => {
+    const stored = localStorage.getItem("foodcourts");
+    if (stored) {
+      setFoodCourts(JSON.parse(stored));
+    }
+  }, []);
+
   const readyForPickup = orders.filter(
     (order: Order) => order.status === OrderStatus.READY_FOR_PICKUP,
   );
@@ -52,6 +72,10 @@ function User(props: UserProps) {
 
   const currentOrder = orders.find(
     (order: Order) => order.id === clickedCard,
+  );
+
+  const currentFoodcourt = foodCourts.find(
+    (court: FoodCourt) => court.name === clickedFoodCourt,
   );
 
   return (
@@ -67,6 +91,13 @@ function User(props: UserProps) {
         <ViewOrder
           currentOrder={currentOrder}
           setClickedCard={setClickedCard}
+        />
+      ) : clickedFoodCourt !== "" ? (
+        <FoodCourtProducts
+          currentFoodCourt={currentFoodcourt}
+          setClickedFoodCourt={setClickedFoodCourt}
+          setOrderBasket={setOrderBasket}
+          orderBasket={orderBasket}
         />
       ) : (
         <>
@@ -84,6 +115,8 @@ function User(props: UserProps) {
           <FoodCourtTab
             isOrdersOpen={isOrdersOpen}
             setIsFoodCourtOpen={setIsFoodCourtOpen}
+            foodCourts={foodCourts}
+            setClickedFoodCourt={setClickedFoodCourt}
           />
         </>
       )}

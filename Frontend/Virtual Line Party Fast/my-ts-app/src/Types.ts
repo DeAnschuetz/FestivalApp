@@ -43,8 +43,9 @@ export interface FoodCourtProductList{
   icon: string;
   count: number;
   sorts?: string[]
-  subItems?:string[]
-  type?: "Menue"
+  subItems?:{name: string, type?: string}[]
+  type?: string;
+  price: number
 }
 
 export interface FoodCourt {
@@ -52,4 +53,12 @@ export interface FoodCourt {
   imageUrl: string;
   avg_waiting_time: number;
   products: FoodCourtProductList[]
+}
+
+export interface BasketItem{
+  amount: number;
+  extra: string;
+  name: string;
+  foodcourt_name:string;
+  subItems: string[]
 }

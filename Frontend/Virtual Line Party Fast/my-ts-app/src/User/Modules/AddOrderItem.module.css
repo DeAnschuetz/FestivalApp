@@ -1,0 +1,50 @@
+.LabelText {
+  color: black;
+}
+
+.BtnContainer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.CancelBtn {
+  margin-right: 12px;
+  border: 1px solid black;
+  color: black;
+}
+
+.ShareBtn {
+  border: 1px solid black;
+  color: black;
+  background-color: #bdc3cb;
+}
+
+.DialogBody {
+  color: black;
+}
+
+.OrderContext {
+  margin: 12px 0px;
+}
+
+.SubItemTitle {
+  margin-bottom: 6px;
+  font-style: italic;
+}
+
+.RadioGroup {
+  margin: 0px 0px 6px 10px;
+  display: flex;
+  align-items: center;
+}
+
+.Option {
+  display: flex;
+  flex-direction: row;
+  margin-right: 12px;
+  align-items: center;
+}
+
+.Flex{
+  display: flex;
+}

@@ -97,7 +97,7 @@ const defaultOrders: Order[] = [
         subItems: [
           { name: "Cheeseburger", count: 1, extra: "" },
           { name: "Pommes Mittel", count: 1, extra: "ohne Salz" },
-          { name: "Getränk 0,5l", count: 1, extra: "" },
+          { name: "Fanta", count: 1, extra: "" },
         ],
         extra: "extra Käse",
       },
@@ -115,16 +115,19 @@ const defaultFoodCourts: FoodCourt[] = [
         name: "Cumber Roll",
         icon: "fa fa-fish",
         count: 30,
+        price: 1.50
       },
        {
         name: "Noodels",
         icon: "fa fa-bowl-rice",
         count: 15,
+        price: 12.00
       },
        {
         name: "Deluex Roll Crispy",
         icon: "fa fa-drumstick-bite",
         count: 21,
+        price: 4.50
       },
     ],
   },
@@ -137,23 +140,33 @@ const defaultFoodCourts: FoodCourt[] = [
         name: "Cheeseburger",
         icon: "fa fa-burger",
         count: 30,
+        price: 8.00,
+        type: 'Burger'
       },
        {
         name: "Pommes",
         icon: "fa fa-bacon",
         count: 15,
+        price: 4.50
       },
        {
         name: "Drink",
         sorts: ["Cola", "Fanta"],
         icon: "fa fa-glass-water",
         count: 21,
+        price: 2.50,
+        type: 'Drink'
       },
       {  name: 'Menue 1',
         icon: "fa fa-utensils",
         count: 0,
+        price: 12.00,
         type: 'Menue',
-        subItems: ["Cheeseburger", "Pommes", "Getränk"],
+        subItems: [
+          {name: "Burger nach Wahl", type: 'Burger'},
+          {name: "Pommes Mittel"},
+          {name: "Getränk 0,5l", type: 'Drink'},
+          ],
 
       },
     ],

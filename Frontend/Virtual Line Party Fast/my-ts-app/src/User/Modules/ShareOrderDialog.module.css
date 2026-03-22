@@ -22,10 +22,12 @@
 
 .CancelBtn {
   color: black;
+  border: 1px solid black;
 }
 
 .ShareBtn {
   color: black;
+  border: 1px solid black;
   background-color: #BDC3CB;
 }
 
