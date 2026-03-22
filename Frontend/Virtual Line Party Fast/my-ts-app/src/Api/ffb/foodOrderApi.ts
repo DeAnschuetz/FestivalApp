@@ -84,13 +84,13 @@ async function createFoodOrderOffline(): Promise<Order[]> {
     foodCourtName: currentCart.cartItems[0]?.displayName ?? "Offline Food Court",
     waitingTime: 0,
     orderItems: currentCart.cartItems.map((item) => ({
-      productID: item.id,
+      productId: item.id,
       displayName: item.displayName,
       iconIdentifier: item.symbolIdentifier,
       count: item.count,
       extra: item.extra,
       subItems: item.subItems.map((subItem) => ({
-        productID: subItem.id,
+        productId: subItem.id,
         displayName: subItem.displayName,
         iconIdentifier: subItem.symbolIdentifier,
         count: subItem.count,

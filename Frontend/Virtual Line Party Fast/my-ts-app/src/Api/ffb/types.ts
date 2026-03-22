@@ -62,7 +62,7 @@ export type OrderHistoryEntry = {
 };
 
 export type OrderItem = {
-  productID: Uuid;
+  productId: Uuid;
   displayName: string;
   iconIdentifier: string;
   count: number;

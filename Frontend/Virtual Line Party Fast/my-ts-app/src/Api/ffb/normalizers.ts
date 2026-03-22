@@ -114,7 +114,7 @@ export function normalizeFoodCourts(foodCourts: RawFoodCourtLike[] | undefined |
 
 export function normalizeOrderItem(item: RawOrderItemLike, path = "FoodOrderItemResponse"): OrderItem {
   return {
-    productID: requireUuid(item.productId, `${path}.productID`),
+    productId: requireUuid(item.productId, `${path}.productId`),
     displayName: requireString(item.displayName, `${path}.displayName`),
     iconIdentifier: requireString(item.iconIdentifier, `${path}.iconIdentifier`),
     count: requireNumber(item.count, `${path}.count`),
