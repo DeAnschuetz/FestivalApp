@@ -12,10 +12,11 @@ type InputElementProps = {
   inputStyle?: CSSProperties;
   labelStyle?: CSSProperties;
   type?: "text" | "password" | "number";
+  maxLength?: number;
 };
 
 function InputElement(props: InputElementProps) {
-  const { label, editorId, value, onChange, wrapperStyle, inputStyle, labelStyle,type } =
+  const { label, editorId, value, onChange, wrapperStyle, inputStyle, labelStyle, type, maxLength } =
     props;
 
   return (
@@ -31,6 +32,7 @@ function InputElement(props: InputElementProps) {
         id={editorId}
         type={type ?? "text"}
         value={value}
+        maxLength={maxLength}
         onChange={(e) => onChange(e.target.value)}
         style={inputStyle}
       />

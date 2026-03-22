@@ -5,7 +5,7 @@ import { FoodCourtResponse } from "../Api/generated/ffbAPI.schemas";
 import { updateProductCount } from "../Api/ffb/productApi";
 import HeaderFoodCourt from "../Components/HeaderFoodCourt";
 
-const API_BASE = "http://10.45.129.4:8080";
+const API_BASE = "http://0.0.0.0:8080";
 
 interface Product {
   id: string;
@@ -107,7 +107,7 @@ function StandPage() {
 
     try {
       setError("");
-      const response = await fetch(`${API_BASE}/food_court`, {
+      const response = await fetch(`${API_BASE}/ffb/food_court`, {
         method: "PUT",
         headers: authHeaders,
         credentials: "include",
@@ -207,7 +207,7 @@ function StandPage() {
     try {
       setIsCreatingProduct(true);
       setError("");
-      const response = await fetch(`${API_BASE}/product`, {
+      const response = await fetch(`${API_BASE}/ffb/product`, {
         method: "POST",
         headers: authHeaders,
         credentials: "include",

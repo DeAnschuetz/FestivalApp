@@ -1447,24 +1447,22 @@ export const getGetFoodCourtImageFoodCourtIdUrl = (foodCourtId: Uuid,) => {
   return `/ffb/food_court/image/${foodCourtId}`
 }
 
-export const getFoodCourtImageFoodCourtId = async (
-  foodCourtId: Uuid,
-  options?: RequestInit
-): Promise<getFoodCourtImageFoodCourtIdResponse> => {
-  const res = await fetch(getGetFoodCourtImageFoodCourtIdUrl(foodCourtId), {
+export const getFoodCourtImageFoodCourtId = async (foodCourtId: Uuid, options?: RequestInit): Promise<getFoodCourtImageFoodCourtIdResponse> => {
+  
+  const res = await fetch(getGetFoodCourtImageFoodCourtIdUrl(foodCourtId),
+  {      
     ...options,
-    method: "GET",
-  });
+    method: 'GET'
+    
+    
+  }
+)
 
-  const data =
-    [204, 205, 304].includes(res.status) ? undefined : await res.blob();
-
-  return {
-    data: data as getFoodCourtImageFoodCourtIdResponse["data"],
-    status: res.status,
-    headers: res.headers,
-  } as getFoodCourtImageFoodCourtIdResponse;
-};
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  
+  const data: getFoodCourtImageFoodCourtIdResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getFoodCourtImageFoodCourtIdResponse
+}
   
 
 

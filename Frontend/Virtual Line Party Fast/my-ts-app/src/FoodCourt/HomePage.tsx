@@ -11,7 +11,7 @@ import { FoodOrderStatus as OrderStatus } from "../Api/generated/ffbAPI.schemas"
 import { FoodCourt, Order } from "../Api/ffb/types";
 import { getFoodCourtImageUrl, getOwnFoodCourt, getVisibleOrders, getVisibleOrdersByStatus, updateFoodOrderStatus } from "../Api/ffb";
 
-const API_BASE = "http://10.45.129.19:8080";
+const API_BASE = "http://0.0.0.0:8080";
 
 const filterConfig: { key: FilterKey; label: string }[] = [
 	{ key: "ALL", label: "Alle" },

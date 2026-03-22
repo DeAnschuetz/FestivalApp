@@ -8,6 +8,26 @@ import { login, LoginResult } from "../Api/ffb";
 import { AccountType } from "../Api/generated/ffbAPI.schemas";
 import { getAccountTypeForRouting } from "./loginHelpers";
 
+const formatLoginNr = (value: string): string => {
+  const upper = value.toUpperCase();
+
+  const firstCharMatch = upper.match(/[AFV]/);
+  const firstChar = firstCharMatch ? firstCharMatch[0] : "";
+
+  const digits = upper.replace(/\D/g, "").slice(0, 9);
+
+  if (!firstChar) {
+    return digits ? "" : "";
+  }
+
+  const parts = [];
+  if (digits.length > 0) parts.push(digits.slice(0, 3));
+  if (digits.length > 3) parts.push(digits.slice(3, 6));
+  if (digits.length > 6) parts.push(digits.slice(6, 9));
+
+  return [firstChar, ...parts].join("-");
+};
+
 function LogInContainer() {
   const [loginNr, setLoginNr] = useState("");
   const [password, setPassword] = useState("");
@@ -16,14 +36,20 @@ function LogInContainer() {
   );
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  
   useEffect(() => {
     setLoginNr("");
     setPassword("");
     setError("");
   }, []);
-
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    
+    const isValidLoginNr = (value: string) => /^[AFV]-\d{3}-\d{3}-\d{3}$/.test(value);
+    if (!isValidLoginNr(loginNr)) {
+      setError("Invalid Login Nr.");
+      return;
+    }
     e.preventDefault();
     setError("");
 
@@ -78,11 +104,12 @@ function LogInContainer() {
           editorId="login_nr"
           value={loginNr}
           onChange={(value) => {
-            setLoginNr(value);
+            const formattedValue = formatLoginNr(value);
+
+            setLoginNr(formattedValue);
             setError("");
 
-            const saved = localStorage.getItem("rememberedPassword_" + value);
-            setError("");
+            const saved = localStorage.getItem("rememberedPassword_" + formattedValue);
 
             if (saved) {
               setPassword(saved);
@@ -112,6 +139,7 @@ function LogInContainer() {
             border: error ? "1px solid red" : undefined,
           }}
           type="password"
+          maxLength={13}
         />
 
         <div className={styles.Checkbox}>

@@ -7,6 +7,7 @@ import Admin from "./Admin/Admin";
 import LogIn from "./LogIn/LogIn";
 import { useEffect } from "react";
 import { bootstrapOfflineDemo } from "./Api/ffb/initialImportBootstrap";
+import HomePage from "./FoodCourt/HomePage";
 
 function App() {
 
@@ -45,7 +46,7 @@ function App() {
             path="/foodcourt_view"
             element={
               <ProtectedRoute role="FOOD_COURT_WORKER">
-                <FoodCourt />
+                <HomePage />
               </ProtectedRoute>
             }
           />

@@ -12,7 +12,6 @@ interface FoodCourtTabProps {
 
 function FoodCourtTab(props: FoodCourtTabProps) {
   const { isOrdersOpen, setIsFoodCourtOpen } = props;
-
   const [isOpen, setIsOpen] = useState(true);
   const [foodCourts, setFoodCourts] = useState<FoodCourt[]>([]);
 

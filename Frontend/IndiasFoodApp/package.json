@@ -1,6 +1,7 @@
 {
   "name": "food-app",
   "private": true,
+  "proxy": "http://0.0.0.0:8080",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -8,7 +9,7 @@
     "dev:mobile": "vite --host",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "types:gen": "openapi-typescript \"http://10.45.129.44:8080/q/openapi?format=json\" -o src/types/api.generated.ts",
+    "types:gen": "openapi-typescript \"http://0.0.0.0:8080/q/openapi?format=json\" -o src/types/api.generated.ts",
     "types:gen:file": "openapi-typescript openapi/openapi.json -o src/types/api.generated.ts"
   },
   "devDependencies": {

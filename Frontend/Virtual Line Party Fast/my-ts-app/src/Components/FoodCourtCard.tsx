@@ -11,9 +11,9 @@ interface FoodCourtCardProps {
 
 function FoodCourtCard(props: FoodCourtCardProps) {
   const [products, setProducts] = useState([] as Product[]) ;
-  const [foodCourtImageUrl, setFoodCourtImageUrl] = useState("noImage") ;
+  const [foodCourtImageUrl, setFoodCourtImageUrl] = useState("") ;
   const { foodCourt } = props;
-  console.log(foodCourt.id);
+  
   useEffect(() => {
       const loadProductData = async () => {
         const loginNr = localStorage.getItem("currentUser");
@@ -21,7 +21,7 @@ function FoodCourtCard(props: FoodCourtCardProps) {
         console.log(foodCourt);
         const products: Product[] = await getProductsByFoodCourtId(foodCourt.id);
         setProducts(products);
-        const foodCourtImageUrl: string = await getFoodCourtImageUrl(foodCourt.id) ?? "noImage";
+        const foodCourtImageUrl: string = await getFoodCourtImageUrl(foodCourt.id) ?? "";
         setFoodCourtImageUrl(foodCourtImageUrl);
       };
       
@@ -38,7 +38,7 @@ function FoodCourtCard(props: FoodCourtCardProps) {
       </div>
       <div className={styles.FlexWrapper}>
         <div className={styles.Img}>
-          <img src={foodCourtImageUrl}></img>
+          {foodCourtImageUrl.length > 0 ? <img src={foodCourtImageUrl}></img> : <></>} 
         </div>
         <div className={styles.ProductContainer}>
           <div className={styles.Text}>Verfügbar</div>

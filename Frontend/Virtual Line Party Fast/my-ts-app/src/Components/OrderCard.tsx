@@ -5,7 +5,7 @@ import { FoodOrderStatus as OrderStatus} from "../Api/generated/ffbAPI.schemas";
 
 interface OrderCardProps {
   order: Order;
-  status: string;
+  status: OrderStatus;
   setClickedCard: React.Dispatch<React.SetStateAction<string>>;
 }
 

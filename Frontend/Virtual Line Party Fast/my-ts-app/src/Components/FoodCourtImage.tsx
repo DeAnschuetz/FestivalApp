@@ -20,7 +20,7 @@ function FoodCourtImage({ foodCourtId, apiBase, token, className, alt = "Food Co
       return "";
     }
 
-    return `${apiBase}/food_court/image/${foodCourtId}`;
+    return `${apiBase}/ffb/food_court/image/${foodCourtId}`;
   }, [apiBase, foodCourtId]);
 
   useEffect(() => {
@@ -55,7 +55,7 @@ function FoodCourtImage({ foodCourtId, apiBase, token, className, alt = "Food Co
     }
 
     try {
-      const response = await fetch(`${apiBase}/food_court/image/${foodCourtId}`, {
+      const response = await fetch(`${apiBase}/ffb/food_court/image/${foodCourtId}`, {
         method: "GET",
         headers,
         credentials: "include",
