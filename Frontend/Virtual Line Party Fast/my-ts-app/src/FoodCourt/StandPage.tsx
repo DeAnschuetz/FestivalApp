@@ -31,7 +31,7 @@ function StandPage() {
   const [isCreatingProduct, setIsCreatingProduct] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState("");
   const [newPrice, setNewPrice] = useState("");
-  const [newSymbolIdentifier, setNewSymbolIdentifier] = useState("TEST");
+  const [newSymbolIdentifier, setNewSymbolIdentifier] = useState("fa-solid fa-ban");
   const [newMinimalWarning, setNewMinimalWarning] = useState("");
 
   const authHeaders = useMemo(

@@ -20,6 +20,7 @@ function FoodCourtCard(props: FoodCourtCardProps) {
         if (!loginNr) return;
         console.log(foodCourt);
         const products: Product[] = await getProductsByFoodCourtId(foodCourt.id);
+        console.log("products: ", products);
         setProducts(products);
         const foodCourtImageUrl: string = await getFoodCourtImageUrl(foodCourt.id) ?? "";
         setFoodCourtImageUrl(foodCourtImageUrl);
@@ -45,7 +46,6 @@ function FoodCourtCard(props: FoodCourtCardProps) {
           <div className={styles.ProductWrapper}>
             {products
                 .filter((product) => {
-                  console.log(product);
                   return product.subProducts.length == 0
                 })
                 .map((product) => (

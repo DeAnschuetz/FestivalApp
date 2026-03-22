@@ -2610,10 +2610,10 @@ export const getProductListByFoodCourtIdFoodCourtId = async (foodCourtId: Uuid, 
     
   }
 )
-
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
   
   const data: getProductListByFoodCourtIdFoodCourtIdResponse['data'] = body ? JSON.parse(body) : {}
+  console.log("DATA",data);
   return { data, status: res.status, headers: res.headers } as getProductListByFoodCourtIdFoodCourtIdResponse
 }
   

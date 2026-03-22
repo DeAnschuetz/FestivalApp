@@ -3,14 +3,36 @@ import styles from "./LogInContainer.module.css";
 import InputElement from "../Components/InputElement";
 import { Button } from "@progress/kendo-react-buttons";
 import { useNavigate } from "react-router-dom";
-import { users, tickets, saveUsers, saveTickets } from "../Data";
-import { LoginRequest } from "../Api/generated/ffbAPI.schemas";
+import { LoginRequest, RegisterRequest } from "../Api/generated/ffbAPI.schemas";
 import { getAccountTypeForRouting } from "./loginHelpers";
-import { apiLogin } from "../Api/ffb/accountApi";
+import { apiLogin, register } from "../Api/ffb/accountApi";
+
+const formatLoginNr = (value: string): string => {
+  const upper = value.toUpperCase();
+
+  const firstCharMatch = upper.match(/[AFV]/);
+  const firstChar = firstCharMatch ? firstCharMatch[0] : "";
+
+  const digits = upper.replace(/\D/g, "").slice(0, 9);
+
+  if (!firstChar) {
+    return digits ? "" : "";
+  }
+
+  const parts = [];
+  if (digits.length > 0) parts.push(digits.slice(0, 3));
+  if (digits.length > 3) parts.push(digits.slice(3, 6));
+  if (digits.length > 6) parts.push(digits.slice(6, 9));
+
+  return [firstChar, ...parts].join("-");
+};
 
 function RegisterContainer() {
   const [loginNr, setLoginNr] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(
+    localStorage.getItem("rememberMe") === "true",
+  );
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
   const [error, setError] = useState("");
@@ -19,32 +41,17 @@ function RegisterContainer() {
     e.preventDefault();
     setError("");
 
-    const loginRequest: LoginRequest = {
+    const registerRequest: RegisterRequest = {
       loginNr,
       password,
     };
 
     try {
-      const loggedInUser = await apiLogin(loginRequest);
-      const userType = getAccountTypeForRouting(loggedInUser.loginNr ?? loginNr);
+      await register(registerRequest);
 
-      switch (userType) {
-        case "ADMIN":
-          navigate("/admin_view");
-          break;
-
-        case "FOOD_COURT_WORKER":
-          navigate("/foodcourt_view");
-          break;
-
-        case "GUEST":
-        default:
-          navigate("/user_view");
-          break;
-      }
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Login failed. Please try again.";
+        err instanceof Error ? err.message : "Registration failed. Please try again.";
       setError(message);
     }
   };
@@ -55,55 +62,6 @@ function RegisterContainer() {
     setConfirmPassword("");
     setError("");
   }, []);
-
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    const trimmedLoginNr = loginNr.trim();
-
-    // 🔴 Passwort check
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    // 🔴 User existiert bereits
-    const existingUser = users.find((u) => u.login_Nr === trimmedLoginNr);
-
-    if (existingUser) {
-      setError("User already exists.");
-      return;
-    }
-
-    // 🔴 Ticket muss existieren
-    const validTicket = tickets.find((t) => t.login_Nr === trimmedLoginNr);
-
-    if (!validTicket) {
-      setError("Invalid ticket number.");
-      return;
-    }
-
-    // ✅ User erstellen
-    users.push({
-      login_Nr: trimmedLoginNr,
-      password: password,
-      type: "GUEST",
-    });
-
-    // 💾 Users speichern
-    saveUsers();
-
-    // ✅ Ticket entfernen (einmal Nutzung)
-    const ticketIndex = tickets.findIndex((t) => t.login_Nr === trimmedLoginNr);
-    tickets.splice(ticketIndex, 1);
-
-    // 💾 Tickets speichern
-    saveTickets();
-
-    // 👉 zurück zum Login
-    navigate("/");
-  };
 
   return (
     <div className={styles.Container}>
@@ -120,12 +78,27 @@ function RegisterContainer() {
         </div>
       )}
 
-      <form onSubmit={handleRegister}>
+      <form onSubmit={handleSubmit}>
         <InputElement
           label="Login-Nr."
           editorId="login_nr"
           value={loginNr}
-          onChange={setLoginNr}
+          onChange={(value) => {
+            const formattedValue = formatLoginNr(value);
+
+            setLoginNr(formattedValue);
+            setError("");
+
+            const saved = localStorage.getItem("rememberedPassword_" + formattedValue);
+
+            if (saved) {
+              setPassword(saved);
+              setRememberMe(true);
+            } else {
+              setPassword("");
+              setRememberMe(false);
+            }
+          }}
           wrapperStyle={{ marginBottom: "10px" }}
           labelStyle={{ width: "100%" }}
           inputStyle={{
