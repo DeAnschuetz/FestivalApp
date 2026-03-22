@@ -59,6 +59,6 @@ export interface BasketItem{
   amount: number;
   extra: string;
   name: string;
-  foodcourt_name:string;
-  subItems: string[]
+  price: number;
+  subItems?: {name:string}[]
 }

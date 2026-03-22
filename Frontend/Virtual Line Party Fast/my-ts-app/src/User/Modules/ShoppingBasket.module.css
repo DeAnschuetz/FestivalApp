@@ -1,0 +1,105 @@
+.BasketWrapper {
+  margin: 20px;
+}
+
+.Title {
+  font-size: larger;
+}
+
+.FlexWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.OrderWrapper {
+  border: 1px solid black;
+  border-radius: 10px;
+  background-color: #ede7dc;
+  box-shadow: 0px 3px 6px 0px gray;
+  margin: 20px 0px 30px 0px;
+  padding: 20px;
+}
+
+.FlexWrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.Extra {
+  margin: 6px 12px;
+}
+
+.SubItem {
+  margin: 0px 0px 0px 12px;
+}
+
+.ItemName {
+  font-size: large;
+  width: 62%;
+}
+
+.Price {
+  margin-right: 12px;
+}
+
+.Line {
+  border-bottom: 1px solid black;
+}
+
+.Total {
+  font-weight: bold;
+  display: flex;
+  font-size: large;
+  margin: 20px 0px;
+}
+
+.Text {
+  width: 58%;
+}
+
+.Flex {
+  display: flex;
+}
+
+.Disabled {
+  color: gray;
+}
+
+.WaitingTimeWrapper {
+  margin: 20px 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.WaitingTime {
+  display: flex;
+  align-items: center;
+  border: 1px solid black;
+  padding: 6px;
+  background-color: #ede7dc;
+}
+
+.Time {
+  margin-left: 6px;
+}
+
+.OrderBtn{
+    color: black;
+    border: 1px solid black;
+    background-color: #BDC3CB;
+    font-size: large;
+}
+
+.OrderBtnWrapper{
+    display: flex;
+    justify-content: center;
+    margin: 40px 0px 20px 0px;
+}
+
+.ErrorText{
+    color: red;
+    margin-top: 20px;
+}

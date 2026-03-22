@@ -2,14 +2,29 @@ import React, { useEffect, useState, useRef } from "react";
 import { Button } from "@progress/kendo-react-buttons";
 import styles from "./Modules/Header.module.css";
 import { useNavigate } from "react-router-dom";
+import { BasketItem } from "../Types";
 
-interface HeaderProps{
+interface HeaderProps {
   setPayisOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  credits: number
+  credits: number;
+  setOpenBasket: React.Dispatch<React.SetStateAction<boolean>>;
+  orderBasket: {
+    foodcourt_name: string;
+    Items: BasketItem[];
+  };
+  openBasket: boolean;
+  setClickedFoodCourt: React.Dispatch<React.SetStateAction<string>>;
 }
 
 function Header(props: HeaderProps) {
-  const {setPayisOpen, credits} = props
+  const {
+    setPayisOpen,
+    credits,
+    setOpenBasket,
+    orderBasket,
+    openBasket,
+    setClickedFoodCourt,
+  } = props;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const loginNr = localStorage.getItem("currentUser");
@@ -44,12 +59,21 @@ function Header(props: HeaderProps) {
           size={"medium"}
           style={{ marginRight: "6px" }}
         />
-        <Button
-          type="button"
-          fillMode={"flat"}
-          iconClass="fa fa-basket-shopping"
-          size={"medium"}
-        />
+        <div className={styles.BasketWrapper}>
+          <Button
+            type="button"
+            fillMode={"flat"}
+            iconClass="fa fa-basket-shopping"
+            size={"medium"}
+            onClick={() => {
+              setOpenBasket(!openBasket);
+              setClickedFoodCourt("");
+            }}
+          />
+          {orderBasket.Items.length !== 0 && (
+            <div className={styles.FullBasket}>{orderBasket.Items.length}</div>
+          )}
+        </div>
         <div className={styles.Credits}>
           <i className="fa fa-money-bills"></i>
           <div className={styles.Price}>{credits} €</div>
@@ -59,7 +83,7 @@ function Header(props: HeaderProps) {
             iconClass="fa fa-plus"
             style={{ borderRadius: "100%" }}
             size={"small"}
-            onClick={()=>setPayisOpen(true)}
+            onClick={() => setPayisOpen(true)}
           />
         </div>
       </div>
