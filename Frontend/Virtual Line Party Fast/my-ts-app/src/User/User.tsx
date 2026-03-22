@@ -5,9 +5,10 @@ import ReadyforPickUp from "./ReadyforPickUp";
 import InProgress from "./InProgress";
 import Orders from "./Orders";
 import FoodCourtTab from "./FoodCourtTab";
-import { Order } from "../Types";
+import { BasketItem, FoodCourt, Order } from "../Types";
 import Pay from "./Pay";
 import ViewOrder from "./ViewOrder";
+import FoodCourtProducts from "./FoodCourtProducts";
 
 interface UserProps {}
 
@@ -20,7 +21,16 @@ function User(props: UserProps) {
   const [currentUser, setCurrentUser] = useState("");
   const [credits, setCredits] = useState<number>(0);
   const [clickedCrad, setClickedCard] = useState("");
-  console.log("clickedCrad: ", clickedCrad);
+  const [foodCourts, setFoodCourts] = useState<FoodCourt[]>([]);
+  const [clickedFoodCourt, setClickedFoodCourt] = useState("");
+  const [orderBasket, setOrderBasket] = useState<{
+    foodcourt_name: string;
+    Items: BasketItem[];
+  }>({
+    foodcourt_name: "",
+    Items: [],
+  });
+  console.log("orderBasket: ", orderBasket);
 
   useEffect(() => {
     const loginNr = localStorage.getItem("currentUser");
@@ -43,6 +53,13 @@ function User(props: UserProps) {
     }
   }, []);
 
+  useEffect(() => {
+    const stored = localStorage.getItem("foodcourts");
+    if (stored) {
+      setFoodCourts(JSON.parse(stored));
+    }
+  }, []);
+
   const readyForPickup = orders.filter(
     (order: Order) => order.order_status === "ready_for_pickup",
   );
@@ -53,6 +70,10 @@ function User(props: UserProps) {
 
   const currentOrder = orders.find(
     (order: Order) => order.order_number === clickedCrad,
+  );
+
+  const currentFoodcourt = foodCourts.find(
+    (court: FoodCourt) => court.name === clickedFoodCourt,
   );
 
   return (
@@ -68,6 +89,13 @@ function User(props: UserProps) {
         <ViewOrder
           currentOrder={currentOrder}
           setClickedCard={setClickedCard}
+        />
+      ) : clickedFoodCourt !== "" ? (
+        <FoodCourtProducts
+          currentFoodCourt={currentFoodcourt}
+          setClickedFoodCourt={setClickedFoodCourt}
+          setOrderBasket={setOrderBasket}
+          orderBasket={orderBasket}
         />
       ) : (
         <>
@@ -85,6 +113,8 @@ function User(props: UserProps) {
           <FoodCourtTab
             isOrdersOpen={isOrdersOpen}
             setIsFoodCourtOpen={setIsFoodCourtOpen}
+            foodCourts={foodCourts}
+            setClickedFoodCourt={setClickedFoodCourt}
           />
         </>
       )}
