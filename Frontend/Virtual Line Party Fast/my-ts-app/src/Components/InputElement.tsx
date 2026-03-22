@@ -6,8 +6,8 @@ import "@progress/kendo-theme-default/dist/all.css";
 type InputElementProps = {
   label: string;
   editorId: string;
-  value: string;
-  onChange: (e: string) => void;
+  value: string | number;
+  onChange: (e: any) => void;
   wrapperStyle?: CSSProperties;
   inputStyle?: CSSProperties;
   labelStyle?: CSSProperties;

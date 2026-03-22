@@ -4,17 +4,18 @@ import styles from "./Modules/FoodCourtCard.module.css";
 
 interface FoodCourtCardProps {
   foodCourt: FoodCourt;
+  setClickedFoodCourt: React.Dispatch<React.SetStateAction<string>>
 }
 
 function FoodCourtCard(props: FoodCourtCardProps) {
-  const { foodCourt } = props;
+  const { foodCourt, setClickedFoodCourt } = props;
 
   const productsWithoutType = foodCourt.products.filter(
-    (product) => !product.type,
+    (product) => product.type !== 'Menue',
   );
 
   return (
-    <div className={styles.FoodCourtContainer}>
+    <div className={styles.FoodCourtContainer} onClick={()=>setClickedFoodCourt(foodCourt.name)}>
       <div className={styles.FoodCourtName}>{foodCourt.name}</div>
       <div className={styles.WaitingTime}>
         <i className="fa-regular fa-clock"></i>
