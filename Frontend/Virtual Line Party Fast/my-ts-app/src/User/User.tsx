@@ -9,6 +9,7 @@ import { BasketItem, FoodCourt, Order } from "../Types";
 import Pay from "./Pay";
 import ViewOrder from "./ViewOrder";
 import FoodCourtProducts from "./FoodCourtProducts";
+import ShoppingBasket from "./ShoppingBasket";
 
 interface UserProps {}
 
@@ -25,12 +26,14 @@ function User(props: UserProps) {
   const [clickedFoodCourt, setClickedFoodCourt] = useState("");
   const [orderBasket, setOrderBasket] = useState<{
     foodcourt_name: string;
+    waiting_time: number;
     Items: BasketItem[];
   }>({
     foodcourt_name: "",
     Items: [],
+    waiting_time: 0,
   });
-  console.log("orderBasket: ", orderBasket);
+  const [openBasket, setOpenBasket] = useState(false);
 
   useEffect(() => {
     const loginNr = localStorage.getItem("currentUser");
@@ -78,7 +81,14 @@ function User(props: UserProps) {
 
   return (
     <div className={styles.Container}>
-      <Header setPayisOpen={setPayisOpen} credits={credits} />
+      <Header
+        setPayisOpen={setPayisOpen}
+        credits={credits}
+        setOpenBasket={setOpenBasket}
+        openBasket={openBasket}
+        orderBasket={orderBasket}
+        setClickedFoodCourt={setClickedFoodCourt}
+      />
       {payisOpen ? (
         <Pay
           setPayisOpen={setPayisOpen}
@@ -96,6 +106,17 @@ function User(props: UserProps) {
           setClickedFoodCourt={setClickedFoodCourt}
           setOrderBasket={setOrderBasket}
           orderBasket={orderBasket}
+        />
+      ) : openBasket ? (
+        <ShoppingBasket
+          orderBasket={orderBasket}
+          setOpenBasket={setOpenBasket}
+          setOrderBasket={setOrderBasket}
+          credits={credits}
+          setCredits={setCredits}
+          orders = {orders}
+          setOrders={setOrders}
+          currentUser={currentUser}
         />
       ) : (
         <>

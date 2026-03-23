@@ -31,6 +31,7 @@ function AddOrderItem(props: AddOrderItemProps) {
       name: clickedItem.name,
       extra: extraText,
       amount: itemCount,
+      price: clickedItem.price,
       subItems: clickedItem.subItems?.map((subItem: any, index: number) => {
         const selected = selectedSubItems[index];
         return {
@@ -44,6 +45,7 @@ function AddOrderItem(props: AddOrderItemProps) {
         // Erster Eintrag
         return {
           foodcourt_name: currentFoodcourt?.name || "",
+          waiting_time: currentFoodcourt?.avg_waiting_time,
           Items: [newItem],
         };
       } else if (prev.foodcourt_name === currentFoodcourt?.name) {
