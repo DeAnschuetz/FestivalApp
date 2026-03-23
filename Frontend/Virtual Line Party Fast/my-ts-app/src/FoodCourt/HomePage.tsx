@@ -1,25 +1,21 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import styles from "./HomePage.module.css";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+// css
+import styles from "./HomePage.module.css";
+
+//components
 import HomePageFilterBar from "../Components/HomePageFilterBar";
 import HomePageBulkActions from "../Components/HomePageBulkActions";
 import HomePageOrderCard from "../Components/HomePageOrderCard";
 import HeaderFoodCourt from "../Components/HeaderFoodCourt";
 
+// api
 import { FoodOrderStatus as OrderStatus } from "../Api/generated/ffbAPI.schemas"
 import { FoodCourt, Order } from "../Api/ffb/types";
-import { getFoodCourtImageUrl, getOwnFoodCourt, getVisibleOrders, getVisibleOrdersByStatus, updateFoodOrderStatus } from "../Api/ffb";
+import { getOwnFoodCourt, getVisibleOrders, getVisibleOrdersByStatus, updateFoodOrderStatus } from "../Api/ffb";
+
 type FilterKey = "ALL" | OrderStatus;
-
-
-const filterConfig: { key: FilterKey; label: string }[] = [
-	{ key: "ALL", label: "Alle" },
-	{ key: OrderStatus.ORDERED, label: "Bestellt" },
-	{ key: OrderStatus.IN_PROGRESS, label: "In Arbeit" },
-	{ key: OrderStatus.READY_FOR_PICKUP, label: "Abholbereit" },
-	{ key: OrderStatus.DONE, label: "Abgeschlossen" },
-	{ key: OrderStatus.CANCELED, label: "Storniert" },
-];
 
 const statusLabels: Record<OrderStatus, string> = {
 	ORDERED: "Bestellt",
@@ -29,15 +25,16 @@ const statusLabels: Record<OrderStatus, string> = {
 	CANCELED: "Storniert",
 };
 
-const isOrderStatus = (value: string): value is OrderStatus =>
-	value === OrderStatus.ORDERED ||
-	value === OrderStatus.IN_PROGRESS ||
-	value === OrderStatus.READY_FOR_PICKUP ||
-	value === OrderStatus.DONE ||
-	value === OrderStatus.CANCELED;
+const filterConfig: { key: FilterKey; label: string }[] = [
+	{ key: "ALL", label: "Alle" },
+	...Object.entries(statusLabels).map(([key, label]) => ({
+		key: key as OrderStatus,
+		label,
+	})),
+];
 
-const isUuid = (value: string) =>
-	/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/.test(value);
+const isOrderStatus = (value: unknown): value is OrderStatus =>
+    typeof value === 'string' && value in statusLabels;
 
 function HomePage() {
 	const token = localStorage.getItem("token");
@@ -53,9 +50,7 @@ function HomePage() {
 	const [error, setError] = useState<string>("");
 	const [success, setSuccess] = useState<string>("");
 	const loginLabel = localStorage.getItem("loginNr") ?? "1234WP56-ZY09";
-	const [foodCourtImageUrl, setFoodCourtImageUrl] = useState<string>("");
-	const [useFallbackImage, setUseFallbackImage] = useState<boolean>(false);
-	console.log("FoodCourtView")
+
 	const handleLogout = () => {
 		localStorage.removeItem("token");
 		navigate("/login");
@@ -65,28 +60,13 @@ function HomePage() {
 		navigate("/food_court_view/stand");
 	};
 
-	const authHeaders = useMemo(
-		() => {
-			const headers: Record<string, string> = {
-				"Content-Type": "application/json",
-			};
-
-			if (token) {
-				headers.Authorization = `Bearer ${token}`;
-			}
-
-			return headers;
-		},
-		[token],
-	);
-
 	const fetchFoodCourt = useCallback(async () => {
 		const data: FoodCourt = await getOwnFoodCourt();
 
 		setFoodCourt(data);
 		setWaitingTime(data.waitingTime ?? 15);
         console.log("Food Court Daten geladen:", data);
-	}, [authHeaders]);
+	}, []);
 
 	const fetchOrders = useCallback(
 		async (filter: FilterKey) => {
@@ -97,7 +77,7 @@ function HomePage() {
 
             console.log("fetchOrders-Funktion erstellt mit Filter:", filter, "Ergebnis:", data);
 			setOrders(data);
-			if (filter == "ALL") {
+			if (filter === "ALL") {
 				setAllOrders(data);
 			}
 			setSelectedOrderIds([]);
@@ -107,7 +87,7 @@ function HomePage() {
 					return accumulator;
 				}, {}),
 			);
-	}, [authHeaders]);
+	}, []);
 
 	const loadPageData = useCallback(async () => {
 		setIsLoading(true);
@@ -139,28 +119,6 @@ function HomePage() {
 		};
 	}, [success]);
 
-	const loadFallbackImage = async () => {
-		if (!foodCourt?.id || !isUuid(foodCourt.id)) {
-			return;
-		}
-
-		const imageHeaders: Record<string, string> = {
-			Accept: "image/png",
-		};
-
-		if (token) {
-			imageHeaders.Authorization = `Bearer ${token}`;
-		}
-
-		try {
-			const data = await getFoodCourtImageUrl(foodCourt.id);
-
-			setFoodCourtImageUrl(data ?? "");
-			setUseFallbackImage(true);
-		} catch {
-			setFoodCourtImageUrl("");
-		}
-	};
 
 	const countsByStatus = useMemo(() => {
 		const initial: Record<OrderStatus, number> = {
@@ -229,7 +187,7 @@ function HomePage() {
 			await fetchOrders(activeFilter);
 		} catch (updateError) {
 			setSuccess("");
-			setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
+			setError("Unbekannter Fehler");
 		}
 	};
 
