@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "../FoodCourt/HomePage.module.css";
 import { FoodOrderStatus as OrderStatus } from "../Api/generated/ffbAPI.schemas"
 import { Order } from "../Api/ffb/types";
