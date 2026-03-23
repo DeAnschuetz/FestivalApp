@@ -77,9 +77,15 @@ function HomePage() {
 
             console.log("fetchOrders-Funktion erstellt mit Filter:", filter, "Ergebnis:", data);
 			setOrders(data);
-			if (filter === "ALL") {
+			
+			// Immer alle Bestellungen laden für die Counters
+			if (filter !== "ALL") {
+				const allOrdersData = await getVisibleOrders();
+				setAllOrders(allOrdersData);
+			} else {
 				setAllOrders(data);
 			}
+			
 			setSelectedOrderIds([]);
 			setStatusSelection(
 				data.reduce<Record<string, OrderStatus>>((accumulator, order) => {
