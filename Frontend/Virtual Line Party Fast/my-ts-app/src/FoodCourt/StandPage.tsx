@@ -55,27 +55,6 @@ function StandPage() {
     loadData();
   }, [loadData]);
 
-  const updateWaitingTime = async () => {
-    if (!foodCourt) {
-      return;
-    }
-
-    const safeWaitingTime = Number.isFinite(waitingTime) ? Math.max(0, Math.trunc(waitingTime)) : NaN;
-    if (!Number.isFinite(safeWaitingTime)) {
-      setError("Bitte eine gültige Wartezeit eingeben.");
-      return;
-    }
-
-    try {
-      setError("");
-      const updatedFoodCourt = await getOwnFoodCourt();
-      setFoodCourt(updatedFoodCourt);
-      setWaitingTime(updatedFoodCourt.waitingTime ?? safeWaitingTime);
-    } catch (updateError) {
-      setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
-    }
-  };
-
   const updateProductCountLocal = async (productId: string) => {
     try {
       setError("");
@@ -308,7 +287,7 @@ function StandPage() {
               }}
             />
             <span>Min</span>
-            <button className={styles.IconBtn} onClick={updateWaitingTime}>
+            <button className={styles.IconBtn}>
               <i className="fa-regular fa-pen-to-square" />
             </button>
           </div>
