@@ -14,6 +14,7 @@ import { FoodOrderStatus as OrderStatus  } from "../Api/generated/ffbAPI.schemas
 import Orders from "./Orders";
 import FoodCourtProducts from "./FoodCourtProducts";
 import { getAllFoodCourts } from "../Api/ffb/foodCourtApi";
+import ShoppingBasket from "./ShoppingBasket";
 
 interface UserProps {}
 
@@ -30,11 +31,14 @@ function User(props: UserProps) {
   const [clickedFoodCourt, setClickedFoodCourt] = useState("");
   const [orderBasket, setOrderBasket] = useState<{
     foodcourt_name: string;
+    waiting_time: number;
     Items: BasketItem[];
   }>({
     foodcourt_name: "",
     Items: [],
+    waiting_time: 0,
   });
+  const [openBasket, setOpenBasket] = useState(false);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -42,14 +46,14 @@ function User(props: UserProps) {
         const loginNr = localStorage.getItem("currentUser");
         if (!loginNr) return;
         setCurrentUser(loginNr);
-  
+
         const credit: Credit = await getCredit();
         setCredits(credit.credit);
-  
+
         const order: Order[] = await getVisibleOrders();
         setOrders(order);
       } catch (error) {
-        
+
       }
     };
 
@@ -62,10 +66,10 @@ function User(props: UserProps) {
         const foodCourts: FoodCourt[] = await getAllFoodCourts();
         setFoodCourts(foodCourts);
       } catch (error) {
-        
+
       }
       };
-  
+
       void loadFoodCourtData();
   }, []);
 
@@ -87,7 +91,14 @@ function User(props: UserProps) {
 
   return (
     <div className={styles.Container}>
-      <Header setPayisOpen={setPayisOpen} credits={credits} />
+      <Header
+        setPayisOpen={setPayisOpen}
+        credits={credits}
+        setOpenBasket={setOpenBasket}
+        openBasket={openBasket}
+        orderBasket={orderBasket}
+        setClickedFoodCourt={setClickedFoodCourt}
+      />
       {payisOpen ? (
         <Pay
           setPayisOpen={setPayisOpen}
@@ -106,6 +117,17 @@ function User(props: UserProps) {
           setOrderBasket={setOrderBasket}
           orderBasket={orderBasket}
         />
+      ) : openBasket ? (
+        <ShoppingBasket
+          orderBasket={orderBasket}
+          setOpenBasket={setOpenBasket}
+          setOrderBasket={setOrderBasket}
+          credits={credits}
+          setCredits={setCredits}
+          orders = {orders}
+          setOrders={setOrders}
+          currentUser={currentUser}
+        />
       ) : (
         <>
           <ReadyforPickUp
@@ -122,6 +144,7 @@ function User(props: UserProps) {
           <FoodCourtTab
             isOrdersOpen={isOrdersOpen}
             setIsFoodCourtOpen={setIsFoodCourtOpen}
+            foodCourts={foodCourts}
             setClickedFoodCourt={setClickedFoodCourt}
           />
         </>

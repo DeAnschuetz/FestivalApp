@@ -20,13 +20,13 @@ function AddOrderItem(props: AddOrderItemProps) {
     setOrderBasket,
     currentFoodCourt,
   } = props;
-  const [itemCount, setItemCount] = useState<string | number>(1);
+  const [itemCount, setItemCount] = useState(1);
   const [extraText, setExtraText] = useState("");
   const [selectedSubItems, setSelectedSubItems] = useState<any>({});
   const [products, setProducts] = useState<Product[]>([]);
 
 
-  
+
   useEffect(() => {
       const loadFoodCourtData = async () => {
         try {
@@ -35,13 +35,13 @@ function AddOrderItem(props: AddOrderItemProps) {
             setProducts(products);
           }
         } catch (error) {
-          
+
         }
         };
-    
+
         void loadFoodCourtData();
   }, []);
-  
+
   console.log("clickedItem: ", clickedItem);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -51,6 +51,7 @@ function AddOrderItem(props: AddOrderItemProps) {
       name: clickedItem.name,
       extra: extraText,
       amount: itemCount,
+      price: clickedItem.price,
       subItems: clickedItem.subItems?.map((subItem: any, index: number) => {
         const selected = selectedSubItems[index];
         return {
@@ -63,6 +64,8 @@ function AddOrderItem(props: AddOrderItemProps) {
       if (!prev || !prev.Items || prev.Items.length === 0) {
         // Erster Eintrag
         return {
+          foodcourt_name: currentFoodcourt?.name || "",
+          waiting_time: currentFoodcourt?.avg_waiting_time,
           foodcourt_name: currentFoodCourt?.name|| "",
           Items: [newItem],
         };
@@ -93,7 +96,6 @@ function AddOrderItem(props: AddOrderItemProps) {
             label="Anzahl"
             editorId="anzahl"
             value={itemCount}
-            type={"number"}
             onChange={setItemCount}
             labelStyle={{ width: "50%", color: "black" }}
             inputStyle={{ color: "black" }}

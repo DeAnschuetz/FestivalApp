@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   padding: 6px 12px 6px 12px;
-  margin: 0px 0px 0px 6px;
+  margin: 0px 0px 0px 12px;
 }
 
 .Wrapper {
@@ -26,9 +26,9 @@
   align-items: center;
 }
 
-.LogInNr{
-    margin: 0px 0px 0px 6px;
-    text-decoration: underline;
+.LogInNr {
+  margin: 0px 0px 0px 6px;
+  text-decoration: underline;
 }
 
 .UserWrapper {
@@ -37,20 +37,38 @@
   align-items: center;
 }
 
-
-
 .DropdownMenu {
   position: absolute;
   top: 34px;
   left: 0;
   margin-left: 12px;
-  background-color: #CCAFA5;
+  background-color: #ccafa5;
   border: 1px solid black;
   border-radius: 5px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   z-index: 100;
 }
 
-.ButtonContent{
+.ButtonContent {
   font-size: 14px;
+}
+
+.BasketWrapper {
+  display: flex;
+  position: relative;
+}
+
+.FullBasket {
+  border: 1px solid black;
+  border-radius: 100%;
+  width: 15px;
+  height: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ede7dc;
+  font-size: x-small;
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
 }
