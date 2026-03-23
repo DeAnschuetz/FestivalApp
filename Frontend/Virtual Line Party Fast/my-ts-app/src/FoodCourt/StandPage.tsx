@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./StandPage.module.css";
 import { FoodCourtResponse } from "../Api/generated/ffbAPI.schemas";
-import { apiDeleteProduct, getOwnFoodCourtProducts, updateProductCount } from "../Api/ffb/productApi";
+import { apiCreateProduct, apiDeleteProduct, getOwnFoodCourtProducts, updateProductCount } from "../Api/ffb/productApi";
 import HeaderFoodCourt from "../Components/HeaderFoodCourt";
 import  DeleteDialog from "../Components/DeleteDialog";
 import { getOwnFoodCourt } from "../Api/ffb/foodCourtApi";
@@ -81,8 +81,8 @@ function StandPage() {
       setError("");
       const rawCount = editedCounts[productId] ?? 0;
       const newCount = Number.isFinite(rawCount) ? Math.max(0, Math.trunc(rawCount)) : 0;
-      const data: Product = await updateProductCount(productId, newCount);
-        await loadData();
+      await updateProductCount(productId, newCount);
+      await loadData();
     } catch (updateError) {
       setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
     }
@@ -110,7 +110,15 @@ function StandPage() {
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "Unbekannter Fehler");
     }
-  }; 
+  };
+
+  const resetProductForm = () => {
+    setNewDisplayName("");
+    setNewPrice("");
+    setNewSymbolIdentifier("fa-solid fa-ban");
+    setNewMinimalWarning("");
+  };
+
   const createProduct = async () => {
     const displayName = newDisplayName.trim();
     if (!displayName) {
@@ -149,10 +157,13 @@ function StandPage() {
     try {
       setIsCreatingProduct(true);
       setError("");
-      setNewDisplayName("");
-      setNewPrice("");
-      setNewSymbolIdentifier("TEST");
-      setNewMinimalWarning("");
+      await apiCreateProduct({
+        displayName,
+        price,
+        symbolIdentifier,
+        minimalWarning,
+      });
+      resetProductForm();
       setIsCreateFormOpen(false);
       await loadData();
     } catch (createError) {
@@ -265,7 +276,7 @@ function StandPage() {
                   }}
                   onKeyDown={(event) => {
                     if (event.key === "Enter") {
-                      updateProductCount(product.id, editedCounts[product.id]);
+                      updateProductCountLocal(product.id);
                     }
                   }}
                 />
