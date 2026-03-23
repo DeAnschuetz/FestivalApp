@@ -220,17 +220,7 @@ function HomePage() {
 		}
 	};
 
-	const updateFoodCourtWaitingTime = async () => {
-		if (!foodCourt) {
-			return;
-		}
-
-		try {
-			setError("");
-		} catch (updateError) {
-			setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
-		}
-	};
+	
 
 	return (
 		<div className={styles.Page}>
@@ -257,7 +247,7 @@ function HomePage() {
 								setWaitingTime(Number.isFinite(parsedValue) ? parsedValue : 0);
 							}}
 						/>
-						<button className={styles.PrimaryButton} onClick={updateFoodCourtWaitingTime}>
+						<button className={styles.PrimaryButton}>
 							Speichern
 						</button>
 					</div>
