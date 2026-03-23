@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { getFoodCourtImageUrl } from "../Api/ffb/foodCourtApi";
 
 interface FoodCourtImageProps {
@@ -13,8 +13,6 @@ const isUuid = (value: string) =>
 
 function FoodCourtImage({ foodCourtId, token, className, alt = "Food Court" }: FoodCourtImageProps) {
   const [imageUrl, setImageUrl] = useState("");
-  const [fallbackImageUrl, setFallbackImageUrl] = useState("");
-  const [useFallbackImage, setUseFallbackImage] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
