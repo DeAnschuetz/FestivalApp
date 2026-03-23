@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./StandPage.module.css";
 import { FoodCourtResponse } from "../Api/generated/ffbAPI.schemas";
-import { apiCreateProduct, apiDeleteProduct, getOwnFoodCourtProducts, updateProductCount } from "../Api/ffb/productApi";
+import { apiDeleteProduct, getOwnFoodCourtProducts, updateProductCount } from "../Api/ffb/productApi";
 import HeaderFoodCourt from "../Components/HeaderFoodCourt";
+import  DeleteDialog from "../Components/DeleteDialog";
 import { getOwnFoodCourt } from "../Api/ffb/foodCourtApi";
 import { Product } from "../Api/ffb/types";
 
@@ -24,23 +25,10 @@ function StandPage() {
   const [newPrice, setNewPrice] = useState("");
   const [newSymbolIdentifier, setNewSymbolIdentifier] = useState("fa-solid fa-ban");
   const [newMinimalWarning, setNewMinimalWarning] = useState("");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [productToDeleteId, setProductToDeleteId] = useState<string | null>(null);
 
-  const authHeaders = useMemo(
-    () => {
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
-
-      return headers;
-    },
-    [token],
-  );
-
-  const loadData = useCallback(async () => {
+   const loadData = useCallback(async () => {
     setError("");
 
     try {
@@ -61,7 +49,7 @@ function StandPage() {
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Unbekannter Fehler");
     }
-  }, [authHeaders]);
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -100,33 +88,29 @@ function StandPage() {
     }
   };
 
-  const adjustProductCount = async (productId: string, delta: number) => {
-    const currentCount = editedCounts[productId] ?? 0;
-    const nextCount = Math.max(0, currentCount + delta);
-
-    setEditedCounts((current) => ({
-      ...current,
-      [productId]: nextCount,
-    }));
-
-    await updateProductCount(productId, nextCount);
+  const openDeleteDialog = (productId: string) => {
+    setProductToDeleteId(productId);
+    setIsDeleteDialogOpen(true);
   };
 
-  const deleteProduct = async (productId: string) => {
-    const shouldDelete = window.confirm("Produkt wirklich löschen?");
-    if (!shouldDelete) {
-      return;
-    }
+  const handleCancelDelete = () => {
+    setIsDeleteDialogOpen(false);
+    setProductToDeleteId(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!productToDeleteId) return;
 
     try {
       setError("");
-      await apiDeleteProduct(productId);
+      await apiDeleteProduct(productToDeleteId);
+      setIsDeleteDialogOpen(false);
+      setProductToDeleteId(null);
       await loadData();
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "Unbekannter Fehler");
     }
-  };
-
+  }; 
   const createProduct = async () => {
     const displayName = newDisplayName.trim();
     if (!displayName) {
@@ -165,9 +149,6 @@ function StandPage() {
     try {
       setIsCreatingProduct(true);
       setError("");
-      console.log("hallop")
-      const product = await apiCreateProduct({ price: price, displayName: displayName, symbolIdentifier: symbolIdentifier, minimalWarning: minimalWarning });
-
       setNewDisplayName("");
       setNewPrice("");
       setNewSymbolIdentifier("TEST");
@@ -270,18 +251,6 @@ function StandPage() {
               <div className={styles.Price}>{product.price.toFixed(2)} €</div>
 
               <div>
-                <button
-                  className={styles.IconBtn}
-                  onClick={() => {
-                    setEditedCounts((current) => ({
-                      ...current,
-                      [product.id]: Number.isFinite(current) ? Math.max(0, editedCounts[product.id] + 1) : 0,
-                    }));
-                  }}
-                  disabled={(editedCounts[product.id] ?? 0) <= 0}
-                >
-                  —
-                </button>
                 <input
                   className={styles.CountInput}
                   type="number"
@@ -300,28 +269,19 @@ function StandPage() {
                     }
                   }}
                 />
-                <button
-                  className={styles.IconBtn}
-                  onClick={() => {
-                    setEditedCounts((current) => ({
-                      ...current,
-                      [product.id]: Number.isFinite(current) ? Math.max(0, editedCounts[product.id] - 1) : 0,
-                    }));
-                  }}
-                >
-                  +
-                </button>
               </div>
 
               <button className={styles.IconBtn} onClick={() => updateProductCountLocal(product.id)}>
                 <i className="fa-regular fa-pen-to-square" />
               </button>
-              <button className={styles.IconBtn} onClick={() => deleteProduct(product.id)}>
+              <button className={styles.IconBtn} onClick={() => openDeleteDialog(product.id)}>
                 <i className="fa-regular fa-trash-can" />
               </button>
             </div>
           ))}
         </div>
+
+        <DeleteDialog open={isDeleteDialogOpen} onConfirm={handleConfirmDelete} onCancel={handleCancelDelete} />
 
         <div className={styles.WaitingSection}>
           <div>Geschätzte Wartezeit</div>
