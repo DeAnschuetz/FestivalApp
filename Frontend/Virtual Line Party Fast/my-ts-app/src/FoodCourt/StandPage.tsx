@@ -5,17 +5,8 @@ import { FoodCourtResponse } from "../Api/generated/ffbAPI.schemas";
 import { apiCreateProduct, apiDeleteProduct, getOwnFoodCourtProducts, updateProductCount } from "../Api/ffb/productApi";
 import HeaderFoodCourt from "../Components/HeaderFoodCourt";
 import { getOwnFoodCourt } from "../Api/ffb/foodCourtApi";
+import { Product } from "../Api/ffb/types";
 
-const API_BASE = "http://0.0.0.0:8080/ffb";
-
-interface Product {
-  id: string;
-  price: number;
-  displayName: string;
-  symbolIdentifier: string;
-  minimalWarning: number;
-  productCount: number;
-}
 
 function StandPage() {
   const token = localStorage.getItem("token");
@@ -89,22 +80,7 @@ function StandPage() {
 
     try {
       setError("");
-      const response = await fetch(`${API_BASE}/ffb/food_court`, {
-        method: "PUT",
-        headers: authHeaders,
-        credentials: "include",
-        body: JSON.stringify({
-          displayName: foodCourt.name,
-          waitingTime: safeWaitingTime,
-        }),
-      });
-
-      if (!response.ok) {
-        const responseText = await response.text();
-        throw new Error(responseText || "Wartezeit konnte nicht gespeichert werden.");
-      }
-
-      const updatedFoodCourt = (await response.json()) as FoodCourtResponse;
+      const updatedFoodCourt = await getOwnFoodCourt();
       setFoodCourt(updatedFoodCourt);
       setWaitingTime(updatedFoodCourt.waitingTime ?? safeWaitingTime);
     } catch (updateError) {
@@ -221,7 +197,6 @@ function StandPage() {
           title={foodCourt?.name ?? "Stand"}
           loginLabel={loginLabel}
           foodCourtId={foodCourt?.id}
-          apiBase={API_BASE}
           token={token}
           onOpenStand={handleOpenStand}
           onLogout={handleLogout}

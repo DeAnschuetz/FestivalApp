@@ -1,19 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./HomePage.module.css";
-import { Route, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import HomePageFilterBar from "../Components/HomePageFilterBar";
 import HomePageBulkActions from "../Components/HomePageBulkActions";
 import HomePageOrderCard from "../Components/HomePageOrderCard";
 import HeaderFoodCourt from "../Components/HeaderFoodCourt";
 
-import { AccountType, FoodOrderStatus as OrderStatus } from "../Api/generated/ffbAPI.schemas"
+import { FoodOrderStatus as OrderStatus } from "../Api/generated/ffbAPI.schemas"
 import { FoodCourt, Order } from "../Api/ffb/types";
 import { getFoodCourtImageUrl, getOwnFoodCourt, getVisibleOrders, getVisibleOrdersByStatus, updateFoodOrderStatus } from "../Api/ffb";
-import ProtectedRoute from "../Auth/ProtectedRoute";
-import StandPage from "./StandPage";
 type FilterKey = "ALL" | OrderStatus;
 
-const API_BASE = "http://0.0.0.0:8080";
 
 const filterConfig: { key: FilterKey; label: string }[] = [
 	{ key: "ALL", label: "Alle" },
@@ -266,23 +263,6 @@ function HomePage() {
 
 		try {
 			setError("");
-			const response = await fetch(`${API_BASE}/food_court`, {
-				method: "PUT",
-				headers: authHeaders,
-				credentials: "include",
-				body: JSON.stringify({
-					displayName: foodCourt.name,
-				}),
-			});
-
-			if (!response.ok) {
-				const responseText = await response.text();
-				throw new Error(responseText || "Wartezeit konnte nicht aktualisiert werden.");
-			}
-
-			const updatedFoodCourt = (await response.json()) as FoodCourt;
-			setFoodCourt(updatedFoodCourt);
-			setWaitingTime(updatedFoodCourt.waitingTime);
 		} catch (updateError) {
 			setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
 		}
@@ -295,7 +275,6 @@ function HomePage() {
 					title={foodCourt?.name ?? "Food Court"}
 					loginLabel={loginLabel}
 					foodCourtId={foodCourt?.id}
-					apiBase={API_BASE}
 					token={token}
 					onOpenStand={handleOpenStand}
 					onLogout={handleLogout}
