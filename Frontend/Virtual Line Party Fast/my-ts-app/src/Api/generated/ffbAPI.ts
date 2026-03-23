@@ -409,23 +409,29 @@ export const getPutCartAddCartItemUrl = () => {
   return `/ffb/cart/add_cart_item`
 }
 
-export const putCartAddCartItem = async (cartItemCreationRequest: CartItemCreationRequest, options?: RequestInit): Promise<putCartAddCartItemResponse> => {
-  
-  const res = await fetch(getPutCartAddCartItemUrl(),
-  {      
+export const putCartAddCartItem = async (
+  cartItemCreationRequest: CartItemCreationRequest,
+  options?: RequestInit
+): Promise<putCartAddCartItemResponse> => {
+  const headers = new Headers(options?.headers);
+  headers.set("Content-Type", "application/json");
+
+  const res = await fetch(getPutCartAddCartItemUrl(), {
     ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      cartItemCreationRequest,)
-  }
-)
+    method: "PUT",
+    headers,
+    body: JSON.stringify(cartItemCreationRequest),
+  });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: putCartAddCartItemResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as putCartAddCartItemResponse
-}
+  const data: putCartAddCartItemResponse["data"] = body ? JSON.parse(body) : {};
+
+  return {
+    data,
+    status: res.status,
+    headers: res.headers,
+  } as putCartAddCartItemResponse;
+};
   
 
 

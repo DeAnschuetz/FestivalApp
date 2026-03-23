@@ -6,33 +6,20 @@ import { FoodCourt } from "../Api/ffb/types";
 import { getAllFoodCourts } from "../Api/ffb/foodCourtApi";
 
 interface FoodCourtTabProps {
+  foodCourts: FoodCourt[];
   setIsFoodCourtOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setClickedFoodCourt: React.Dispatch<React.SetStateAction<string>>;
   isOrdersOpen: boolean;
 }
 
 function FoodCourtTab(props: FoodCourtTabProps) {
-  const { isOrdersOpen, setClickedFoodCourt, setIsFoodCourtOpen } = props;
+  const { foodCourts, isOrdersOpen, setClickedFoodCourt, setIsFoodCourtOpen } = props;
   const [isOpen, setIsOpen] = useState(true);
-  const [foodCourts, setFoodCourts] = useState<FoodCourt[]>([]);
 
   const showOpen = () => {
     setIsOpen(!isOpen);
     setIsFoodCourtOpen(isOpen);
   };
-
-  useEffect(() => {
-    const loadFoodCourtData = async () => {
-        try {
-          const foodCourts: FoodCourt[] = await getAllFoodCourts();
-          setFoodCourts(foodCourts); 
-        } catch (error) {
-          
-        }
-      };
-  
-      void loadFoodCourtData();
-  }, []);
 
   return (
     <div>

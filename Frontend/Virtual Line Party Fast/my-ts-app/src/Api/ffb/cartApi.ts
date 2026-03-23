@@ -45,7 +45,7 @@ function ensureCart(): Cart {
   return getStoredCart() ?? { hasPrio: false, total: 0, cartItems: [] };
 }
 
-export async function getCart(): Promise<Cart> {
+export async function apiGetCart(): Promise<Cart> {
   return readThroughCache<Cart>({
     apiCall: () => getCartRequest(createRequestOptions()),
     expectedStatuses: [200],
@@ -56,7 +56,7 @@ export async function getCart(): Promise<Cart> {
   });
 }
 
-export async function addCartItem(
+export async function apiAddCartItem(
   request: CartItemCreationRequest,
 ): Promise<Cart> {
   return mutateWithOfflineFallback<Cart>({
@@ -134,7 +134,7 @@ export async function updateCartItem(
   });
 }
 
-export async function removeCartItem(id: Uuid): Promise<Cart> {
+export async function apiRemoveCartItem(id: Uuid): Promise<Cart> {
   return mutateWithOfflineFallback<Cart>({
     apiCall: () => deleteCartId(id, createRequestOptions()),
     expectedStatuses: [200],

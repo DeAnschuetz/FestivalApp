@@ -3,15 +3,13 @@ import { Button } from "@progress/kendo-react-buttons";
 import styles from "./Modules/Header.module.css";
 import { useNavigate } from "react-router-dom";
 import { BasketItem } from "../Types";
+import { Cart } from "../Api/ffb/types";
 
 interface HeaderProps {
   setPayisOpen: React.Dispatch<React.SetStateAction<boolean>>;
   credits: number;
   setOpenBasket: React.Dispatch<React.SetStateAction<boolean>>;
-  orderBasket: {
-    foodcourt_name: string;
-    Items: BasketItem[];
-  };
+  cart: Cart;
   openBasket: boolean;
   setClickedFoodCourt: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -21,7 +19,7 @@ function Header(props: HeaderProps) {
     setPayisOpen,
     credits,
     setOpenBasket,
-    orderBasket,
+    cart,
     openBasket,
     setClickedFoodCourt,
   } = props;
@@ -48,6 +46,8 @@ function Header(props: HeaderProps) {
     localStorage.removeItem("currentUser");
     navigate("/login");
   };
+  const cartItems =  cart.cartItems ?? [];
+  const cartItemsCount: number = cartItems.length;
 
   return (
     <div className={styles.User}>
@@ -70,8 +70,8 @@ function Header(props: HeaderProps) {
               setClickedFoodCourt("");
             }}
           />
-          {orderBasket.Items.length !== 0 && (
-            <div className={styles.FullBasket}>{orderBasket.Items.length}</div>
+          {cartItemsCount !== 0 && (
+            <div className={styles.FullBasket}>{cartItemsCount}</div>
           )}
         </div>
         <div className={styles.Credits}>

@@ -3,44 +3,33 @@ import styles from "./Modules/FoodCourtProducts.module.css";
 import { BasketItem  } from "../Types";
 import { Button } from "@progress/kendo-react-buttons";
 import AddOrderItem from "./AddOrderItem";
-import { FoodCourt, Product } from "../Api/ffb/types";
+import { Cart, FoodCourt, Product } from "../Api/ffb/types";
 import { getProductsByFoodCourtId } from "../Api/ffb/productApi";
 
 interface FoodCourtProductsProps {
   currentFoodCourt: FoodCourt | undefined;
   setClickedFoodCourt: React.Dispatch<React.SetStateAction<string>>;
-  setOrderBasket: React.Dispatch<React.SetStateAction<any>>;
-  orderBasket: { foodcourt_name: string; Items: BasketItem[] };
+  setCart: React.Dispatch<React.SetStateAction<Cart>>;
+  cart: Cart;
 }
 
 function FoodCourtProducts(props: FoodCourtProductsProps) {
-  const { currentFoodCourt, setClickedFoodCourt, setOrderBasket, orderBasket } =
+  const { currentFoodCourt, setClickedFoodCourt, setCart, cart } =
     props;
-  console.log("orderBasket: ", orderBasket);
+  console.log("orderBasket: ", cart);
   const [openAddItemDialog, setOpenAddItemDialog] = useState(false);
   const [clickedItem, setClickedItem] = useState({});
   const [errorText, setErrorText] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
 
   const onAddClick = (item: any) => {
-    if (
-      orderBasket.Items.length > 0 &&
-      orderBasket.foodcourt_name !== currentFoodCourt?.name
-    ) {
-      // Fehler anzeigen, Dialog nicht öffnen
-      setErrorText(
-        "Parallel bei unterschiedlichen Ständen bestellen ist nicht möglich",
-      );
-      setOpenAddItemDialog(false);
-    } else {
-      setClickedItem(item);
-      setOpenAddItemDialog(true);
-      setErrorText(""); // Fehler zurücksetzen, falls vorher gesetzt
-    }
+    setClickedItem(item);
+    setOpenAddItemDialog(true);
+    setErrorText("");
   };
 
   useEffect(() => {
-      const loadFoodCourtData = async () => {
+      const loadProductData = async () => {
         try {
           if (currentFoodCourt) {
             const products: Product[] = await getProductsByFoodCourtId(currentFoodCourt?.id);
@@ -49,9 +38,9 @@ function FoodCourtProducts(props: FoodCourtProductsProps) {
         } catch (error) {
           
         } 
-        };
+      };
     
-        void loadFoodCourtData();
+      void loadProductData();
   }, []);
 
   return (
@@ -112,10 +101,11 @@ function FoodCourtProducts(props: FoodCourtProductsProps) {
       </div>
       {openAddItemDialog && (
         <AddOrderItem
+          products={products}
           clickedItem={clickedItem}
           setOpenAddItemDialog={setOpenAddItemDialog}
           currentFoodCourt={currentFoodCourt}
-          setOrderBasket={setOrderBasket}
+          setCart={setCart}
         />
       )}
     </div>

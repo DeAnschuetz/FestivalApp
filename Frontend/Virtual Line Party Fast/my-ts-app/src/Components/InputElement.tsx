@@ -7,7 +7,7 @@ type InputElementProps = {
   label: string;
   editorId: string;
   value: string | number;
-  onChange: (e: string) => void;
+  onChange: (e: any) => void;
   wrapperStyle?: CSSProperties;
   inputStyle?: CSSProperties;
   labelStyle?: CSSProperties;

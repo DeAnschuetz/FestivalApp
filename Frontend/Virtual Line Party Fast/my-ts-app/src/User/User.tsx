@@ -7,7 +7,7 @@ import FoodCourtTab from "./FoodCourtTab";
 import { BasketItem } from "../Types";
 import Pay from "./Pay";
 import ViewOrder from "./ViewOrder";
-import { Credit, FoodCourt, Order } from "../Api/ffb/types";
+import { Cart, Credit, FoodCourt, Order } from "../Api/ffb/types";
 import { getCredit } from "../Api/ffb/creditApi";
 import { getVisibleOrders } from "../Api/ffb/foodOrderApi";
 import { FoodOrderStatus as OrderStatus  } from "../Api/generated/ffbAPI.schemas";
@@ -29,16 +29,8 @@ function User(props: UserProps) {
   const [clickedCard, setClickedCard] = useState("");
   const [foodCourts, setFoodCourts] = useState<FoodCourt[]>([]);
   const [clickedFoodCourt, setClickedFoodCourt] = useState("");
-  const [orderBasket, setOrderBasket] = useState<{
-    foodcourt_name: string;
-    waiting_time: number;
-    Items: BasketItem[];
-  }>({
-    foodcourt_name: "",
-    Items: [],
-    waiting_time: 0,
-  });
-  const [openBasket, setOpenBasket] = useState(false);
+  const [cart, setCart] = useState<Cart>({} as Cart);
+  const [cartOpen, setCartOpen] = useState(false);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -94,9 +86,9 @@ function User(props: UserProps) {
       <Header
         setPayisOpen={setPayisOpen}
         credits={credits}
-        setOpenBasket={setOpenBasket}
-        openBasket={openBasket}
-        orderBasket={orderBasket}
+        setOpenBasket={setCartOpen}
+        openBasket={cartOpen}
+        cart={cart ?? {} as Cart}
         setClickedFoodCourt={setClickedFoodCourt}
       />
       {payisOpen ? (
@@ -114,14 +106,14 @@ function User(props: UserProps) {
         <FoodCourtProducts
           currentFoodCourt={currentFoodcourt}
           setClickedFoodCourt={setClickedFoodCourt}
-          setOrderBasket={setOrderBasket}
-          orderBasket={orderBasket}
+          setCart={setCart}
+          cart={cart}
         />
-      ) : openBasket ? (
+      ) : cartOpen ? (
         <ShoppingBasket
-          orderBasket={orderBasket}
-          setOpenBasket={setOpenBasket}
-          setOrderBasket={setOrderBasket}
+          cart={cart}
+          setCartOpen={setCartOpen}
+          setCartOutside={setCart}
           credits={credits}
           setCredits={setCredits}
           orders = {orders}

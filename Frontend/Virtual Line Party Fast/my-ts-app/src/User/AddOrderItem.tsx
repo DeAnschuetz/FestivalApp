@@ -3,83 +3,50 @@ import styles from "./Modules/AddOrderItem.module.css";
 import { Dialog, DialogActionsBar } from "@progress/kendo-react-dialogs";
 import InputElement from "../Components/InputElement";
 import { Button } from "@progress/kendo-react-buttons";
-import { FoodCourt, Product } from "../Api/ffb/types";
-import { getProductsByFoodCourtId } from "../Api/ffb";
+import { Cart, FoodCourt, Product } from "../Api/ffb/types";
+import { apiAddCartItem } from "../Api/ffb";
+import { CartItemCreationRequest } from "../Api/generated/ffbAPI.schemas";
 
 interface AddOrderItemProps {
   clickedItem: any;
+  products: Product[];
   setOpenAddItemDialog: React.Dispatch<React.SetStateAction<boolean>>;
   currentFoodCourt: FoodCourt | undefined;
-  setOrderBasket: React.Dispatch<React.SetStateAction<any>>;
+  setCart: React.Dispatch<React.SetStateAction<any>>;
 }
 
 function AddOrderItem(props: AddOrderItemProps) {
   const {
+    products,
     clickedItem,
     setOpenAddItemDialog,
-    setOrderBasket,
+    setCart,
     currentFoodCourt,
   } = props;
-  const [itemCount, setItemCount] = useState(1);
+  const [itemCount, setItemCount] = useState<string | number>(1);
   const [extraText, setExtraText] = useState("");
   const [selectedSubItems, setSelectedSubItems] = useState<any>({});
-  const [products, setProducts] = useState<Product[]>([]);
-
-
-
-  useEffect(() => {
-      const loadFoodCourtData = async () => {
-        try {
-          if (currentFoodCourt) {
-            const products: Product[] = await getProductsByFoodCourtId(currentFoodCourt?.id);
-            setProducts(products);
-          }
-        } catch (error) {
-
-        }
-        };
-
-        void loadFoodCourtData();
-  }, []);
 
   console.log("clickedItem: ", clickedItem);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const cartItemRequest: CartItemCreationRequest = {
+      productId: clickedItem.id,
+      itemCount: itemCount as number,
+      extra: extraText
+    }
 
-    const newItem = {
-      name: clickedItem.name,
-      extra: extraText,
-      amount: itemCount,
-      price: clickedItem.price,
-      subItems: clickedItem.subItems?.map((subItem: any, index: number) => {
-        const selected = selectedSubItems[index];
-        return {
-          name: selected || subItem.name,
-        };
-      }),
-    };
-
-    setOrderBasket((prev: any) => {
-      if (!prev || !prev.Items || prev.Items.length === 0) {
-        // Erster Eintrag
-        return {
-          foodcourt_name: currentFoodcourt?.name || "",
-          waiting_time: currentFoodcourt?.avg_waiting_time,
-          foodcourt_name: currentFoodCourt?.name|| "",
-          Items: [newItem],
-        };
-      } else if (prev.foodcourt_name === currentFoodCourt?.name) {
-        // Weitere Items vom gleichen Stand
-        return {
-          ...prev,
-          Items: [...prev.Items, newItem],
-        };
-      } else {
-        return prev; // keine Änderung
+    const addOrderItem = async () => {
+      try {
+        const newCart: Cart = await apiAddCartItem(cartItemRequest);
+        setCart(newCart);
+        
+      } catch (error) {
+      
       }
-    });
-
+    }
+    addOrderItem();
     setOpenAddItemDialog(false);
   };
   return (
