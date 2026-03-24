@@ -7,6 +7,7 @@ interface HomePageOrderCardProps {
 	isSelected: boolean;
 	selectedStatus: OrderStatus;
 	statusLabels: Record<OrderStatus, string>;
+	allowedStatuses: OrderStatus[];
 	isOrderStatus: (value: string) => value is OrderStatus;
 	onToggleSelected: () => void;
 	onStatusChange: (status: OrderStatus) => void;
@@ -18,6 +19,7 @@ function HomePageOrderCard({
 	isSelected,
 	selectedStatus,
 	statusLabels,
+	allowedStatuses,
 	isOrderStatus,
 	onToggleSelected,
 	onStatusChange,
@@ -74,9 +76,9 @@ function HomePageOrderCard({
 							onStatusChange(value);
 						}}
 					>
-						{Object.entries(statusLabels).map(([statusKey, label]) => (
+						{allowedStatuses.map((statusKey) => (
 							<option key={statusKey} value={statusKey}>
-								{label}
+								{statusLabels[statusKey]}
 							</option>
 						))}
 					</select>

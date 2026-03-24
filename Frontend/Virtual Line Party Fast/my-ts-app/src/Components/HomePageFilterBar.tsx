@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "../FoodCourt/HomePage.module.css";
 import { FoodOrderStatus as OrderStatus } from "../Api/generated/ffbAPI.schemas"
 
@@ -6,7 +5,6 @@ interface FilterOption {
 	key: string;
 	label: string;
 }
-
 interface HomePageFilterBarProps {
 	filters: FilterOption[];
 	activeFilter: string | OrderStatus;

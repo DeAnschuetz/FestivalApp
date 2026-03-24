@@ -36,6 +36,23 @@ const filterConfig: { key: FilterKey; label: string }[] = [
 const isOrderStatus = (value: unknown): value is OrderStatus =>
     typeof value === 'string' && value in statusLabels;
 
+const getAllowedNextStatuses = (currentStatus: OrderStatus): OrderStatus[] => {
+	switch (currentStatus) {
+		case "ORDERED":
+			return ["ORDERED", "IN_PROGRESS", "CANCELED"];
+		case "IN_PROGRESS":
+			return ["IN_PROGRESS", "READY_FOR_PICKUP", "CANCELED"];
+		case "READY_FOR_PICKUP":
+			return ["READY_FOR_PICKUP", "DONE"];
+		case "DONE":
+			return ["DONE"];
+		case "CANCELED":
+			return ["CANCELED"];
+		default:
+			return [];
+	}
+};
+
 function HomePage() {
 	const token = localStorage.getItem("token");
 	const navigate = useNavigate();
@@ -150,6 +167,23 @@ function HomePage() {
 		return countsByStatus[filterKey];
 	};
 
+	const bulkAllowedStatuses = useMemo(() => {
+		if (selectedOrderIds.length === 0) {
+			return Object.keys(statusLabels) as OrderStatus[];
+		}
+
+		const selectedOrders = orders.filter((o) => selectedOrderIds.includes(o.id));
+		const perOrderAllowed = selectedOrders.map((o) => getAllowedNextStatuses(o.status));
+
+		if (perOrderAllowed.length === 0) {
+			return Object.keys(statusLabels) as OrderStatus[];
+		}
+
+		return perOrderAllowed[0].filter((status) =>
+			perOrderAllowed.every((allowed) => allowed.includes(status)),
+		);
+	}, [selectedOrderIds, orders]);
+
 	const allVisibleOrdersSelected =
 		orders.length > 0 && orders.every((order) => selectedOrderIds.includes(order.id));
 
@@ -187,6 +221,17 @@ function HomePage() {
 			return;
 		}
 
+		const order = orders.find((o) => o.id === orderId);
+		if (!order) {
+			return;
+		}
+
+		const allowed = getAllowedNextStatuses(order.status);
+		if (!allowed.includes(selectedStatus)) {
+			setError(`Status kann nicht von "${statusLabels[order.status]}" auf "${statusLabels[selectedStatus]}" geändert werden.`);
+			return;
+		}
+
 		try {
 			setSuccess("");
 			await updateOrderStatus(orderId, selectedStatus);
@@ -202,18 +247,28 @@ function HomePage() {
 			return;
 		}
 
+		const eligibleOrderIds = selectedOrderIds.filter((orderId) => {
+			const order = orders.find((o) => o.id === orderId);
+			return order && getAllowedNextStatuses(order.status).includes(statusForUpdate);
+		});
+
+		if (eligibleOrderIds.length === 0) {
+			setError("Keine der ausgewählten Bestellungen kann auf diesen Status gesetzt werden.");
+			return;
+		}
+
 		try {
 			setError("");
 			setSuccess("");
-			const updatedCount = selectedOrderIds.length;
+			const updatedCount = eligibleOrderIds.length;
+			const skippedCount = selectedOrderIds.length - eligibleOrderIds.length;
 			await Promise.all(
-				selectedOrderIds.map((orderId) => updateOrderStatus(orderId, statusForUpdate)),
+				eligibleOrderIds.map((orderId) => updateOrderStatus(orderId, statusForUpdate)),
 			);
 			await fetchOrders(activeFilter);
 			setSelectedOrderIds([]);
-			setSuccess(
-				`Status für ${updatedCount} Bestellung${updatedCount === 1 ? "" : "en"} aktualisiert.`,
-			);
+			const msg = `Status für ${updatedCount} Bestellung${updatedCount === 1 ? "" : "en"} aktualisiert.`;
+			setSuccess(skippedCount > 0 ? `${msg} ${skippedCount} übersprungen (ungültiger Übergang).` : msg);
 		} catch (updateError) {
 			setSuccess("");
 			setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
@@ -269,6 +324,7 @@ function HomePage() {
 						allVisibleOrdersSelected={allVisibleOrdersSelected}
 						selectedCount={selectedOrderIds.length}
 						statusLabels={statusLabels}
+						allowedBulkStatuses={bulkAllowedStatuses}
 						onToggleAll={toggleAllSelectedOrders}
 						onApplyBulk={applyBulkStatusUpdate}
 					/>
@@ -289,8 +345,7 @@ function HomePage() {
 							order={order}
 							isSelected={selectedOrderIds.includes(order.id)}
 							selectedStatus={statusSelection[order.id] ?? order.status}
-							statusLabels={statusLabels}
-							isOrderStatus={isOrderStatus}
+							statusLabels={statusLabels}						allowedStatuses={getAllowedNextStatuses(order.status)}							isOrderStatus={isOrderStatus}
 							onToggleSelected={() => toggleOrderSelection(order.id)}
 							onStatusChange={(value) =>
 								setStatusSelection((currentSelection) => ({
