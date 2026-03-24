@@ -1,13 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+// css
 import styles from "./StandPage.module.css";
+
+// api
 import { FoodCourtResponse } from "../Api/generated/ffbAPI.schemas";
 import { apiCreateProduct, apiDeleteProduct, getOwnFoodCourtProducts, updateProductCount } from "../Api/ffb/productApi";
-import HeaderFoodCourt from "../Components/HeaderFoodCourt";
-import  DeleteDialog from "../Components/DeleteDialog";
 import { getOwnFoodCourt } from "../Api/ffb/foodCourtApi";
 import { Product } from "../Api/ffb/types";
 
+// components
+import  DeleteDialog from "../Components/DeleteDialog";
+import HeaderFoodCourt from "../Components/HeaderFoodCourt";
 
 function StandPage() {
   const token = localStorage.getItem("token");
@@ -33,8 +38,8 @@ function StandPage() {
 
     try {
       const [foodCourtResponse, productsResponse] = await Promise.all([
-        await getOwnFoodCourt(),
-        await getOwnFoodCourtProducts(),
+        getOwnFoodCourt(),
+        getOwnFoodCourtProducts(),
       ]);
 
       setFoodCourt(foodCourtResponse);
@@ -235,7 +240,15 @@ function StandPage() {
             <div className={styles.ProductRow} key={product.id}>
               <div className={styles.ProductMain}>
                 <div className={styles.ProductName}>{product.displayName}</div>
-                <div className={styles.Warning}>Warnung bei Bestand</div>
+                <div
+                  className={
+                    product.productCount != null && product.minimalWarning != null && product.productCount <= product.minimalWarning
+                      ? `${styles.Warning} ${styles.WarningAlert}`
+                      : styles.Warning
+                  }
+                >
+                  Warnung bei Bestand: <strong>{product.minimalWarning ?? "–"}</strong>
+                </div>
               </div>
 
               <div className={styles.Price}>{product.price.toFixed(2)} €</div>

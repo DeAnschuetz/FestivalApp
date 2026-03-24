@@ -154,6 +154,14 @@
   color: #4f4f4f;
 }
 
+.WarningAlert {
+  color: #b22222;
+  font-weight: 700;
+  background: rgba(178,34,34,0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
 .Price {
   font-size: 13px;
   font-weight: 700;
