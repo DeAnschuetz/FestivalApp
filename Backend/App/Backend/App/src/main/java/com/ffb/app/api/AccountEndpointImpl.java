@@ -157,18 +157,16 @@ public class AccountEndpointImpl {
 			)
 	})
 	public Response register(@PartType(MediaType.APPLICATION_JSON) RegisterRequest registerRequest) throws ApiException {
-		String loginNr;
-		try {
-			loginNr = validator.validateAndGetLoginNr(webToken);
-		} catch (ApiException e) {
-			LOG.error("invalid authentication; Exception: ", e);
-			throw e;
+		String loginNr = registerRequest.loginNr();
+		if (loginNr == null || loginNr.isBlank()) {
+			LOG.error("Register atempt failed: login number is null or blank.");
+			throw new ApiException("The login number must not be null or blank.", Response.Status.BAD_REQUEST);
 		}
-		LOG.trace("Register attempt for loginNr={{}}", loginNr);
 		if (registerRequest.password() == null || registerRequest.password().isBlank()) {
 			LOG.error("Register attempt failed: password is null or blank.");
 			throw new ApiException("The password must not be null or blank.", Response.Status.BAD_REQUEST);
 		}
+		LOG.trace("Register attempt for loginNr={{}}", loginNr);
 		Pattern loginNrPattern = Pattern.compile("[AFV][-]\\d{3}[-]\\d{3}[-]\\d{3}");
 		Matcher matcher = loginNrPattern.matcher(loginNr);
 		if (!matcher.find()) {

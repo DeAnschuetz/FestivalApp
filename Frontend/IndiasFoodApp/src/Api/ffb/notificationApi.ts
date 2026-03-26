@@ -1,59 +1,51 @@
+
 import {
   getNotificationListAll,
   putNotificationUpdateNotificationIdNewStatus,
 } from "../generated/ffbAPI";
 import type {
-  FoodOrderNotificationResponse,
-  FoodOrderResponse,
-  FoodOrderResponseHistory,
+  FoodOrderStatus,
   NotificationStatus,
   Uuid,
 } from "../generated/ffbAPI.schemas";
 import { createRequestOptions, mutateWithOfflineFallback, readThroughCache } from "./core/api";
 import { STORAGE_KEYS } from "./core/keys";
 import { readJson, writeJson } from "./core/storage";
+import {
+  normalizeFoodOrderStatus,
+  normalizeNotifications,
+  normalizeNotificationStatus,
+} from "./normalizers";
+import type { Notification, OrderHistory } from "./types";
 
-export type StoredNotification = FoodOrderNotificationResponse;
-
-function getStoredNotifications(): StoredNotification[] {
-  return readJson<StoredNotification[]>(STORAGE_KEYS.notifications, []);
+function getStoredNotifications(): Notification[] {
+  return readJson<Notification[]>(STORAGE_KEYS.notifications, []);
 }
 
-function setStoredNotifications(value: StoredNotification[]): StoredNotification[] {
+function setStoredNotifications(value: Notification[]): Notification[] {
   return writeJson(STORAGE_KEYS.notifications, value);
 }
 
-function normalizeNotificationList(raw: unknown): StoredNotification[] {
-  return (raw as Array<FoodOrderResponse | FoodOrderNotificationResponse>).map((item) => {
-    const notification = item as FoodOrderNotificationResponse;
-
-    return {
-      id: notification.id ?? crypto.randomUUID(),
-      type: notification.type,
-      status: notification.status ?? "NEW",
-      message: notification.message ?? "Notification",
-      creationTime: notification.creationTime ?? new Date().toISOString(),
-      pickupTime: notification.pickupTime,
-    };
-  });
+function normalizeNotificationList(raw: unknown): Notification[] {
+  return normalizeNotifications(raw as Parameters<typeof normalizeNotifications>[0]);
 }
 
 export function upsertNotificationsFromOrderUpdate(
-  order: Pick<FoodOrderResponseHistory, "id" | "status" | "foodCourtName">,
+  order: Pick<OrderHistory, "id" | "status" | "foodCourtName">,
 ): void {
-  const next: StoredNotification = {
+  const next: Notification = {
     id: crypto.randomUUID(),
-    type: order.status,
-    status: "NEW",
-    message: `${order.foodCourtName ?? "Order"} changed to ${order.status ?? "UNKNOWN"}.`,
+    type: normalizeFoodOrderStatus(order.status, "order.status"),
+    status: normalizeNotificationStatus("NEW", "notification.status"),
+    message: `${order.foodCourtName} changed to ${order.status}.`,
     creationTime: new Date().toISOString(),
   };
 
   setStoredNotifications([next, ...getStoredNotifications()]);
 }
 
-export async function getNotifications(): Promise<StoredNotification[]> {
-  return readThroughCache<StoredNotification[]>({
+export async function getNotifications(): Promise<Notification[]> {
+  return readThroughCache<Notification[]>({
     apiCall: () => getNotificationListAll(createRequestOptions()),
     expectedStatuses: [200],
     mapApiData: normalizeNotificationList,
@@ -69,8 +61,8 @@ export async function getNotifications(): Promise<StoredNotification[]> {
 export async function updateNotificationStatus(
   notificationId: Uuid,
   newStatus: NotificationStatus,
-): Promise<StoredNotification[]> {
-  return mutateWithOfflineFallback<StoredNotification[]>({
+): Promise<Notification[]> {
+  return mutateWithOfflineFallback<Notification[]>({
     apiCall: () =>
       putNotificationUpdateNotificationIdNewStatus(
         notificationId,

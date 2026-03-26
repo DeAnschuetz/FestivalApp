@@ -1,3 +1,4 @@
+
 import {
   getFoodOrderListAll,
   getFoodOrderListAllByStatusStatus,
@@ -8,93 +9,87 @@ import {
   putFoodOrderUpdateOrderIdStatus,
 } from "../generated/ffbAPI";
 import type {
-  FoodOrderHistoryResponse,
-  FoodOrderResponse,
-  FoodOrderResponseHistory,
   FoodOrderStatus,
   ShareOrderRequest,
   Uuid,
 } from "../generated/ffbAPI.schemas";
 import { createRequestOptions, mutateWithOfflineFallback, readThroughCache } from "./core/api";
+import { isOfflineLikeError, toApiError } from "./core/errors";
 import { STORAGE_KEYS } from "./core/keys";
 import { readJson, writeJson } from "./core/storage";
 import { clearStoredCart, getCart } from "./cartApi";
+import {
+  normalizeOrder,
+  normalizeOrderHistory,
+  normalizeOrderHistories,
+  normalizeOrders,
+} from "./normalizers";
 import { upsertNotificationsFromOrderUpdate } from "./notificationApi";
-import { isOfflineLikeError, toApiError } from "./core/errors";
+import type { Order, OrderHistory, OrderHistoryEntry } from "./types";
 
-function getStoredOrders(): FoodOrderResponse[] {
-  return readJson<FoodOrderResponse[]>(STORAGE_KEYS.orders, []);
+function getStoredOrders(): Order[] {
+  return readJson<Order[]>(STORAGE_KEYS.orders, []);
 }
 
-function setStoredOrders(orders: FoodOrderResponse[]): FoodOrderResponse[] {
+function setStoredOrders(orders: Order[]): Order[] {
   return writeJson(STORAGE_KEYS.orders, orders);
 }
 
-function getStoredOrderHistory(): FoodOrderResponseHistory[] {
-  return readJson<FoodOrderResponseHistory[]>(STORAGE_KEYS.orderHistory, []);
+function getStoredOrderHistory(): OrderHistory[] {
+  return readJson<OrderHistory[]>(STORAGE_KEYS.orderHistory, []);
 }
 
-function setStoredOrderHistory(orders: FoodOrderResponseHistory[]): FoodOrderResponseHistory[] {
+function setStoredOrderHistory(orders: OrderHistory[]): OrderHistory[] {
   return writeJson(STORAGE_KEYS.orderHistory, orders);
 }
 
-function toHistory(order: FoodOrderResponse, oldStatus?: FoodOrderStatus): FoodOrderResponseHistory {
-  const historyEntry: FoodOrderHistoryResponse | undefined = order.status
-    ? {
-        oldStatus,
-        newStatus: order.status,
-        statusChangeTime: new Date().toISOString(),
-      }
-    : undefined;
+function toHistory(order: Order, oldStatus?: FoodOrderStatus): OrderHistory {
+  const history: OrderHistoryEntry[] = [
+    {
+      oldStatus,
+      newStatus: order.status,
+      statusChangeTime: new Date().toISOString(),
+    },
+  ];
 
   return {
     ...order,
-    history: historyEntry ? [historyEntry] : [],
+    history,
   };
 }
 
-function upsertOrder(order: FoodOrderResponse): FoodOrderResponse[] {
-  const current = getStoredOrders().filter((item) => item.id !== order.id);
-  current.push(order);
-  setStoredOrders(current);
+function upsertOrder(order: OrderHistory): void {
+  setStoredOrders([
+    ...getStoredOrders().filter((item) => item.id !== order.id),
+    {
+      id: order.id,
+      status: order.status,
+      foodCourtName: order.foodCourtName,
+      waitingTime: order.waitingTime,
+      orderItems: order.orderItems,
+    },
+  ]);
 
-  const existingHistory = getStoredOrderHistory().find((item) => item.id === order.id);
-  const history = getStoredOrderHistory().filter((item) => item.id !== order.id);
-  history.push({
-    ...toHistory(order),
-    history: [
-      ...(existingHistory?.history ?? []),
-      ...(order.status
-        ? [
-            {
-              oldStatus: existingHistory?.status,
-              newStatus: order.status,
-              statusChangeTime: new Date().toISOString(),
-            } satisfies FoodOrderHistoryResponse,
-          ]
-        : []),
-    ],
-  });
-  setStoredOrderHistory(history);
-
-  return current;
+  const currentHistory = getStoredOrderHistory().filter((item) => item.id !== order.id);
+  currentHistory.push(order);
+  setStoredOrderHistory(currentHistory);
 }
 
-async function createFoodOrderOffline(): Promise<FoodOrderResponse[]> {
+async function createFoodOrderOffline(): Promise<Order[]> {
   const currentCart = await getCart();
 
-  const order: FoodOrderResponse = {
+  const order: Order = {
     id: crypto.randomUUID(),
     status: "ORDERED",
-    foodCourtName: currentCart.cartItems?.[0]?.displayName ?? "Offline Food Court",
+    foodCourtName: currentCart.cartItems[0]?.displayName ?? "Offline Food Court",
     waitingTime: 0,
-    orderItems: currentCart.cartItems?.map((item) => ({
+    orderItems: currentCart.cartItems.map((item) => ({
       productID: item.id,
       displayName: item.displayName,
       iconIdentifier: item.symbolIdentifier,
       count: item.count,
       extra: item.extra,
-      subItems: item.subItems?.map((subItem) => ({
+      subItems: item.subItems.map((subItem) => ({
         productID: subItem.id,
         displayName: subItem.displayName,
         iconIdentifier: subItem.symbolIdentifier,
@@ -102,7 +97,7 @@ async function createFoodOrderOffline(): Promise<FoodOrderResponse[]> {
         extra: subItem.extra,
         subItems: [],
       })),
-    })) ?? [],
+    })),
   };
 
   const orders = [...getStoredOrders(), order];
@@ -112,11 +107,11 @@ async function createFoodOrderOffline(): Promise<FoodOrderResponse[]> {
   return orders;
 }
 
-export async function getVisibleOrders(): Promise<FoodOrderResponse[]> {
-  return readThroughCache<FoodOrderResponse[]>({
+export async function getVisibleOrders(): Promise<Order[]> {
+  return readThroughCache<Order[]>({
     apiCall: () => getFoodOrderListAll(createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => data as FoodOrderResponse[],
+    mapApiData: (data) => normalizeOrders(data as Parameters<typeof normalizeOrders>[0]),
     readCache: () => {
       const orders = getStoredOrders();
       return orders.length > 0 ? orders : null;
@@ -128,27 +123,26 @@ export async function getVisibleOrders(): Promise<FoodOrderResponse[]> {
 
 export async function getVisibleOrdersByStatus(
   status: FoodOrderStatus,
-): Promise<FoodOrderResponse[]> {
-  return readThroughCache<FoodOrderResponse[]>({
+): Promise<Order[]> {
+  return readThroughCache<Order[]>({
     apiCall: () => getFoodOrderListAllByStatusStatus(status, createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => data as FoodOrderResponse[],
+    mapApiData: (data) => normalizeOrders(data as Parameters<typeof normalizeOrders>[0]),
     readCache: () => {
       const filtered = getStoredOrders().filter((order) => order.status === status);
       return filtered.length > 0 ? filtered : null;
     },
-    writeCache: (orders) => {
-      setStoredOrders(orders);
-    },
+    writeCache: setStoredOrders,
     errorMessage: "Orders could not be loaded.",
   });
 }
 
-export async function getVisibleOrdersWithHistory(): Promise<FoodOrderResponseHistory[]> {
-  return readThroughCache<FoodOrderResponseHistory[]>({
+export async function getVisibleOrdersWithHistory(): Promise<OrderHistory[]> {
+  return readThroughCache<OrderHistory[]>({
     apiCall: () => getFoodOrderListAllHistory(createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => data as FoodOrderResponseHistory[],
+    mapApiData: (data) =>
+      normalizeOrderHistories(data as Parameters<typeof normalizeOrderHistories>[0]),
     readCache: () => {
       const orders = getStoredOrderHistory();
       return orders.length > 0 ? orders : null;
@@ -160,11 +154,12 @@ export async function getVisibleOrdersWithHistory(): Promise<FoodOrderResponseHi
 
 export async function getVisibleOrdersByStatusWithHistory(
   status: FoodOrderStatus,
-): Promise<FoodOrderResponseHistory[]> {
-  return readThroughCache<FoodOrderResponseHistory[]>({
+): Promise<OrderHistory[]> {
+  return readThroughCache<OrderHistory[]>({
     apiCall: () => getFoodOrderListAllByStatusStatusHistory(status, createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => data as FoodOrderResponseHistory[],
+    mapApiData: (data) =>
+      normalizeOrderHistories(data as Parameters<typeof normalizeOrderHistories>[0]),
     readCache: () => {
       const filtered = getStoredOrderHistory().filter((order) => order.status === status);
       return filtered.length > 0 ? filtered : null;
@@ -174,12 +169,12 @@ export async function getVisibleOrdersByStatusWithHistory(
   });
 }
 
-export async function createFoodOrder(): Promise<FoodOrderResponse[]> {
+export async function createFoodOrder(): Promise<Order[]> {
   try {
     const response = await postFoodOrderOrder(createRequestOptions());
 
     if (response.status === 200) {
-      const orders = response.data as FoodOrderResponse[];
+      const orders = normalizeOrders(response.data as Parameters<typeof normalizeOrders>[0]);
       setStoredOrders(orders);
       setStoredOrderHistory(orders.map((order) => toHistory(order)));
       clearStoredCart();
@@ -216,28 +211,31 @@ export async function shareFoodOrder(request: ShareOrderRequest): Promise<boolea
 export async function updateFoodOrderStatus(
   orderId: Uuid,
   status: FoodOrderStatus,
-): Promise<FoodOrderResponseHistory> {
-  return mutateWithOfflineFallback<FoodOrderResponseHistory>({
+): Promise<OrderHistory> {
+  return mutateWithOfflineFallback<OrderHistory>({
     apiCall: () => putFoodOrderUpdateOrderIdStatus(orderId, status, createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => data as FoodOrderResponseHistory,
+    mapApiData: (data) =>
+      normalizeOrderHistory(data as Parameters<typeof normalizeOrderHistory>[0]),
     onApiSuccess: (value) => {
       upsertOrder(value);
       upsertNotificationsFromOrderUpdate(value);
     },
     applyOffline: () => {
-      const currentOrders = getStoredOrders();
-      const oldOrder = currentOrders.find((item) => item.id === orderId);
+      const oldOrder = getStoredOrders().find((item) => item.id === orderId);
 
       if (!oldOrder) {
         throw new Error("Offline update failed because the order is not cached.");
       }
 
-      const updated: FoodOrderResponseHistory = {
+      const currentHistoryEntries =
+        getStoredOrderHistory().find((item) => item.id === orderId)?.history ?? [];
+
+      const updated: OrderHistory = {
         ...oldOrder,
         status,
         history: [
-          ...(getStoredOrderHistory().find((item) => item.id === orderId)?.history ?? []),
+          ...currentHistoryEntries,
           {
             oldStatus: oldOrder.status,
             newStatus: status,
@@ -246,23 +244,8 @@ export async function updateFoodOrderStatus(
         ],
       };
 
-      setStoredOrders(
-        currentOrders.map((item) =>
-          item.id === orderId ? { ...item, status } : item,
-        ),
-      );
-
-      const currentHistory = getStoredOrderHistory();
-      const alreadyExists = currentHistory.some((item) => item.id === orderId);
-
-      setStoredOrderHistory(
-        alreadyExists
-          ? currentHistory.map((item) => (item.id === orderId ? updated : item))
-          : [...currentHistory, updated],
-      );
-
+      upsertOrder(updated);
       upsertNotificationsFromOrderUpdate(updated);
-
       return updated;
     },
     errorMessage: "Order status could not be updated.",

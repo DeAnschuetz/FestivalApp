@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "../FoodCourt/HomePage.module.css";
 import { FoodOrderStatus as OrderStatus } from "../Api/generated/ffbAPI.schemas"
 import { Order } from "../Api/ffb/types";
@@ -8,6 +7,7 @@ interface HomePageOrderCardProps {
 	isSelected: boolean;
 	selectedStatus: OrderStatus;
 	statusLabels: Record<OrderStatus, string>;
+	allowedStatuses: OrderStatus[];
 	isOrderStatus: (value: string) => value is OrderStatus;
 	onToggleSelected: () => void;
 	onStatusChange: (status: OrderStatus) => void;
@@ -19,6 +19,7 @@ function HomePageOrderCard({
 	isSelected,
 	selectedStatus,
 	statusLabels,
+	allowedStatuses,
 	isOrderStatus,
 	onToggleSelected,
 	onStatusChange,
@@ -75,9 +76,9 @@ function HomePageOrderCard({
 							onStatusChange(value);
 						}}
 					>
-						{Object.entries(statusLabels).map(([statusKey, label]) => (
+						{allowedStatuses.map((statusKey) => (
 							<option key={statusKey} value={statusKey}>
-								{label}
+								{statusLabels[statusKey]}
 							</option>
 						))}
 					</select>

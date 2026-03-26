@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Modules/FoodCourtTab.module.css";
 import { Button } from "@progress/kendo-react-buttons";
-import { FoodCourt} from "../Types";
 import FoodCourtCard from "../Components/FoodCourtCard";
+import { FoodCourt } from "../Api/ffb/types";
+import { getAllFoodCourts } from "../Api/ffb/foodCourtApi";
 
 interface FoodCourtTabProps {
-  setIsFoodCourtOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  isOrdersOpen: boolean;
   foodCourts: FoodCourt[];
-  setClickedFoodCourt:  React.Dispatch<React.SetStateAction<string>>
+  setIsFoodCourtOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setClickedFoodCourt: React.Dispatch<React.SetStateAction<string>>;
+  isOrdersOpen: boolean;
 }
 
 function FoodCourtTab(props: FoodCourtTabProps) {
-  const { isOrdersOpen, setIsFoodCourtOpen, foodCourts, setClickedFoodCourt } = props;
-
+  const { foodCourts, isOrdersOpen, setClickedFoodCourt, setIsFoodCourtOpen } = props;
   const [isOpen, setIsOpen] = useState(true);
 
   const showOpen = () => {
@@ -42,8 +42,12 @@ function FoodCourtTab(props: FoodCourtTabProps) {
           <div
             className={`${styles.FoodCourtContainer} ${isOrdersOpen ? styles.BiggerContainer : ""}`}
           >
-            {foodCourts.map((foodCourt) => (
-              <FoodCourtCard foodCourt={foodCourt} setClickedFoodCourt={setClickedFoodCourt}/>
+            {foodCourts
+                .map((foodCourt) => (
+                <FoodCourtCard
+                  foodCourt={foodCourt}
+                  setClickedFoodCourt={setClickedFoodCourt}
+                />
             ))}
           </div>
         </div>

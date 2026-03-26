@@ -23,6 +23,7 @@ function buildHeaders(extraHeaders?: HeadersInit): HeadersInit {
 
   if (session.token) {
     headers.set("Authorization", `Bearer ${session.token}`);
+    console.log(session.token);
   }
 
   return headers;
@@ -85,7 +86,7 @@ export function isSuccessfulStatus(status: number, expected: number[]): boolean 
 export async function readThroughCache<TCached>(config: {
   apiCall: () => Promise<ApiResponse>;
   expectedStatuses: number[];
-  mapApiData: (data: unknown) => TCached;
+  mapApiData: (data: unknown) => TCached | Promise<TCached>;
   readCache: () => TCached | null;
   writeCache?: (value: TCached) => void;
   errorMessage: string;
@@ -94,7 +95,7 @@ export async function readThroughCache<TCached>(config: {
     const response = await config.apiCall();
 
     if (isSuccessfulStatus(response.status, config.expectedStatuses)) {
-      const mapped = config.mapApiData(response.data);
+      const mapped = await config.mapApiData(response.data);
       config.writeCache?.(mapped);
       return mapped;
     }

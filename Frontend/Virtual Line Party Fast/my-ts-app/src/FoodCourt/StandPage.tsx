@@ -1,19 +1,18 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+// css
 import styles from "./StandPage.module.css";
+
+// api
 import { FoodCourtResponse } from "../Api/generated/ffbAPI.schemas";
-import { updateProductCount } from "../Api/ffb/productApi";
+import { apiCreateProduct, apiDeleteProduct, getOwnFoodCourtProducts, updateProductCount } from "../Api/ffb/productApi";
+import { getOwnFoodCourt } from "../Api/ffb/foodCourtApi";
+import { Product } from "../Api/ffb/types";
 
-const API_BASE = "http://10.45.129.4:8080";
-
-interface Product {
-  id: string;
-  price: number;
-  displayName: string;
-  symbolIdentifier: string;
-  minimalWarning: number;
-  productCount: number;
-}
+// components
+import  DeleteDialog from "../Components/DeleteDialog";
+import HeaderFoodCourt from "../Components/HeaderFoodCourt";
 
 function StandPage() {
   const token = localStorage.getItem("token");
@@ -29,57 +28,25 @@ function StandPage() {
   const [isCreatingProduct, setIsCreatingProduct] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState("");
   const [newPrice, setNewPrice] = useState("");
-  const [newSymbolIdentifier, setNewSymbolIdentifier] = useState("TEST");
+  const [newSymbolIdentifier, setNewSymbolIdentifier] = useState("fa-solid fa-ban");
   const [newMinimalWarning, setNewMinimalWarning] = useState("");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [productToDeleteId, setProductToDeleteId] = useState<string | null>(null);
 
-  const authHeaders = useMemo(
-    () => {
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
-
-      return headers;
-    },
-    [token],
-  );
-
-  const loadData = useCallback(async () => {
+   const loadData = useCallback(async () => {
     setError("");
 
     try {
       const [foodCourtResponse, productsResponse] = await Promise.all([
-        fetch(`${API_BASE}/food_court`, {
-          method: "GET",
-          headers: authHeaders,
-          credentials: "include",
-        }),
-        fetch(`${API_BASE}/product/list`, {
-          method: "GET",
-          headers: authHeaders,
-          credentials: "include",
-        }),
+        getOwnFoodCourt(),
+        getOwnFoodCourtProducts(),
       ]);
 
-      if (!foodCourtResponse.ok) {
-        throw new Error("Food Court konnte nicht geladen werden.");
-      }
-
-      if (!productsResponse.ok) {
-        throw new Error("Produkte konnten nicht geladen werden.");
-      }
-
-      const foodCourtResult = (await foodCourtResponse.json()) as FoodCourtResponse;
-      const productResult = (await productsResponse.json()) as Product[];
-
-      setFoodCourt(foodCourtResult);
-      setWaitingTime(foodCourtResult.waitingTime ?? 15);
-      setProducts(productResult);
+      setFoodCourt(foodCourtResponse);
+      setWaitingTime(foodCourtResponse.waitingTime ?? 15);
+      setProducts(productsResponse);
       setEditedCounts(
-        productResult.reduce<Record<string, number>>((accumulator, product) => {
+        productsResponse.reduce<Record<string, number>>((accumulator, product) => {
           accumulator[product.id] = product.productCount;
           return accumulator;
         }, {}),
@@ -87,85 +54,53 @@ function StandPage() {
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Unbekannter Fehler");
     }
-  }, [authHeaders]);
+  }, []);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  const updateWaitingTime = async () => {
-    if (!foodCourt) {
-      return;
-    }
-
-    const safeWaitingTime = Number.isFinite(waitingTime) ? Math.max(0, Math.trunc(waitingTime)) : NaN;
-    if (!Number.isFinite(safeWaitingTime)) {
-      setError("Bitte eine gültige Wartezeit eingeben.");
-      return;
-    }
-
-    try {
-      setError("");
-      const response = await fetch(`${API_BASE}/food_court`, {
-        method: "PUT",
-        headers: authHeaders,
-        credentials: "include",
-        body: JSON.stringify({
-          displayName: foodCourt.name,
-          waitingTime: safeWaitingTime,
-        }),
-      });
-
-      if (!response.ok) {
-        const responseText = await response.text();
-        throw new Error(responseText || "Wartezeit konnte nicht gespeichert werden.");
-      }
-
-      const updatedFoodCourt = (await response.json()) as FoodCourtResponse;
-      setFoodCourt(updatedFoodCourt);
-      setWaitingTime(updatedFoodCourt.waitingTime ?? safeWaitingTime);
-    } catch (updateError) {
-      setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
-    }
-  };
-
   const updateProductCountLocal = async (productId: string) => {
     try {
       setError("");
-      const rawCount = nextCount ?? editedCounts[productId] ?? 0;
+      const rawCount = editedCounts[productId] ?? 0;
       const newCount = Number.isFinite(rawCount) ? Math.max(0, Math.trunc(rawCount)) : 0;
-      const data: Product = await updateProductCount(productId, newCount);
-        await loadData();
+      await updateProductCount(productId, newCount);
+      await loadData();
     } catch (updateError) {
       setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
     }
   };
 
-  const adjustProductCount = async (productId: string, delta: number) => {
-    const currentCount = editedCounts[productId] ?? 0;
-    const nextCount = Math.max(0, currentCount + delta);
-
-    setEditedCounts((current) => ({
-      ...current,
-      [productId]: nextCount,
-    }));
-
-    await updateProductCount(productId, nextCount);
+  const openDeleteDialog = (productId: string) => {
+    setProductToDeleteId(productId);
+    setIsDeleteDialogOpen(true);
   };
 
-  const deleteProduct = async (productId: string) => {
-    const shouldDelete = window.confirm("Produkt wirklich löschen?");
-    if (!shouldDelete) {
-      return;
-    }
+  const handleCancelDelete = () => {
+    setIsDeleteDialogOpen(false);
+    setProductToDeleteId(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!productToDeleteId) return;
 
     try {
       setError("");
-      await deleteProduct(productId);
+      await apiDeleteProduct(productToDeleteId);
+      setIsDeleteDialogOpen(false);
+      setProductToDeleteId(null);
       await loadData();
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "Unbekannter Fehler");
     }
+  };
+
+  const resetProductForm = () => {
+    setNewDisplayName("");
+    setNewPrice("");
+    setNewSymbolIdentifier("fa-solid fa-ban");
+    setNewMinimalWarning("");
   };
 
   const createProduct = async () => {
@@ -206,40 +141,13 @@ function StandPage() {
     try {
       setIsCreatingProduct(true);
       setError("");
-      const response = await fetch(`${API_BASE}/product`, {
-        method: "POST",
-        headers: authHeaders,
-        credentials: "include",
-        body: JSON.stringify({
-          price,
-          displayName,
-          symbolIdentifier,
-          minimalWarning,
-        }),
+      await apiCreateProduct({
+        displayName,
+        price,
+        symbolIdentifier,
+        minimalWarning,
       });
-
-      if (!response.ok) {
-        let errorMessage = "Produkt konnte nicht erstellt werden.";
-
-        try {
-          const errorData = (await response.json()) as { message?: string };
-          if (errorData.message) {
-            errorMessage = errorData.message;
-          }
-        } catch {
-          const responseText = await response.text();
-          if (responseText) {
-            errorMessage = responseText;
-          }
-        }
-
-        throw new Error(errorMessage);
-      }
-
-      setNewDisplayName("");
-      setNewPrice("");
-      setNewSymbolIdentifier("TEST");
-      setNewMinimalWarning("");
+      resetProductForm();
       setIsCreateFormOpen(false);
       await loadData();
     } catch (createError) {
@@ -255,7 +163,7 @@ function StandPage() {
   };
 
   const handleOpenStand = () => {
-    navigate("/food_court/stand");
+    navigate("/food_court_view/stand");
   };
 
   return (
@@ -265,14 +173,13 @@ function StandPage() {
           title={foodCourt?.name ?? "Stand"}
           loginLabel={loginLabel}
           foodCourtId={foodCourt?.id}
-          apiBase={API_BASE}
           token={token}
           onOpenStand={handleOpenStand}
           onLogout={handleLogout}
         />
 
         <div className={styles.SectionHeader}>
-          <button className={styles.BackBtn} onClick={() => navigate("/food_court")}>
+          <button className={styles.BackBtn} onClick={() => navigate("/food_court_view")}>
             <i className="fa-solid fa-arrow-left" /> Produkte
           </button>
           <button className={styles.AddBtn} onClick={() => setIsCreateFormOpen((open) => !open)}>
@@ -333,19 +240,20 @@ function StandPage() {
             <div className={styles.ProductRow} key={product.id}>
               <div className={styles.ProductMain}>
                 <div className={styles.ProductName}>{product.displayName}</div>
-                <div className={styles.Warning}>Warnung bei Bestand</div>
+                <div
+                  className={
+                    product.productCount != null && product.minimalWarning != null && product.productCount <= product.minimalWarning
+                      ? `${styles.Warning} ${styles.WarningAlert}`
+                      : styles.Warning
+                  }
+                >
+                  Warnung bei Bestand: <strong>{product.minimalWarning ?? "–"}</strong>
+                </div>
               </div>
 
               <div className={styles.Price}>{product.price.toFixed(2)} €</div>
 
               <div>
-                <button
-                  className={styles.IconBtn}
-                  onClick={() => adjustProductCount(product.id, -1)}
-                  disabled={(editedCounts[product.id] ?? 0) <= 0}
-                >
-                  —
-                </button>
                 <input
                   className={styles.CountInput}
                   type="number"
@@ -360,27 +268,23 @@ function StandPage() {
                   }}
                   onKeyDown={(event) => {
                     if (event.key === "Enter") {
-                      updateProductCount(product.id);
+                      updateProductCountLocal(product.id);
                     }
                   }}
                 />
-                <button
-                  className={styles.IconBtn}
-                  onClick={() => adjustProductCount(product.id, 1)}
-                >
-                  +
-                </button>
               </div>
 
               <button className={styles.IconBtn} onClick={() => updateProductCountLocal(product.id)}>
                 <i className="fa-regular fa-pen-to-square" />
               </button>
-              <button className={styles.IconBtn} onClick={() => deleteProduct(product.id)}>
+              <button className={styles.IconBtn} onClick={() => openDeleteDialog(product.id)}>
                 <i className="fa-regular fa-trash-can" />
               </button>
             </div>
           ))}
         </div>
+
+        <DeleteDialog open={isDeleteDialogOpen} onConfirm={handleConfirmDelete} onCancel={handleCancelDelete} />
 
         <div className={styles.WaitingSection}>
           <div>Geschätzte Wartezeit</div>
@@ -396,7 +300,7 @@ function StandPage() {
               }}
             />
             <span>Min</span>
-            <button className={styles.IconBtn} onClick={updateWaitingTime}>
+            <button className={styles.IconBtn}>
               <i className="fa-regular fa-pen-to-square" />
             </button>
           </div>

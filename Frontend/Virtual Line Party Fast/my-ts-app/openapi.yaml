@@ -141,7 +141,7 @@ components:
     FoodOrderItemResponse:
       type: object
       properties:
-        productID:
+        productId:
           $ref: "#/components/schemas/UUID"
         displayName:
           type: string
@@ -240,9 +240,9 @@ components:
     ProductLinkRequest:
       type: object
       properties:
-        mainProductId:
+        mainproductId:
           $ref: "#/components/schemas/UUID"
-        subProductId:
+        subproductId:
           $ref: "#/components/schemas/UUID"
     ProductRequest:
       type: object
@@ -2187,7 +2187,7 @@ paths:
         - GUEST
   /products/assignments:
     delete:
-      summary: Delete an assignment by Main/Sub-ProductIds
+      summary: Delete an assignment by Main/Sub-productIds
       requestBody:
         content:
           application/json:

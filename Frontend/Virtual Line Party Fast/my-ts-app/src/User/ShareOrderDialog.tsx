@@ -9,7 +9,7 @@ interface ShareOrderDialogProps {
 }
 
 const ShareOrderDialog= (props: ShareOrderDialogProps) => {
-    const {setOpenShareDialog} = props
+  const {setOpenShareDialog} = props
   const [ticketNumber, setTicketNumber] = useState("");
 
   return (

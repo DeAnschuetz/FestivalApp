@@ -37,5 +37,30 @@ export function isOfflineLikeError(error: unknown): boolean {
     return true;
   }
 
+  if (error instanceof SyntaxError) {
+    const message = error.message.toLowerCase();
+
+    if (
+      message.includes("unexpected token") ||
+      message.includes("not valid json") ||
+      message.includes("json")
+    ) {
+      return true;
+    }
+  }
+
+  if (error instanceof Error) {
+    const message = error.message.toLowerCase();
+
+    if (
+      message.includes("proxy error") ||
+      message.includes("failed to fetch") ||
+      message.includes("networkerror") ||
+      message.includes("load failed")
+    ) {
+      return true;
+    }
+  }
+
   return false;
 }

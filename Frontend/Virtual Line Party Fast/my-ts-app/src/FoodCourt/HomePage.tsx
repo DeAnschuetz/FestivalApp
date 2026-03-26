@@ -1,26 +1,21 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import styles from "./HomePage.module.css";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+// css
+import styles from "./HomePage.module.css";
+
+//components
 import HomePageFilterBar from "../Components/HomePageFilterBar";
 import HomePageBulkActions from "../Components/HomePageBulkActions";
 import HomePageOrderCard from "../Components/HomePageOrderCard";
 import HeaderFoodCourt from "../Components/HeaderFoodCourt";
-type FilterKey = "ALL" | OrderStatus;
 
+// api
 import { FoodOrderStatus as OrderStatus } from "../Api/generated/ffbAPI.schemas"
 import { FoodCourt, Order } from "../Api/ffb/types";
-import { getFoodCourtImageUrl, getOwnFoodCourt, getVisibleOrders, getVisibleOrdersByStatus, updateFoodOrderStatus } from "../Api/ffb";
+import { getOwnFoodCourt, getVisibleOrders, getVisibleOrdersByStatus, updateFoodOrderStatus } from "../Api/ffb";
 
-const API_BASE = "http://10.45.129.19:8080";
-
-const filterConfig: { key: FilterKey; label: string }[] = [
-	{ key: "ALL", label: "Alle" },
-	{ key: "ORDERED", label: "Bestellt" },
-	{ key: "IN_PROGRESS", label: "In Arbeit" },
-	{ key: "READY_FOR_PICKUP", label: "Abholbereit" },
-	{ key: "DONE", label: "Abgeschlossen" },
-	{ key: "CANCELED", label: "Storniert" },
-];
+type FilterKey = "ALL" | OrderStatus;
 
 const statusLabels: Record<OrderStatus, string> = {
 	ORDERED: "Bestellt",
@@ -30,12 +25,33 @@ const statusLabels: Record<OrderStatus, string> = {
 	CANCELED: "Storniert",
 };
 
-const isOrderStatus = (value: string): value is OrderStatus =>
-	value === "ORDERED" ||
-	value === "IN_PROGRESS" ||
-	value === "READY_FOR_PICKUP" ||
-	value === "DONE" ||
-	value === "CANCELED";
+const filterConfig: { key: FilterKey; label: string }[] = [
+	{ key: "ALL", label: "Alle" },
+	...Object.entries(statusLabels).map(([key, label]) => ({
+		key: key as OrderStatus,
+		label,
+	})),
+];
+
+const isOrderStatus = (value: unknown): value is OrderStatus =>
+    typeof value === 'string' && value in statusLabels;
+
+const getAllowedNextStatuses = (currentStatus: OrderStatus): OrderStatus[] => {
+	switch (currentStatus) {
+		case "ORDERED":
+			return ["ORDERED", "IN_PROGRESS", "CANCELED"];
+		case "IN_PROGRESS":
+			return ["IN_PROGRESS", "READY_FOR_PICKUP", "CANCELED"];
+		case "READY_FOR_PICKUP":
+			return ["READY_FOR_PICKUP", "DONE"];
+		case "DONE":
+			return ["DONE"];
+		case "CANCELED":
+			return ["CANCELED"];
+		default:
+			return [];
+	}
+};
 
 function HomePage() {
 	const token = localStorage.getItem("token");
@@ -58,23 +74,8 @@ function HomePage() {
 	};
 
 	const handleOpenStand = () => {
-		navigate("/food_court/stand");
+		navigate("/food_court_view/stand");
 	};
-
-	const authHeaders = useMemo(
-		() => {
-			const headers: Record<string, string> = {
-				"Content-Type": "application/json",
-			};
-
-			if (token) {
-				headers.Authorization = `Bearer ${token}`;
-			}
-
-			return headers;
-		},
-		[token],
-	);
 
 	const fetchFoodCourt = useCallback(async () => {
 		const data: FoodCourt = await getOwnFoodCourt();
@@ -82,7 +83,7 @@ function HomePage() {
 		setFoodCourt(data);
 		setWaitingTime(data.waitingTime ?? 15);
         console.log("Food Court Daten geladen:", data);
-	}, [authHeaders]);
+	}, []);
 
 	const fetchOrders = useCallback(
 		async (filter: FilterKey) => {
@@ -93,6 +94,15 @@ function HomePage() {
 
             console.log("fetchOrders-Funktion erstellt mit Filter:", filter, "Ergebnis:", data);
 			setOrders(data);
+			
+			// Immer alle Bestellungen laden für die Counters
+			if (filter !== "ALL") {
+				const allOrdersData = await getVisibleOrders();
+				setAllOrders(allOrdersData);
+			} else {
+				setAllOrders(data);
+			}
+			
 			setSelectedOrderIds([]);
 			setStatusSelection(
 				data.reduce<Record<string, OrderStatus>>((accumulator, order) => {
@@ -100,14 +110,7 @@ function HomePage() {
 					return accumulator;
 				}, {}),
 			);
-		},
-
-	const fetchAllOrders = useCallback(async () => {
-		const data: Order[] = await getVisibleOrders();
-
-		
-		setAllOrders(data);
-	}, [authHeaders]);
+	}, []);
 
 	const loadPageData = useCallback(async () => {
 		setIsLoading(true);
@@ -139,28 +142,6 @@ function HomePage() {
 		};
 	}, [success]);
 
-	const loadFallbackImage = async () => {
-		if (!foodCourt?.id || !isUuid(foodCourt.id)) {
-			return;
-		}
-
-		const imageHeaders: Record<string, string> = {
-			Accept: "image/png",
-		};
-
-		if (token) {
-			imageHeaders.Authorization = `Bearer ${token}`;
-		}
-
-		try {
-			const data = await getFoodCourtImageUrl(foodCourt.id);
-
-			setFoodCourtImageUrl(data ?? "");
-			setUseFallbackImage(true);
-		} catch {
-			setFoodCourtImageUrl("");
-		}
-	};
 
 	const countsByStatus = useMemo(() => {
 		const initial: Record<OrderStatus, number> = {
@@ -170,6 +151,7 @@ function HomePage() {
 			DONE: 0,
 			CANCELED: 0,
 		};
+		console.log("AllOrders",allOrders);
 
 		return allOrders.reduce<Record<OrderStatus, number>>((accumulator, order) => {
 			accumulator[order.status] += 1;
@@ -184,6 +166,23 @@ function HomePage() {
 
 		return countsByStatus[filterKey];
 	};
+
+	const bulkAllowedStatuses = useMemo(() => {
+		if (selectedOrderIds.length === 0) {
+			return Object.keys(statusLabels) as OrderStatus[];
+		}
+
+		const selectedOrders = orders.filter((o) => selectedOrderIds.includes(o.id));
+		const perOrderAllowed = selectedOrders.map((o) => getAllowedNextStatuses(o.status));
+
+		if (perOrderAllowed.length === 0) {
+			return Object.keys(statusLabels) as OrderStatus[];
+		}
+
+		return perOrderAllowed[0].filter((status) =>
+			perOrderAllowed.every((allowed) => allowed.includes(status)),
+		);
+	}, [selectedOrderIds, orders]);
 
 	const allVisibleOrdersSelected =
 		orders.length > 0 && orders.every((order) => selectedOrderIds.includes(order.id));
@@ -222,13 +221,24 @@ function HomePage() {
 			return;
 		}
 
+		const order = orders.find((o) => o.id === orderId);
+		if (!order) {
+			return;
+		}
+
+		const allowed = getAllowedNextStatuses(order.status);
+		if (!allowed.includes(selectedStatus)) {
+			setError(`Status kann nicht von "${statusLabels[order.status]}" auf "${statusLabels[selectedStatus]}" geändert werden.`);
+			return;
+		}
+
 		try {
 			setSuccess("");
 			await updateOrderStatus(orderId, selectedStatus);
 			await fetchOrders(activeFilter);
 		} catch (updateError) {
 			setSuccess("");
-			setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
+			setError("Unbekannter Fehler");
 		}
 	};
 
@@ -237,52 +247,35 @@ function HomePage() {
 			return;
 		}
 
-		try {
-			setError("");
-			setSuccess("");
-			const updatedCount = selectedOrderIds.length;
-			await Promise.all(
-				selectedOrderIds.map((orderId) => updateOrderStatus(orderId, statusForUpdate)),
-			);
-			await fetchOrders(activeFilter);
-			setSelectedOrderIds([]);
-			setSuccess(
-				`Status für ${updatedCount} Bestellung${updatedCount === 1 ? "" : "en"} aktualisiert.`,
-			);
-		} catch (updateError) {
-			setSuccess("");
-			setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
-		}
-	};
+		const eligibleOrderIds = selectedOrderIds.filter((orderId) => {
+			const order = orders.find((o) => o.id === orderId);
+			return order && getAllowedNextStatuses(order.status).includes(statusForUpdate);
+		});
 
-	const updateFoodCourtWaitingTime = async () => {
-		if (!foodCourt) {
+		if (eligibleOrderIds.length === 0) {
+			setError("Keine der ausgewählten Bestellungen kann auf diesen Status gesetzt werden.");
 			return;
 		}
 
 		try {
 			setError("");
-			const response = await fetch(`${API_BASE}/food_court`, {
-				method: "PUT",
-				headers: authHeaders,
-				credentials: "include",
-				body: JSON.stringify({
-					displayName: foodCourt.name,
-				}),
-			});
-
-			if (!response.ok) {
-				const responseText = await response.text();
-				throw new Error(responseText || "Wartezeit konnte nicht aktualisiert werden.");
-			}
-
-			const updatedFoodCourt = (await response.json()) as FoodCourt;
-			setFoodCourt(updatedFoodCourt);
-			setWaitingTime(updatedFoodCourt.waitingTime);
+			setSuccess("");
+			const updatedCount = eligibleOrderIds.length;
+			const skippedCount = selectedOrderIds.length - eligibleOrderIds.length;
+			await Promise.all(
+				eligibleOrderIds.map((orderId) => updateOrderStatus(orderId, statusForUpdate)),
+			);
+			await fetchOrders(activeFilter);
+			setSelectedOrderIds([]);
+			const msg = `Status für ${updatedCount} Bestellung${updatedCount === 1 ? "" : "en"} aktualisiert.`;
+			setSuccess(skippedCount > 0 ? `${msg} ${skippedCount} übersprungen (ungültiger Übergang).` : msg);
 		} catch (updateError) {
+			setSuccess("");
 			setError(updateError instanceof Error ? updateError.message : "Unbekannter Fehler");
 		}
 	};
+
+	
 
 	return (
 		<div className={styles.Page}>
@@ -291,7 +284,6 @@ function HomePage() {
 					title={foodCourt?.name ?? "Food Court"}
 					loginLabel={loginLabel}
 					foodCourtId={foodCourt?.id}
-					apiBase={API_BASE}
 					token={token}
 					onOpenStand={handleOpenStand}
 					onLogout={handleLogout}
@@ -310,7 +302,7 @@ function HomePage() {
 								setWaitingTime(Number.isFinite(parsedValue) ? parsedValue : 0);
 							}}
 						/>
-						<button className={styles.PrimaryButton} onClick={updateFoodCourtWaitingTime}>
+						<button className={styles.PrimaryButton}>
 							Speichern
 						</button>
 					</div>
@@ -332,6 +324,7 @@ function HomePage() {
 						allVisibleOrdersSelected={allVisibleOrdersSelected}
 						selectedCount={selectedOrderIds.length}
 						statusLabels={statusLabels}
+						allowedBulkStatuses={bulkAllowedStatuses}
 						onToggleAll={toggleAllSelectedOrders}
 						onApplyBulk={applyBulkStatusUpdate}
 					/>
@@ -352,8 +345,7 @@ function HomePage() {
 							order={order}
 							isSelected={selectedOrderIds.includes(order.id)}
 							selectedStatus={statusSelection[order.id] ?? order.status}
-							statusLabels={statusLabels}
-							isOrderStatus={isOrderStatus}
+							statusLabels={statusLabels}						allowedStatuses={getAllowedNextStatuses(order.status)}							isOrderStatus={isOrderStatus}
 							onToggleSelected={() => toggleOrderSelection(order.id)}
 							onStatusChange={(value) =>
 								setStatusSelection((currentSelection) => ({

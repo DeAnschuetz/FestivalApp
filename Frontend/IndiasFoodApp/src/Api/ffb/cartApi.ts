@@ -1,3 +1,4 @@
+
 import {
   deleteCartId,
   getCart as getCartRequest,
@@ -7,49 +8,48 @@ import {
 } from "../generated/ffbAPI";
 import type {
   CartItemCreationRequest,
-  CartItemResponse,
   CartItemUpdateRequest,
-  GetCart200,
-  ProductResponse,
   Uuid,
 } from "../generated/ffbAPI.schemas";
 import { createRequestOptions, mutateWithOfflineFallback, readThroughCache } from "./core/api";
 import { STORAGE_KEYS } from "./core/keys";
 import { readJson, writeJson } from "./core/storage";
+import { normalizeCart } from "./normalizers";
+import type { Cart, CartItem, Product } from "./types";
 
-function getStoredCart(): GetCart200 | null {
-  return readJson<GetCart200 | null>(STORAGE_KEYS.cart, null);
+function getStoredCart(): Cart | null {
+  return readJson<Cart | null>(STORAGE_KEYS.cart, null);
 }
 
-function setStoredCart(cart: GetCart200): GetCart200 {
+function setStoredCart(cart: Cart): Cart {
   return writeJson(STORAGE_KEYS.cart, cart);
 }
 
-function getStoredProducts(): ProductResponse[] {
-  return readJson<ProductResponse[]>(STORAGE_KEYS.products, []);
+function getStoredProducts(): Product[] {
+  return readJson<Product[]>(STORAGE_KEYS.products, []);
 }
 
-function findProduct(productId: Uuid | undefined): ProductResponse | undefined {
+function findProduct(productId: Uuid | undefined): Product | undefined {
   return getStoredProducts().find((product) => product.id === productId);
 }
 
-function calculateTotal(cartItems: CartItemResponse[] | undefined): number {
-  return (cartItems ?? []).reduce((sum, item) => {
-    const ownPrice = (item.price ?? 0) * (item.count ?? 0);
+function calculateTotal(cartItems: CartItem[]): number {
+  return cartItems.reduce((sum, item) => {
+    const ownPrice = item.price * item.count;
     const subItemPrice = calculateTotal(item.subItems);
     return sum + ownPrice + subItemPrice;
   }, 0);
 }
 
-function ensureCart(): GetCart200 {
+function ensureCart(): Cart {
   return getStoredCart() ?? { hasPrio: false, total: 0, cartItems: [] };
 }
 
-export async function getCart(): Promise<GetCart200> {
-  return readThroughCache<GetCart200>({
+export async function getCart(): Promise<Cart> {
+  return readThroughCache<Cart>({
     apiCall: () => getCartRequest(createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => data as GetCart200,
+    mapApiData: (data) => normalizeCart(data as Parameters<typeof normalizeCart>[0]),
     readCache: () => getStoredCart(),
     writeCache: setStoredCart,
     errorMessage: "Cart could not be loaded.",
@@ -58,36 +58,40 @@ export async function getCart(): Promise<GetCart200> {
 
 export async function addCartItem(
   request: CartItemCreationRequest,
-): Promise<GetCart200> {
-  return mutateWithOfflineFallback<GetCart200>({
+): Promise<Cart> {
+  return mutateWithOfflineFallback<Cart>({
     apiCall: () => putCartAddCartItem(request, createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => data as GetCart200,
+    mapApiData: (data) => normalizeCart(data as Parameters<typeof normalizeCart>[0]),
     onApiSuccess: setStoredCart,
     applyOffline: () => {
       const cart = ensureCart();
       const product = findProduct(request.productId);
 
-      const newItem: CartItemResponse = {
+      if (!product) {
+        throw new Error("Offline cart update failed because the product is not cached.");
+      }
+
+      const newItem: CartItem = {
         id: crypto.randomUUID(),
-        displayName: product?.displayName ?? "Offline product",
-        symbolIdentifier: product?.symbolIdentifier,
-        price: product?.price ?? 0,
+        displayName: product.displayName,
+        symbolIdentifier: product.symbolIdentifier,
+        price: product.price,
         count: request.itemCount ?? 1,
-        extra: request.extra,
-        subItems: product?.subProducts?.map((subProduct) => ({
+        extra: request.extra ?? "",
+        subItems: product.subProducts.map((subProduct) => ({
           id: subProduct.id,
           displayName: subProduct.displayName,
           symbolIdentifier: subProduct.symbolIdentifier,
           price: subProduct.price,
           count: 1,
-          extra: undefined,
+          extra: "",
           subItems: [],
-        })) ?? [],
+        })),
       };
 
-      const updatedItems = [...(cart.cartItems ?? []), newItem];
-      const updatedCart: GetCart200 = {
+      const updatedItems = [...cart.cartItems, newItem];
+      const updatedCart: Cart = {
         ...cart,
         cartItems: updatedItems,
         total: calculateTotal(updatedItems),
@@ -101,16 +105,16 @@ export async function addCartItem(
 
 export async function updateCartItem(
   request: CartItemUpdateRequest,
-): Promise<GetCart200> {
-  return mutateWithOfflineFallback<GetCart200>({
+): Promise<Cart> {
+  return mutateWithOfflineFallback<Cart>({
     apiCall: () => putCartUpdate(request, createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => data as GetCart200,
+    mapApiData: (data) => normalizeCart(data as Parameters<typeof normalizeCart>[0]),
     onApiSuccess: setStoredCart,
     applyOffline: () => {
       const cart = ensureCart();
 
-      const updatedItems = (cart.cartItems ?? []).map((item) =>
+      const updatedItems = cart.cartItems.map((item) =>
         item.id === request.cartItemId
           ? {
               ...item,
@@ -130,15 +134,15 @@ export async function updateCartItem(
   });
 }
 
-export async function removeCartItem(id: Uuid): Promise<GetCart200> {
-  return mutateWithOfflineFallback<GetCart200>({
+export async function removeCartItem(id: Uuid): Promise<Cart> {
+  return mutateWithOfflineFallback<Cart>({
     apiCall: () => deleteCartId(id, createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => data as GetCart200,
+    mapApiData: (data) => normalizeCart(data as Parameters<typeof normalizeCart>[0]),
     onApiSuccess: setStoredCart,
     applyOffline: () => {
       const cart = ensureCart();
-      const updatedItems = (cart.cartItems ?? []).filter((item) => item.id !== id);
+      const updatedItems = cart.cartItems.filter((item) => item.id !== id);
 
       return setStoredCart({
         ...cart,
@@ -150,14 +154,15 @@ export async function removeCartItem(id: Uuid): Promise<GetCart200> {
   });
 }
 
-export async function setCartPriority(newPriority: boolean): Promise<GetCart200> {
-  return mutateWithOfflineFallback<GetCart200>({
+export async function setCartPriority(newPriority: boolean): Promise<Cart> {
+  return mutateWithOfflineFallback<Cart>({
     apiCall: () => putCartNewPriority(newPriority, createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => data as GetCart200,
+    mapApiData: (data) => normalizeCart(data as Parameters<typeof normalizeCart>[0]),
     onApiSuccess: setStoredCart,
     applyOffline: () => {
       const cart = ensureCart();
+
       return setStoredCart({
         ...cart,
         hasPrio: newPriority,
@@ -172,5 +177,5 @@ export function clearStoredCart(): void {
     hasPrio: false,
     total: 0,
     cartItems: [],
-  } satisfies GetCart200);
+  } satisfies Cart);
 }

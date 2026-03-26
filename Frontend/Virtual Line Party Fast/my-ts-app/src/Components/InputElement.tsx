@@ -11,11 +11,12 @@ type InputElementProps = {
   wrapperStyle?: CSSProperties;
   inputStyle?: CSSProperties;
   labelStyle?: CSSProperties;
-  type?: "text" | "password";
+  type?: "text" | "password" | "number";
+  maxLength?: number;
 };
 
 function InputElement(props: InputElementProps) {
-  const { label, editorId, value, onChange, wrapperStyle, inputStyle, labelStyle,type } =
+  const { label, editorId, value, onChange, wrapperStyle, inputStyle, labelStyle, type, maxLength } =
     props;
 
   return (
@@ -27,13 +28,14 @@ function InputElement(props: InputElementProps) {
         editorValue={value || ""}
         optional={false}
       >
-        <Input
-          id={editorId}
-          value={value || ""}
-          type={type}
-          style={inputStyle}
-          onChange={(e: InputChangeEvent) => onChange(e.value ?? "")}
-        />
+      <input
+        id={editorId}
+        type={type ?? "text"}
+        value={value}
+        maxLength={maxLength}
+        onChange={(e) => onChange(e.target.value)}
+        style={inputStyle}
+      />
       </FloatingLabel>
     </div>
   );

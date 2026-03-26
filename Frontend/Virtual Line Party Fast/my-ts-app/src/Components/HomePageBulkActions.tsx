@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import styles from "../FoodCourt/HomePage.module.css";
-import { OrderStatus } from "../Types";
+import { FoodOrderStatus as OrderStatus} from "../Api/generated/ffbAPI.schemas";
+
 
 interface HomePageBulkActionsProps {
 	hasOrders: boolean;
 	allVisibleOrdersSelected: boolean;
 	selectedCount: number;
 	statusLabels: Record<OrderStatus, string>;
+	allowedBulkStatuses: OrderStatus[];
 	onToggleAll: () => void;
 	onApplyBulk: (status: OrderStatus) => void;
 }
@@ -16,6 +18,7 @@ function HomePageBulkActions({
 	allVisibleOrdersSelected,
 	selectedCount,
 	statusLabels,
+	allowedBulkStatuses,
 	onToggleAll,
 	onApplyBulk,
 }: HomePageBulkActionsProps) {
@@ -50,9 +53,9 @@ function HomePageBulkActions({
 				disabled={selectedCount === 0}
 			>
 				<option value="">Alle Updaten</option>
-				{Object.entries(statusLabels).map(([statusKey, label]) => (
+				{allowedBulkStatuses.map((statusKey) => (
 					<option key={statusKey} value={statusKey}>
-						{label}
+						{statusLabels[statusKey]}
 					</option>
 				))}
 			</select>

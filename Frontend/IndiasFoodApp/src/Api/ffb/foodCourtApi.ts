@@ -1,3 +1,4 @@
+
 import {
   getFoodCourt as getOwnFoodCourtRequest,
   getFoodCourtListAll,
@@ -6,16 +7,26 @@ import {
 } from "../generated/ffbAPI";
 import type {
   FoodCourtRequestSimple,
-  FoodCourtResponse,
-  GetFoodCourt200,
   Uuid,
 } from "../generated/ffbAPI.schemas";
-import { createRequestOptions, mutateWithOfflineFallback, readThroughCache, saveStoredSession } from "./core/api";
-import { fileToDataUrl, getStoredFoodCourtImage, responseToDataUrl, setStoredFoodCourtImage } from "./core/imageStorage";
+import {
+  createRequestOptions,
+  mutateWithOfflineFallback,
+  readThroughCache,
+  saveStoredSession,
+} from "./core/api";
+import {
+  fileToDataUrl,
+  getStoredFoodCourtImage,
+  responseToDataUrl,
+  setStoredFoodCourtImage,
+} from "./core/imageStorage";
 import { STORAGE_KEYS } from "./core/keys";
 import { readJson, writeJson } from "./core/storage";
+import { normalizeFoodCourt, normalizeFoodCourts } from "./normalizers";
+import type { FoodCourt } from "./types";
 
-type FoodCourtList = FoodCourtResponse[];
+type FoodCourtList = FoodCourt[];
 
 function getStoredFoodCourts(): FoodCourtList {
   return readJson<FoodCourtList>(STORAGE_KEYS.foodCourts, []);
@@ -25,7 +36,7 @@ function setStoredFoodCourts(foodCourts: FoodCourtList): FoodCourtList {
   return writeJson(STORAGE_KEYS.foodCourts, foodCourts);
 }
 
-function upsertFoodCourt(foodCourt: FoodCourtResponse): FoodCourtList {
+function upsertFoodCourt(foodCourt: FoodCourt): FoodCourtList {
   const current = getStoredFoodCourts().filter((item) => item.id !== foodCourt.id);
   current.push(foodCourt);
   return setStoredFoodCourts(current);
@@ -40,11 +51,11 @@ function setOwnFoodCourtId(id: Uuid | undefined): void {
   saveStoredSession({ ownFoodCourtId: id });
 }
 
-export async function getAllFoodCourts(): Promise<FoodCourtResponse[]> {
-  return readThroughCache<FoodCourtResponse[]>({
+export async function getAllFoodCourts(): Promise<FoodCourt[]> {
+  return readThroughCache<FoodCourt[]>({
     apiCall: () => getFoodCourtListAll(createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => data as FoodCourtResponse[],
+    mapApiData: (data) => normalizeFoodCourts(data as Parameters<typeof normalizeFoodCourts>[0]),
     readCache: () => {
       const foodCourts = getStoredFoodCourts();
       return foodCourts.length > 0 ? foodCourts : null;
@@ -54,20 +65,18 @@ export async function getAllFoodCourts(): Promise<FoodCourtResponse[]> {
   });
 }
 
-export async function getOwnFoodCourt(): Promise<GetFoodCourt200> {
-  return readThroughCache<GetFoodCourt200>({
+export async function getOwnFoodCourt(): Promise<FoodCourt> {
+  return readThroughCache<FoodCourt>({
     apiCall: () => getOwnFoodCourtRequest(createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => data as GetFoodCourt200,
+    mapApiData: (data) => normalizeFoodCourt(data as Parameters<typeof normalizeFoodCourt>[0]),
     readCache: () => {
       const ownId = getOwnFoodCourtId();
       const own = getStoredFoodCourts().find((item) => item.id === ownId);
       return own ?? null;
     },
     writeCache: (value) => {
-      if (value.id) {
-        setOwnFoodCourtId(value.id);
-      }
+      setOwnFoodCourtId(value.id);
       upsertFoodCourt(value);
     },
     errorMessage: "Own food court could not be loaded.",
@@ -76,28 +85,23 @@ export async function getOwnFoodCourt(): Promise<GetFoodCourt200> {
 
 export async function createOwnFoodCourt(
   request: FoodCourtRequestSimple,
-): Promise<FoodCourtResponse> {
-  return mutateWithOfflineFallback<FoodCourtResponse>({
+): Promise<FoodCourt> {
+  return mutateWithOfflineFallback<FoodCourt>({
     apiCall: () => postFoodCourt(request, createRequestOptions()),
     expectedStatuses: [201],
-    mapApiData: (data) => data as FoodCourtResponse,
+    mapApiData: (data) => normalizeFoodCourt(data as Parameters<typeof normalizeFoodCourt>[0]),
     onApiSuccess: (value) => {
-      if (value.id) {
-        setOwnFoodCourtId(value.id);
-      }
+      setOwnFoodCourtId(value.id);
       upsertFoodCourt(value);
     },
     applyOffline: () => {
-      const created: FoodCourtResponse = {
+      const created: FoodCourt = {
         id: crypto.randomUUID(),
         name: request.displayName ?? "Offline Food Court",
         waitingTime: 0,
       };
 
-      if (created.id) {
-        setOwnFoodCourtId(created.id);
-      }
-
+      setOwnFoodCourtId(created.id);
       upsertFoodCourt(created);
       return created;
     },
@@ -107,21 +111,19 @@ export async function createOwnFoodCourt(
 
 export async function updateOwnFoodCourt(
   request: FoodCourtRequestSimple,
-): Promise<FoodCourtResponse> {
-  return mutateWithOfflineFallback<FoodCourtResponse>({
+): Promise<FoodCourt> {
+  return mutateWithOfflineFallback<FoodCourt>({
     apiCall: () => putFoodCourt(request, createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => data as FoodCourtResponse,
+    mapApiData: (data) => normalizeFoodCourt(data as Parameters<typeof normalizeFoodCourt>[0]),
     onApiSuccess: (value) => {
-      if (value.id) {
-        setOwnFoodCourtId(value.id);
-      }
+      setOwnFoodCourtId(value.id);
       upsertFoodCourt(value);
     },
     applyOffline: () => {
       const ownId = getOwnFoodCourtId() ?? crypto.randomUUID();
 
-      const updated: FoodCourtResponse = {
+      const updated: FoodCourt = {
         id: ownId,
         name: request.displayName ?? "Offline Food Court",
         waitingTime: 0,
@@ -177,10 +179,6 @@ export async function getFoodCourtImageUrl(foodCourtId: Uuid): Promise<string | 
       const dataUrl = await responseToDataUrl(response);
       setStoredFoodCourtImage(foodCourtId, dataUrl);
       return dataUrl;
-    }
-
-    if (response.status >= 500) {
-      return getStoredFoodCourtImage(foodCourtId);
     }
 
     return getStoredFoodCourtImage(foodCourtId);

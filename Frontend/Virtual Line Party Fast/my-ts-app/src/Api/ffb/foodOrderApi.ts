@@ -17,7 +17,7 @@ import { createRequestOptions, mutateWithOfflineFallback, readThroughCache } fro
 import { isOfflineLikeError, toApiError } from "./core/errors";
 import { STORAGE_KEYS } from "./core/keys";
 import { readJson, writeJson } from "./core/storage";
-import { clearStoredCart, getCart } from "./cartApi";
+import { clearStoredCart, apiGetCart } from "./cartApi";
 import {
   normalizeOrder,
   normalizeOrderHistory,
@@ -76,7 +76,7 @@ function upsertOrder(order: OrderHistory): void {
 }
 
 async function createFoodOrderOffline(): Promise<Order[]> {
-  const currentCart = await getCart();
+  const currentCart = await apiGetCart();
 
   const order: Order = {
     id: crypto.randomUUID(),
@@ -84,13 +84,13 @@ async function createFoodOrderOffline(): Promise<Order[]> {
     foodCourtName: currentCart.cartItems[0]?.displayName ?? "Offline Food Court",
     waitingTime: 0,
     orderItems: currentCart.cartItems.map((item) => ({
-      productID: item.id,
+      productId: item.id,
       displayName: item.displayName,
       iconIdentifier: item.symbolIdentifier,
       count: item.count,
       extra: item.extra,
       subItems: item.subItems.map((subItem) => ({
-        productID: subItem.id,
+        productId: subItem.id,
         displayName: subItem.displayName,
         iconIdentifier: subItem.symbolIdentifier,
         count: subItem.count,

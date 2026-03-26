@@ -1,3 +1,4 @@
+
 import {
   deleteProductByIdId,
   deleteProductsAssignments,
@@ -13,13 +14,14 @@ import {
 import type {
   ProductLinkRequest,
   ProductRequestSimple,
-  ProductResponse,
   Uuid,
 } from "../generated/ffbAPI.schemas";
 import { createRequestOptions, mutateWithOfflineFallback, readThroughCache } from "./core/api";
 import { STORAGE_KEYS } from "./core/keys";
 import { readJson, writeJson } from "./core/storage";
 import { getOwnFoodCourtId } from "./foodCourtApi";
+import { normalizeProduct, normalizeProducts } from "./normalizers";
+import type { Product } from "./types";
 
 type StoredProductAssignment = {
   id: string;
@@ -29,15 +31,15 @@ type StoredProductAssignment = {
 
 type ProductFoodCourtMap = Record<string, Uuid>;
 
-function getStoredProducts(): ProductResponse[] {
-  return readJson<ProductResponse[]>(STORAGE_KEYS.products, []);
+function getStoredProducts(): Product[] {
+  return readJson<Product[]>(STORAGE_KEYS.products, []);
 }
 
-function setStoredProducts(value: ProductResponse[]): ProductResponse[] {
+function setStoredProducts(value: Product[]): Product[] {
   return writeJson(STORAGE_KEYS.products, value);
 }
 
-function mergeStoredProducts(value: ProductResponse[]): ProductResponse[] {
+function mergeStoredProducts(value: Product[]): Product[] {
   const merged = [...getStoredProducts()];
 
   for (const nextProduct of value) {
@@ -69,36 +71,34 @@ function setStoredProductFoodCourtMap(value: ProductFoodCourtMap): ProductFoodCo
   return writeJson(STORAGE_KEYS.productFoodCourtMap, value);
 }
 
-function assignProductsToFoodCourt(products: ProductResponse[], foodCourtId: Uuid): void {
+function assignProductsToFoodCourt(products: Product[], foodCourtId: Uuid): void {
   const nextMap = {
     ...getStoredProductFoodCourtMap(),
   };
 
   for (const product of products) {
-    if (product.id) {
-      nextMap[product.id] = foodCourtId;
-    }
+    nextMap[product.id] = foodCourtId;
   }
 
   setStoredProductFoodCourtMap(nextMap);
 }
 
-function upsertProduct(product: ProductResponse): ProductResponse[] {
+function upsertProduct(product: Product): Product[] {
   const next = getStoredProducts().filter((item) => item.id !== product.id);
   next.push(product);
   return setStoredProducts(next);
 }
 
-function findProduct(productId: Uuid): ProductResponse | undefined {
+function findProduct(productId: Uuid): Product | undefined {
   return getStoredProducts().find((item) => item.id === productId);
 }
 
-function filterProductsByFoodCourt(products: ProductResponse[], foodCourtId: Uuid): ProductResponse[] {
+function filterProductsByFoodCourt(products: Product[], foodCourtId: Uuid): Product[] {
   const productFoodCourtMap = getStoredProductFoodCourtMap();
-  return products.filter((product) => product.id && productFoodCourtMap[product.id] === foodCourtId);
+  return products.filter((product) => productFoodCourtMap[product.id] === foodCourtId);
 }
 
-function applyAssignments(products: ProductResponse[]): ProductResponse[] {
+function applyAssignments(products: Product[]): Product[] {
   const assignments = getStoredAssignments();
   const productIndex = new Map(getStoredProducts().map((product) => [product.id, product]));
 
@@ -107,31 +107,31 @@ function applyAssignments(products: ProductResponse[]): ProductResponse[] {
     subProducts: assignments
       .filter((assignment) => assignment.mainProductId === product.id)
       .map((assignment) => productIndex.get(assignment.subProductId))
-      .filter((item): item is ProductResponse => Boolean(item)),
+      .filter((item): item is Product => Boolean(item)),
   }));
 }
 
-export async function getAllProducts(): Promise<ProductResponse[]> {
-  return readThroughCache<ProductResponse[]>({
+export async function getAllProducts(): Promise<Product[]> {
+  return readThroughCache<Product[]>({
     apiCall: () => getProductListAll(createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => applyAssignments(data as ProductResponse[]),
+    mapApiData: (data) =>
+      applyAssignments(normalizeProducts(data as Parameters<typeof normalizeProducts>[0])),
     readCache: () => {
       const products = getStoredProducts();
       return products.length > 0 ? applyAssignments(products) : null;
     },
-    writeCache: (products) => {
-      setStoredProducts(products);
-    },
+    writeCache: setStoredProducts,
     errorMessage: "Products could not be loaded.",
   });
 }
 
-export async function getOwnFoodCourtProducts(): Promise<ProductResponse[]> {
-  return readThroughCache<ProductResponse[]>({
+export async function getOwnFoodCourtProducts(): Promise<Product[]> {
+  return readThroughCache<Product[]>({
     apiCall: () => getProductList(createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => applyAssignments(data as ProductResponse[]),
+    mapApiData: (data) =>
+      applyAssignments(normalizeProducts(data as Parameters<typeof normalizeProducts>[0])),
     readCache: () => {
       const ownFoodCourtId = getOwnFoodCourtId();
 
@@ -155,11 +155,12 @@ export async function getOwnFoodCourtProducts(): Promise<ProductResponse[]> {
   });
 }
 
-export async function getProductsByFoodCourtId(foodCourtId: Uuid): Promise<ProductResponse[]> {
-  return readThroughCache<ProductResponse[]>({
+export async function getProductsByFoodCourtId(foodCourtId: Uuid): Promise<Product[]> {
+  return readThroughCache<Product[]>({
     apiCall: () => getProductListByFoodCourtIdFoodCourtId(foodCourtId, createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => applyAssignments(data as ProductResponse[]),
+    mapApiData: (data) =>
+      applyAssignments(normalizeProducts(data as Parameters<typeof normalizeProducts>[0])),
     readCache: () => {
       const products = filterProductsByFoodCourt(getStoredProducts(), foodCourtId);
       return products.length > 0 ? applyAssignments(products) : null;
@@ -172,11 +173,11 @@ export async function getProductsByFoodCourtId(foodCourtId: Uuid): Promise<Produ
   });
 }
 
-export async function getProductById(id: Uuid): Promise<ProductResponse> {
-  return readThroughCache<ProductResponse>({
+export async function getProductById(id: Uuid): Promise<Product> {
+  return readThroughCache<Product>({
     apiCall: () => getProductId(id, createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => data as ProductResponse,
+    mapApiData: (data) => normalizeProduct(data as Parameters<typeof normalizeProduct>[0]),
     readCache: () => findProduct(id) ?? null,
     writeCache: upsertProduct,
     errorMessage: "Product could not be loaded.",
@@ -185,26 +186,26 @@ export async function getProductById(id: Uuid): Promise<ProductResponse> {
 
 export async function createProduct(
   request: ProductRequestSimple,
-): Promise<ProductResponse> {
-  return mutateWithOfflineFallback<ProductResponse>({
+): Promise<Product> {
+  return mutateWithOfflineFallback<Product>({
     apiCall: () => postProduct(request, createRequestOptions()),
     expectedStatuses: [201],
-    mapApiData: (data) => data as ProductResponse,
+    mapApiData: (data) => normalizeProduct(data as Parameters<typeof normalizeProduct>[0]),
     onApiSuccess: (product) => {
       upsertProduct(product);
 
       const ownFoodCourtId = getOwnFoodCourtId();
-      if (product.id && ownFoodCourtId) {
+      if (ownFoodCourtId) {
         assignProductsToFoodCourt([product], ownFoodCourtId);
       }
     },
     applyOffline: () => {
-      const created: ProductResponse = {
+      const created: Product = {
         id: crypto.randomUUID(),
         displayName: request.displayName ?? "Offline product",
         price: request.price ?? 0,
-        symbolIdentifier: request.symbolIdentifier,
-        minimalWarning: request.minimalWarning,
+        symbolIdentifier: request.symbolIdentifier ?? "offline-product",
+        minimalWarning: request.minimalWarning ?? 0,
         productCount: 0,
         subProducts: [],
       };
@@ -212,7 +213,7 @@ export async function createProduct(
       upsertProduct(created);
 
       const ownFoodCourtId = getOwnFoodCourtId();
-      if (created.id && ownFoodCourtId) {
+      if (ownFoodCourtId) {
         assignProductsToFoodCourt([created], ownFoodCourtId);
       }
 
@@ -225,8 +226,8 @@ export async function createProduct(
 export async function updateProductCount(
   productId: Uuid,
   newCount: number,
-): Promise<ProductResponse> {
-  return mutateWithOfflineFallback<ProductResponse>({
+): Promise<Product> {
+  return mutateWithOfflineFallback<Product>({
     apiCall: () =>
       putProductUpdateCountProductIdNewCount(
         productId,
@@ -301,17 +302,19 @@ export async function createProductAssignment(
   return mutateWithOfflineFallback<boolean>({
     apiCall: () => postProductsAssignments(request, createRequestOptions()),
     expectedStatuses: [201],
-    mapApiData: (data) => Boolean(data),
+    mapApiData: () => true,
     onApiSuccess: () => {
-      if (request.mainProductId && request.subProductId) {
-        const assignment: StoredProductAssignment = {
-          id: crypto.randomUUID(),
-          mainProductId: request.mainProductId,
-          subProductId: request.subProductId,
-        };
-
-        setStoredAssignments([...getStoredAssignments(), assignment]);
+      if (!request.mainProductId || !request.subProductId) {
+        return;
       }
+
+      const assignment: StoredProductAssignment = {
+        id: crypto.randomUUID(),
+        mainProductId: request.mainProductId,
+        subProductId: request.subProductId,
+      };
+
+      setStoredAssignments([...getStoredAssignments(), assignment]);
     },
     applyOffline: () => {
       if (!request.mainProductId || !request.subProductId) {

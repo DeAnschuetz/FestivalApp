@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { getFoodCourtImageUrl } from "../Api/ffb/foodCourtApi";
 
 interface FoodCourtImageProps {
   foodCourtId?: string;
-  apiBase: string;
   token?: string | null;
   className: string;
   alt?: string;
@@ -11,88 +11,44 @@ interface FoodCourtImageProps {
 const isUuid = (value: string) =>
   /^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/.test(value);
 
-function FoodCourtImage({ foodCourtId, apiBase, token, className, alt = "Food Court" }: FoodCourtImageProps) {
-  const [fallbackImageUrl, setFallbackImageUrl] = useState("");
-  const [useFallbackImage, setUseFallbackImage] = useState(false);
-
-  const directImageUrl = useMemo(() => {
-    if (!foodCourtId || !isUuid(foodCourtId)) {
-      return "";
-    }
-
-    return `${apiBase}/food_court/image/${foodCourtId}`;
-  }, [apiBase, foodCourtId]);
+function FoodCourtImage({ foodCourtId, token, className, alt = "Food Court" }: FoodCourtImageProps) {
+  const [imageUrl, setImageUrl] = useState("");
 
   useEffect(() => {
-    setUseFallbackImage(false);
-    setFallbackImageUrl((currentUrl) => {
-      if (currentUrl) {
-        URL.revokeObjectURL(currentUrl);
-      }
-      return "";
-    });
-  }, [foodCourtId]);
+    let cancelled = false;
 
-  useEffect(() => {
-    return () => {
-      if (fallbackImageUrl) {
-        URL.revokeObjectURL(fallbackImageUrl);
-      }
-    };
-  }, [fallbackImageUrl]);
+    const loadImage = async () => {
+      setImageUrl("");
 
-  const loadFallbackImage = async () => {
-    if (!foodCourtId || !isUuid(foodCourtId)) {
-      return;
-    }
-
-    const headers: Record<string, string> = {
-      Accept: "image/png",
-    };
-
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
-    try {
-      const response = await fetch(`${apiBase}/food_court/image/${foodCourtId}`, {
-        method: "GET",
-        headers,
-        credentials: "include",
-      });
-
-      if (!response.ok) {
+      if (!foodCourtId || !isUuid(foodCourtId)) {
         return;
       }
 
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      setFallbackImageUrl((currentUrl) => {
-        if (currentUrl) {
-          URL.revokeObjectURL(currentUrl);
-        }
-        return objectUrl;
-      });
-      setUseFallbackImage(true);
-    } catch {
-      setFallbackImageUrl("");
-    }
-  };
+      try {
+        const url = (await getFoodCourtImageUrl(foodCourtId)) ?? "";
 
-  if (!directImageUrl && !fallbackImageUrl) {
+        setImageUrl(url);
+      } catch {
+        if (!cancelled) {
+          setImageUrl("");
+        }
+      }
+    };
+
+    loadImage();
+
+  }, [foodCourtId]);
+
+  if (!imageUrl) {
     return <div className={className} />;
   }
 
   return (
     <img
       className={className}
-      src={useFallbackImage ? fallbackImageUrl : directImageUrl}
+      src={imageUrl}
       alt={alt}
-      onError={() => {
-        if (!useFallbackImage) {
-          loadFallbackImage();
-        }
-      }}
+      onError={() => setImageUrl("")}
     />
   );
 }

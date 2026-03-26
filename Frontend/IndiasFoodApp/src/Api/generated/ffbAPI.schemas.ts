@@ -19,76 +19,76 @@ export const AccountType = {
 } as const;
 
 export interface AccountResponse {
-  id?: Uuid;
-  loginNr?: string;
-  type?: AccountType;
+  id: Uuid;
+  loginNr: string;
+  type: AccountType;
 }
 
 export interface CartItemCreationRequest {
-  productId?: Uuid;
-  itemCount?: number;
+  productId: Uuid;
+  itemCount: number;
   extra?: string;
 }
 
 export interface CartItemResponse {
-  id?: Uuid;
-  displayName?: string;
-  symbolIdentifier?: string;
-  price?: number;
-  count?: number;
+  id: Uuid;
+  displayName: string;
+  symbolIdentifier: string;
+  price: number;
+  count: number;
   extra?: string;
-  subItems?: CartItemResponse[];
+  subItems: CartItemResponse[];
 }
 
 export interface CartItemUpdateRequest {
-  cartItemId?: Uuid;
-  itemCount?: number;
+  cartItemId: Uuid;
+  itemCount: number;
   extra?: string;
 }
 
 export interface CartResponseFull {
-  account?: AccountResponse;
-  hasPrio?: boolean;
-  total?: number;
-  cartItems?: CartItemResponse[];
+  account: AccountResponse;
+  hasPrio: boolean;
+  total: number;
+  cartItems: CartItemResponse[];
 }
 
 export interface CreditAddRequest {
-  amount?: number;
+  amount: number;
 }
 
 export interface CreditHistoryRequest {
-  loginNr?: string;
-  pageIndex?: number;
-  pageSize?: number;
+  loginNr: string;
+  pageIndex: number;
+  pageSize: number;
 }
 
 export type LocalDateTime = string;
 
 export interface CreditHistoryResponse {
-  oldAmount?: number;
-  newAmount?: number;
-  changeTime?: LocalDateTime;
+  oldAmount: number;
+  newAmount: number;
+  changeTime: LocalDateTime;
 }
 
 export interface ErrorResponse {
-  code?: string;
-  message?: string;
+  code: string;
+  message: string;
 }
 
 export interface FoodCourtRequest {
-  loginNr?: string;
-  displayName?: string;
+  loginNr: string;
+  displayName: string;
 }
 
 export interface FoodCourtRequestSimple {
-  displayName?: string;
+  displayName: string;
 }
 
 export interface FoodCourtResponse {
-  id?: Uuid;
-  name?: string;
-  waitingTime?: number;
+  id: Uuid;
+  name: string;
+  waitingTime: number;
 }
 
 export type FoodOrderStatus = typeof FoodOrderStatus[keyof typeof FoodOrderStatus];
@@ -103,18 +103,18 @@ export const FoodOrderStatus = {
 } as const;
 
 export interface FoodOrderHistoryResponse {
-  oldStatus?: FoodOrderStatus;
-  newStatus?: FoodOrderStatus;
-  statusChangeTime?: LocalDateTime;
+  oldStatus: FoodOrderStatus;
+  newStatus: FoodOrderStatus;
+  statusChangeTime: LocalDateTime;
 }
 
 export interface FoodOrderItemResponse {
-  productID?: Uuid;
-  displayName?: string;
-  iconIdentifier?: string;
-  count?: number;
+  productId: Uuid;
+  displayName: string;
+  iconIdentifier: string;
+  count: number;
   extra?: string;
-  subItems?: FoodOrderItemResponse[];
+  subItems: FoodOrderItemResponse[];
 }
 
 export type NotificationStatus = typeof NotificationStatus[keyof typeof NotificationStatus];
@@ -127,93 +127,119 @@ export const NotificationStatus = {
 } as const;
 
 export interface FoodOrderNotificationResponse {
-  id?: Uuid;
-  type?: FoodOrderStatus;
-  status?: NotificationStatus;
-  message?: string;
-  creationTime?: LocalDateTime;
+  id: Uuid;
+  type: FoodOrderStatus;
+  status: NotificationStatus;
+  message: string;
+  creationTime: LocalDateTime;
   pickupTime?: LocalDateTime;
 }
 
 export interface FoodOrderResponse {
-  id?: Uuid;
-  status?: FoodOrderStatus;
-  foodCourtName?: string;
-  waitingTime?: number;
-  orderItems?: FoodOrderItemResponse[];
+  id: Uuid;
+  status: FoodOrderStatus;
+  foodCourtName: string;
+  waitingTime: number;
+  orderItems: FoodOrderItemResponse[];
 }
 
 export interface FoodOrderResponseHistory {
-  id?: Uuid;
-  status?: FoodOrderStatus;
-  foodCourtName?: string;
-  waitingTime?: number;
-  orderItems?: FoodOrderItemResponse[];
-  history?: FoodOrderHistoryResponse[];
+  id: Uuid;
+  status: FoodOrderStatus;
+  foodCourtName: string;
+  waitingTime: number;
+  orderItems: FoodOrderItemResponse[];
+  history: FoodOrderHistoryResponse[];
 }
 
 export interface LoginRequest {
-  loginNr?: string;
-  password?: string;
+  loginNr: string;
+  password: string;
 }
 
 export interface ProductLinkRequest {
-  mainProductId?: Uuid;
-  subProductId?: Uuid;
+  mainProductId: Uuid;
+  subProductId: Uuid;
 }
 
 export interface ProductRequest {
-  id?: Uuid;
-  price?: number;
-  displayName?: string;
-  symbolIdentifier?: string;
-  minimalWarning?: number;
+  id: Uuid;
+  price: number;
+  displayName: string;
+  symbolIdentifier: string;
+  minimalWarning: number;
 }
 
 export interface ProductRequestSimple {
-  price?: number;
-  displayName?: string;
-  symbolIdentifier?: string;
-  minimalWarning?: number;
+  price: number;
+  displayName: string;
+  symbolIdentifier: string;
+  minimalWarning: number;
 }
 
 export interface ProductResponse {
-  id?: Uuid;
-  price?: number;
-  displayName?: string;
-  symbolIdentifier?: string;
-  minimalWarning?: number;
-  productCount?: number;
-  subProducts?: ProductResponse[];
+  id: Uuid;
+  price: number;
+  displayName: string;
+  symbolIdentifier: string;
+  minimalWarning: number;
+  productCount: number;
+  subProducts: ProductResponse[];
 }
 
 export interface RegisterRequest {
-  loginNr?: string;
-  password?: string;
+  loginNr: string;
+  password: string;
 }
 
 export interface ShareOrderRequest {
-  orderId?: Uuid;
-  loginNr?: string;
+  orderId: Uuid;
+  loginNr: string;
 }
 
 export interface TicketRequest {
-  loginNrs?: string[];
+  loginNrs: string[];
 }
 
 export interface TicketResponse {
-  id?: Uuid;
-  loginNr?: string;
+  id: Uuid;
+  loginNr: string;
+}
+
+export interface AccountLoginResponse {
+  loginNr: string;
+  token: string;
+}
+
+export interface AccountRegisterResponse {
+  id: Uuid;
+  loginNr: string;
+  type: AccountType;
+}
+
+export interface CartResponse {
+  hasPrio: boolean;
+  total: number;
+  cartItems: CartItemResponse[];
+}
+
+export interface CreditResponse {
+  credit: number;
+}
+
+export interface FoodOrderUpdateResponse {
+  id: Uuid;
+  status: FoodOrderStatus;
+  foodCourtName: string;
+  waitingTime: number;
+  orderItems: FoodOrderItemResponse[];
+  history: FoodOrderHistoryResponse[];
+  notifications: FoodOrderNotificationResponse[];
 }
 
 export type GetAccountListAll400 = {
   code?: string;
   message?: string;
-};
-
-export type PostAccountLogin200 = {
-  loginNr?: string;
-  token?: string;
 };
 
 export type PostAccountLogin400 = {
@@ -226,49 +252,9 @@ export type PostAccountLogout400 = {
   message?: string;
 };
 
-export type PostAccountRegister201 = {
-  id?: Uuid;
-  loginNr?: string;
-  type?: AccountType;
-};
-
 export type PostAccountRegister400 = {
   code?: string;
   message?: string;
-};
-
-export type GetCart200 = {
-  hasPrio?: boolean;
-  total?: number;
-  cartItems?: CartItemResponse[];
-};
-
-export type PutCartAddCartItem200 = {
-  hasPrio?: boolean;
-  total?: number;
-  cartItems?: CartItemResponse[];
-};
-
-export type PutCartUpdate200 = {
-  hasPrio?: boolean;
-  total?: number;
-  cartItems?: CartItemResponse[];
-};
-
-export type DeleteCartId200 = {
-  hasPrio?: boolean;
-  total?: number;
-  cartItems?: CartItemResponse[];
-};
-
-export type PutCartNewPriority200 = {
-  hasPrio?: boolean;
-  total?: number;
-  cartItems?: CartItemResponse[];
-};
-
-export type GetCredit200 = {
-  credit?: number;
 };
 
 export type GetCredit400 = {
@@ -276,31 +262,9 @@ export type GetCredit400 = {
   message?: string;
 };
 
-export type PutCreditAdd200 = {
-  credit?: number;
-};
-
-export type PutFoodCourt200 = {
-  id?: Uuid;
-  name?: string;
-  waitingTime?: number;
-};
-
 export type PutFoodCourt400 = {
   code?: string;
   message?: string;
-};
-
-export type GetFoodCourt200 = {
-  id?: Uuid;
-  name?: string;
-  waitingTime?: number;
-};
-
-export type PostFoodCourt201 = {
-  id?: Uuid;
-  name?: string;
-  waitingTime?: number;
 };
 
 export type PostFoodCourt400 = {
@@ -313,19 +277,9 @@ export type PostFoodCourt409 = {
   message?: string;
 };
 
-export type GetFoodCourtByIdFoodCourtId200 = {
-  credit?: number;
-};
-
 export type GetFoodCourtByIdFoodCourtId404 = {
   code?: string;
   message?: string;
-};
-
-export type PutFoodCourtByIdId200 = {
-  id?: Uuid;
-  name?: string;
-  waitingTime?: number;
 };
 
 export type PutFoodCourtByIdId400 = {
@@ -346,12 +300,6 @@ export type DeleteFoodCourtByIdId400 = {
 export type DeleteFoodCourtByIdId404 = {
   code?: string;
   message?: string;
-};
-
-export type PostFoodCourtByIdId200 = {
-  id?: Uuid;
-  name?: string;
-  waitingTime?: number;
 };
 
 export type PostFoodCourtByIdId400 = {
@@ -467,16 +415,6 @@ export type PutFoodOrderShare404 = {
   message?: string;
 };
 
-export type PutFoodOrderUpdateOrderIdStatus200 = {
-  id?: Uuid;
-  status?: FoodOrderStatus;
-  foodCourtName?: string;
-  waitingTime?: number;
-  orderItems?: FoodOrderItemResponse[];
-  history?: FoodOrderHistoryResponse[];
-  notifications?: FoodOrderNotificationResponse[];
-};
-
 export type PutFoodOrderUpdateOrderIdStatus400 = {
   code?: string;
   message?: string;
@@ -502,16 +440,6 @@ export type PutNotificationUpdateNotificationIdNewStatus404 = {
   message?: string;
 };
 
-export type PostProduct201 = {
-  id?: Uuid;
-  price?: number;
-  displayName?: string;
-  symbolIdentifier?: string;
-  minimalWarning?: number;
-  productCount?: number;
-  subProducts?: ProductResponse[];
-};
-
 export type PostProduct400 = {
   code?: string;
   message?: string;
@@ -520,16 +448,6 @@ export type PostProduct400 = {
 export type PostProductAdminByFoodCourtIdManyFoodCourtId400 = {
   code?: string;
   message?: string;
-};
-
-export type PostProductAdminByFoodCourtIdFoodCourtId201 = {
-  id?: Uuid;
-  price?: number;
-  displayName?: string;
-  symbolIdentifier?: string;
-  minimalWarning?: number;
-  productCount?: number;
-  subProducts?: ProductResponse[];
 };
 
 export type PostProductAdminByFoodCourtIdFoodCourtId400 = {
@@ -550,16 +468,6 @@ export type GetProductListByFoodCourtIdFoodCourtId400 = {
 export type PutProductUpdateCountProductIdNewCount400 = {
   code?: string;
   message?: string;
-};
-
-export type GetProductId200 = {
-  id?: Uuid;
-  price?: number;
-  displayName?: string;
-  symbolIdentifier?: string;
-  minimalWarning?: number;
-  productCount?: number;
-  subProducts?: ProductResponse[];
 };
 
 export type GetProductId400 = {

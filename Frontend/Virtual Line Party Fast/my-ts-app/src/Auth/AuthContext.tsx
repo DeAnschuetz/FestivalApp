@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState } from "react";
+import { AccountType } from "../Api/generated/ffbAPI.schemas";
 
 type AuthContextType = {
   role: string | null;
-  login: (role: string) => void;
+  login: (role: AccountType) => void;
   logout: () => void;
 };
 
@@ -19,7 +20,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.getItem("role")
   );
 
-  const login = (role: string) => {
+  const login = (role: AccountType) => {
     localStorage.setItem("role", role);
     setRole(role);
   };

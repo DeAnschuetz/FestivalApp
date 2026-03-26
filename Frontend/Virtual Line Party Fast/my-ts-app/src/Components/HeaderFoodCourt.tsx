@@ -8,7 +8,6 @@ interface HeaderFoodCourtProps {
     title: string;
     loginLabel: string;
     foodCourtId?: string;
-    apiBase: string;
     token?: string | null;
     onOpenStand?: () => void;
     onLogout?: () => void;
@@ -18,7 +17,6 @@ const HeaderFoodCourt: React.FC<HeaderFoodCourtProps> = ({
     title,
     loginLabel,
     foodCourtId,
-    apiBase,
     token,
     onOpenStand,
     onLogout,
@@ -65,7 +63,6 @@ const HeaderFoodCourt: React.FC<HeaderFoodCourtProps> = ({
             <div className={styles.TopRight}>
                 <FoodCourtImage
                     foodCourtId={foodCourtId}
-                    apiBase={apiBase}
                     token={token}
                     className={styles.FoodImage}
                 />

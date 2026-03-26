@@ -116,7 +116,7 @@ export async function getAllProducts(): Promise<Product[]> {
     apiCall: () => getProductListAll(createRequestOptions()),
     expectedStatuses: [200],
     mapApiData: (data) =>
-      applyAssignments(normalizeProducts(data as Parameters<typeof normalizeProducts>[0])),
+      normalizeProducts(data as Parameters<typeof normalizeProducts>[0]),
     readCache: () => {
       const products = getStoredProducts();
       return products.length > 0 ? applyAssignments(products) : null;
@@ -131,7 +131,7 @@ export async function getOwnFoodCourtProducts(): Promise<Product[]> {
     apiCall: () => getProductList(createRequestOptions()),
     expectedStatuses: [200],
     mapApiData: (data) =>
-      applyAssignments(normalizeProducts(data as Parameters<typeof normalizeProducts>[0])),
+      normalizeProducts(data as Parameters<typeof normalizeProducts>[0]),
     readCache: () => {
       const ownFoodCourtId = getOwnFoodCourtId();
 
@@ -160,7 +160,7 @@ export async function getProductsByFoodCourtId(foodCourtId: Uuid): Promise<Produ
     apiCall: () => getProductListByFoodCourtIdFoodCourtId(foodCourtId, createRequestOptions()),
     expectedStatuses: [200],
     mapApiData: (data) =>
-      applyAssignments(normalizeProducts(data as Parameters<typeof normalizeProducts>[0])),
+      normalizeProducts(data as Parameters<typeof normalizeProducts>[0]),
     readCache: () => {
       const products = filterProductsByFoodCourt(getStoredProducts(), foodCourtId);
       return products.length > 0 ? applyAssignments(products) : null;
@@ -184,7 +184,7 @@ export async function getProductById(id: Uuid): Promise<Product> {
   });
 }
 
-export async function createProduct(
+export async function apiCreateProduct(
   request: ProductRequestSimple,
 ): Promise<Product> {
   return mutateWithOfflineFallback<Product>({
@@ -261,7 +261,7 @@ export async function updateProductCount(
   });
 }
 
-export async function deleteProduct(productId: Uuid): Promise<void> {
+export async function apiDeleteProduct(productId: Uuid): Promise<void> {
   await mutateWithOfflineFallback<void>({
     apiCall: () => deleteProductByIdId(productId, createRequestOptions()),
     expectedStatuses: [200],

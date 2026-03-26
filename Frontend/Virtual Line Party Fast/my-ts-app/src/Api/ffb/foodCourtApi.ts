@@ -4,17 +4,22 @@ import {
   getFoodCourtListAll,
   postFoodCourt,
   putFoodCourt,
+  postFoodCourtImage,
+  getFoodCourtImageFoodCourtId,
 } from "../generated/ffbAPI";
+
 import type {
   FoodCourtRequestSimple,
   Uuid,
 } from "../generated/ffbAPI.schemas";
+
 import {
   createRequestOptions,
   mutateWithOfflineFallback,
   readThroughCache,
   saveStoredSession,
 } from "./core/api";
+
 import {
   fileToDataUrl,
   getStoredFoodCourtImage,
@@ -137,52 +142,49 @@ export async function updateOwnFoodCourt(
   });
 }
 
-export async function uploadOwnFoodCourtImage(file: File | Blob): Promise<string> {
+export async function uploadOwnFoodCourtImage(file: File): Promise<string> {
   const ownFoodCourtId = getOwnFoodCourtId();
 
   if (!ownFoodCourtId) {
     throw new Error("No own food court is known. Create or load it first.");
   }
 
-  const formData = new FormData();
-  formData.append("file", file);
+  const dataUrl = await fileToDataUrl(file);
 
-  try {
-    const response = await fetch("/food_court/image", {
-      ...createRequestOptions(),
-      method: "POST",
-      body: formData,
-    });
-
-    if (response.ok || response.status >= 500) {
-      const dataUrl = await fileToDataUrl(file);
+  return mutateWithOfflineFallback<string>({
+    apiCall: () => postFoodCourtImage({ file }, createRequestOptions()),
+    expectedStatuses: [200, 201, 202, 204],
+    mapApiData: () => dataUrl,
+    onApiSuccess: (value) => {
+      setStoredFoodCourtImage(ownFoodCourtId, value);
+    },
+    applyOffline: () => {
       setStoredFoodCourtImage(ownFoodCourtId, dataUrl);
       return dataUrl;
-    }
-  } catch {
-    // fall back to local cache update below
-  }
-
-  const dataUrl = await fileToDataUrl(file);
-  setStoredFoodCourtImage(ownFoodCourtId, dataUrl);
-  return dataUrl;
+    },
+    errorMessage: "Food court image could not be uploaded.",
+  });
 }
 
 export async function getFoodCourtImageUrl(foodCourtId: Uuid): Promise<string | null> {
-  try {
-    const response = await fetch(`/food_court/image/${foodCourtId}`, {
-      ...createRequestOptions(),
-      method: "GET",
-    });
+  return readThroughCache<string | null>({
+    apiCall: () => getFoodCourtImageFoodCourtId(foodCourtId, createRequestOptions()),
+    expectedStatuses: [200],
+    mapApiData: async (data) => {
+      const blob = data as Blob;
 
-    if (response.ok) {
-      const dataUrl = await responseToDataUrl(response);
-      setStoredFoodCourtImage(foodCourtId, dataUrl);
-      return dataUrl;
-    }
+      if (!blob || blob.size === 0) {
+        return null;
+      }
 
-    return getStoredFoodCourtImage(foodCourtId);
-  } catch {
-    return getStoredFoodCourtImage(foodCourtId);
-  }
+      return responseToDataUrl(new Response(blob));
+    },
+    readCache: () => getStoredFoodCourtImage(foodCourtId),
+    writeCache: (value) => {
+      if (value) {
+        setStoredFoodCourtImage(foodCourtId, value);
+      }
+    },
+    errorMessage: "Food court image could not be loaded.",
+  });
 }

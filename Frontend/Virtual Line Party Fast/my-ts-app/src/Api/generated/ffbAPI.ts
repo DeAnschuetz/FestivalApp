@@ -129,7 +129,7 @@ export const getGetAccountListAllUrl = () => {
 
   
 
-  return `/account/list_all`
+  return `/ffb/account/list_all`
 }
 
 export const getAccountListAll = async ( options?: RequestInit): Promise<getAccountListAllResponse> => {
@@ -178,7 +178,7 @@ export const getPostAccountLoginUrl = () => {
 
   
 
-  return `/account/login`
+  return `/ffb/account/login`
 }
 
 export const postAccountLogin = async (loginRequest: LoginRequest, options?: RequestInit): Promise<postAccountLoginResponse> => {
@@ -238,7 +238,7 @@ export const getPostAccountLogoutUrl = () => {
 
   
 
-  return `/account/logout`
+  return `/ffb/account/logout`
 }
 
 export const postAccountLogout = async ( options?: RequestInit): Promise<postAccountLogoutResponse> => {
@@ -287,7 +287,7 @@ export const getPostAccountRegisterUrl = () => {
 
   
 
-  return `/account/register`
+  return `/ffb/account/register`
 }
 
 export const postAccountRegister = async (registerRequest: RegisterRequest, options?: RequestInit): Promise<postAccountRegisterResponse> => {
@@ -347,7 +347,7 @@ export const getGetCartUrl = () => {
 
   
 
-  return `/cart`
+  return `/ffb/cart`
 }
 
 export const getCart = async ( options?: RequestInit): Promise<getCartResponse> => {
@@ -406,26 +406,32 @@ export const getPutCartAddCartItemUrl = () => {
 
   
 
-  return `/cart/add_cart_item`
+  return `/ffb/cart/add_cart_item`
 }
 
-export const putCartAddCartItem = async (cartItemCreationRequest: CartItemCreationRequest, options?: RequestInit): Promise<putCartAddCartItemResponse> => {
-  
-  const res = await fetch(getPutCartAddCartItemUrl(),
-  {      
+export const putCartAddCartItem = async (
+  cartItemCreationRequest: CartItemCreationRequest,
+  options?: RequestInit
+): Promise<putCartAddCartItemResponse> => {
+  const headers = new Headers(options?.headers);
+  headers.set("Content-Type", "application/json");
+
+  const res = await fetch(getPutCartAddCartItemUrl(), {
     ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      cartItemCreationRequest,)
-  }
-)
+    method: "PUT",
+    headers,
+    body: JSON.stringify(cartItemCreationRequest),
+  });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: putCartAddCartItemResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as putCartAddCartItemResponse
-}
+  const data: putCartAddCartItemResponse["data"] = body ? JSON.parse(body) : {};
+
+  return {
+    data,
+    status: res.status,
+    headers: res.headers,
+  } as putCartAddCartItemResponse;
+};
   
 
 
@@ -461,7 +467,7 @@ export const getGetCartListAllUrl = () => {
 
   
 
-  return `/cart/list_all`
+  return `/ffb/cart/list_all`
 }
 
 export const getCartListAll = async ( options?: RequestInit): Promise<getCartListAllResponse> => {
@@ -520,7 +526,7 @@ export const getPutCartUpdateUrl = () => {
 
   
 
-  return `/cart/update`
+  return `/ffb/cart/update`
 }
 
 export const putCartUpdate = async (cartItemUpdateRequest: CartItemUpdateRequest, options?: RequestInit): Promise<putCartUpdateResponse> => {
@@ -580,7 +586,7 @@ export const getDeleteCartIdUrl = (id: Uuid,) => {
 
   
 
-  return `/cart/${id}`
+  return `/ffb/cart/${id}`
 }
 
 export const deleteCartId = async (id: Uuid, options?: RequestInit): Promise<deleteCartIdResponse> => {
@@ -639,7 +645,7 @@ export const getPutCartNewPriorityUrl = (newPriority: boolean,) => {
 
   
 
-  return `/cart/${newPriority}`
+  return `/ffb/cart/${newPriority}`
 }
 
 export const putCartNewPriority = async (newPriority: boolean, options?: RequestInit): Promise<putCartNewPriorityResponse> => {
@@ -698,7 +704,7 @@ export const getGetCreditUrl = () => {
 
   
 
-  return `/credit`
+  return `/ffb/credit`
 }
 
 export const getCredit = async ( options?: RequestInit): Promise<getCreditResponse> => {
@@ -757,27 +763,27 @@ export const getPutCreditAddUrl = () => {
 
   
 
-  return `/credit/add`
+  return `/ffb/credit/add`
 }
 
-export const putCreditAdd = async (creditAddRequest: CreditAddRequest, options?: RequestInit): Promise<putCreditAddResponse> => {
-  
-  const res = await fetch(getPutCreditAddUrl(),
-  {      
+export const putCreditAdd = async (
+  creditAddRequest: CreditAddRequest,
+  options?: RequestInit
+): Promise<putCreditAddResponse> => {
+  const headers = new Headers(options?.headers);
+  headers.set("Content-Type", "application/json");
+
+  const res = await fetch(getPutCreditAddUrl(), {
     ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      creditAddRequest,)
-  }
-)
+    method: "PUT",
+    headers,
+    body: JSON.stringify(creditAddRequest),
+  });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: putCreditAddResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as putCreditAddResponse
-}
-  
+  const data: putCreditAddResponse["data"] = body ? JSON.parse(body) : {};
+  return { data, status: res.status, headers: res.headers } as putCreditAddResponse;
+}; 
 
 
 /**
@@ -812,7 +818,7 @@ export const getGetCreditHistoryUrl = () => {
 
   
 
-  return `/credit/history`
+  return `/ffb/credit/history`
 }
 
 export const getCreditHistory = async (creditHistoryRequest: CreditHistoryRequest, options?: RequestInit): Promise<getCreditHistoryResponse> => {
@@ -872,7 +878,7 @@ export const getPutFoodCourtUrl = () => {
 
   
 
-  return `/food_court`
+  return `/ffb/food_court`
 }
 
 export const putFoodCourt = async (foodCourtRequestSimple: FoodCourtRequestSimple, options?: RequestInit): Promise<putFoodCourtResponse> => {
@@ -927,7 +933,7 @@ export const getGetFoodCourtUrl = () => {
 
   
 
-  return `/food_court`
+  return `/ffb/food_court`
 }
 
 export const getFoodCourt = async ( options?: RequestInit): Promise<getFoodCourtResponse> => {
@@ -991,7 +997,7 @@ export const getPostFoodCourtUrl = () => {
 
   
 
-  return `/food_court`
+  return `/ffb/food_court`
 }
 
 export const postFoodCourt = async (foodCourtRequestSimple: FoodCourtRequestSimple, options?: RequestInit): Promise<postFoodCourtResponse> => {
@@ -1056,7 +1062,7 @@ export const getGetFoodCourtByIdFoodCourtIdUrl = (foodCourtId: Uuid,) => {
 
   
 
-  return `/food_court/by_id/${foodCourtId}`
+  return `/ffb/food_court/by_id/${foodCourtId}`
 }
 
 export const getFoodCourtByIdFoodCourtId = async (foodCourtId: Uuid, options?: RequestInit): Promise<getFoodCourtByIdFoodCourtIdResponse> => {
@@ -1120,7 +1126,7 @@ export const getPutFoodCourtByIdIdUrl = (id: Uuid,) => {
 
   
 
-  return `/food_court/by_id/${id}`
+  return `/ffb/food_court/by_id/${id}`
 }
 
 export const putFoodCourtByIdId = async (id: Uuid,
@@ -1179,7 +1185,7 @@ export const getDeleteFoodCourtByIdIdUrl = (id: Uuid,) => {
 
   
 
-  return `/food_court/by_id/${id}`
+  return `/ffb/food_court/by_id/${id}`
 }
 
 export const deleteFoodCourtByIdId = async (id: Uuid, options?: RequestInit): Promise<deleteFoodCourtByIdIdResponse> => {
@@ -1243,7 +1249,7 @@ export const getPostFoodCourtByIdIdUrl = (id: Uuid,) => {
 
   
 
-  return `/food_court/by_id/${id}`
+  return `/ffb/food_court/by_id/${id}`
 }
 
 export const postFoodCourtByIdId = async (id: Uuid,
@@ -1307,7 +1313,7 @@ export const getPostFoodCourtImageUrl = () => {
 
   
 
-  return `/food_court/image`
+  return `/ffb/food_court/image`
 }
 
 export const postFoodCourtImage = async (postFoodCourtImageBody: PostFoodCourtImageBody, options?: RequestInit): Promise<postFoodCourtImageResponse> => {
@@ -1374,7 +1380,7 @@ export const getPostFoodCourtImageByIdIdUrl = (id: Uuid,) => {
 
   
 
-  return `/food_court/image/by_id/${id}`
+  return `/ffb/food_court/image/by_id/${id}`
 }
 
 export const postFoodCourtImageByIdId = async (id: Uuid,
@@ -1444,25 +1450,27 @@ export const getGetFoodCourtImageFoodCourtIdUrl = (foodCourtId: Uuid,) => {
 
   
 
-  return `/food_court/image/${foodCourtId}`
+  return `/ffb/food_court/image/${foodCourtId}`
 }
 
-export const getFoodCourtImageFoodCourtId = async (foodCourtId: Uuid, options?: RequestInit): Promise<getFoodCourtImageFoodCourtIdResponse> => {
-  
-  const res = await fetch(getGetFoodCourtImageFoodCourtIdUrl(foodCourtId),
-  {      
+export const getFoodCourtImageFoodCourtId = async (
+  foodCourtId: Uuid,
+  options?: RequestInit
+): Promise<getFoodCourtImageFoodCourtIdResponse> => {
+  const res = await fetch(getGetFoodCourtImageFoodCourtIdUrl(foodCourtId), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-)
+    method: "GET",
+  });
 
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: getFoodCourtImageFoodCourtIdResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as getFoodCourtImageFoodCourtIdResponse
-}
+  const data =
+    [204, 205, 304].includes(res.status) ? undefined : await res.blob();
+
+  return {
+    data: data as getFoodCourtImageFoodCourtIdResponse["data"],
+    status: res.status,
+    headers: res.headers,
+  } as getFoodCourtImageFoodCourtIdResponse;
+};
   
 
 
@@ -1503,7 +1511,7 @@ export const getGetFoodCourtListAllUrl = () => {
 
   
 
-  return `/food_court/list_all`
+  return `/ffb/food_court/list_all`
 }
 
 export const getFoodCourtListAll = async ( options?: RequestInit): Promise<getFoodCourtListAllResponse> => {
@@ -1567,7 +1575,7 @@ export const getGetFoodOrderListAllUrl = () => {
 
   
 
-  return `/food_order/list_all`
+  return `/ffb/food_order/list_all`
 }
 
 export const getFoodOrderListAll = async ( options?: RequestInit): Promise<getFoodOrderListAllResponse> => {
@@ -1631,7 +1639,7 @@ export const getGetFoodOrderListAllByStatusStatusUrl = (status: FoodOrderStatus,
 
   
 
-  return `/food_order/list_all/by_status/${status}`
+  return `/ffb/food_order/list_all/by_status/${status}`
 }
 
 export const getFoodOrderListAllByStatusStatus = async (status: FoodOrderStatus, options?: RequestInit): Promise<getFoodOrderListAllByStatusStatusResponse> => {
@@ -1695,7 +1703,7 @@ export const getGetFoodOrderListAllByStatusStatusHistoryUrl = (status: FoodOrder
 
   
 
-  return `/food_order/list_all/by_status/${status}/history`
+  return `/ffb/food_order/list_all/by_status/${status}/history`
 }
 
 export const getFoodOrderListAllByStatusStatusHistory = async (status: FoodOrderStatus, options?: RequestInit): Promise<getFoodOrderListAllByStatusStatusHistoryResponse> => {
@@ -1759,7 +1767,7 @@ export const getGetFoodOrderListAllHistoryUrl = () => {
 
   
 
-  return `/food_order/list_all/history`
+  return `/ffb/food_order/list_all/history`
 }
 
 export const getFoodOrderListAllHistory = async ( options?: RequestInit): Promise<getFoodOrderListAllHistoryResponse> => {
@@ -1823,7 +1831,7 @@ export const getPostFoodOrderOrderUrl = () => {
 
   
 
-  return `/food_order/order`
+  return `/ffb/food_order/order`
 }
 
 export const postFoodOrderOrder = async ( options?: RequestInit): Promise<postFoodOrderOrderResponse> => {
@@ -1887,7 +1895,7 @@ export const getPutFoodOrderShareUrl = () => {
 
   
 
-  return `/food_order/share`
+  return `/ffb/food_order/share`
 }
 
 export const putFoodOrderShare = async (shareOrderRequest: ShareOrderRequest, options?: RequestInit): Promise<putFoodOrderShareResponse> => {
@@ -1953,7 +1961,7 @@ export const getPutFoodOrderUpdateOrderIdStatusUrl = (orderId: Uuid,
 
   
 
-  return `/food_order/update/${orderId}/${status}`
+  return `/ffb/food_order/update/${orderId}/${status}`
 }
 
 export const putFoodOrderUpdateOrderIdStatus = async (orderId: Uuid,
@@ -1996,7 +2004,7 @@ export const getGetMasterUrl = () => {
 
   
 
-  return `/master`
+  return `/ffb/master`
 }
 
 export const getMaster = async ( options?: RequestInit): Promise<getMasterResponse> => {
@@ -2038,7 +2046,7 @@ export const getPostMasterUrl = () => {
 
   
 
-  return `/master`
+  return `/ffb/master`
 }
 
 export const postMaster = async ( options?: RequestInit): Promise<postMasterResponse> => {
@@ -2080,7 +2088,7 @@ export const getPostMasterSimmulationPauseUrl = () => {
 
   
 
-  return `/master/simmulation/pause`
+  return `/ffb/master/simmulation/pause`
 }
 
 export const postMasterSimmulationPause = async ( options?: RequestInit): Promise<postMasterSimmulationPauseResponse> => {
@@ -2122,7 +2130,7 @@ export const getPostMasterSimmulationResumeUrl = () => {
 
   
 
-  return `/master/simmulation/resume`
+  return `/ffb/master/simmulation/resume`
 }
 
 export const postMasterSimmulationResume = async ( options?: RequestInit): Promise<postMasterSimmulationResumeResponse> => {
@@ -2186,7 +2194,7 @@ export const getGetNotificationListAllUrl = () => {
 
   
 
-  return `/notification/list_all`
+  return `/ffb/notification/list_all`
 }
 
 export const getNotificationListAll = async ( options?: RequestInit): Promise<getNotificationListAllResponse> => {
@@ -2246,7 +2254,7 @@ export const getPutNotificationUpdateNotificationIdNewStatusUrl = (notificationI
 
   
 
-  return `/notification/update/${notificationId}/${newStatus}`
+  return `/ffb/notification/update/${notificationId}/${newStatus}`
 }
 
 export const putNotificationUpdateNotificationIdNewStatus = async (notificationId: Uuid,
@@ -2306,26 +2314,28 @@ export const getPostProductUrl = () => {
 
   
 
-  return `/product`
+  return `/ffb/product`
 }
 
-export const postProduct = async (productRequestSimple: ProductRequestSimple, options?: RequestInit): Promise<postProductResponse> => {
-  
-  const res = await fetch(getPostProductUrl(),
-  {      
+export const postProduct = async (
+  productRequestSimple: ProductRequestSimple,
+  options?: RequestInit
+): Promise<postProductResponse> => {
+  const headers = new Headers(options?.headers);
+  headers.set("Content-Type", "application/json");
+
+  const res = await fetch(getPostProductUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      productRequestSimple,)
-  }
-)
+    method: "POST",
+    headers,
+    body: JSON.stringify(productRequestSimple),
+  });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: postProductResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as postProductResponse
-}
+  const data: postProductResponse["data"] = body ? JSON.parse(body) : {};
+
+  return { data, status: res.status, headers: res.headers } as postProductResponse;
+};
   
 
 
@@ -2366,7 +2376,7 @@ export const getPostProductAdminByFoodCourtIdManyFoodCourtIdUrl = (foodCourtId: 
 
   
 
-  return `/product/admin/by_food_court_id/many/${foodCourtId}`
+  return `/ffb/product/admin/by_food_court_id/many/${foodCourtId}`
 }
 
 export const postProductAdminByFoodCourtIdManyFoodCourtId = async (foodCourtId: Uuid,
@@ -2427,7 +2437,7 @@ export const getPostProductAdminByFoodCourtIdFoodCourtIdUrl = (foodCourtId: Uuid
 
   
 
-  return `/product/admin/by_food_court_id/${foodCourtId}`
+  return `/ffb/product/admin/by_food_court_id/${foodCourtId}`
 }
 
 export const postProductAdminByFoodCourtIdFoodCourtId = async (foodCourtId: Uuid,
@@ -2481,7 +2491,7 @@ export const getDeleteProductByIdIdUrl = (id: Uuid,) => {
 
   
 
-  return `/product/by_id/${id}`
+  return `/ffb/product/by_id/${id}`
 }
 
 export const deleteProductByIdId = async (id: Uuid, options?: RequestInit): Promise<deleteProductByIdIdResponse> => {
@@ -2535,7 +2545,7 @@ export const getGetProductListUrl = () => {
 
   
 
-  return `/product/list`
+  return `/ffb/product/list`
 }
 
 export const getProductList = async ( options?: RequestInit): Promise<getProductListResponse> => {
@@ -2594,11 +2604,10 @@ export const getGetProductListByFoodCourtIdFoodCourtIdUrl = (foodCourtId: Uuid,)
 
   
 
-  return `/product/list/by_food_court_id/${foodCourtId}`
+  return `/ffb/product/list/by_food_court_id/${foodCourtId}`
 }
 
 export const getProductListByFoodCourtIdFoodCourtId = async (foodCourtId: Uuid, options?: RequestInit): Promise<getProductListByFoodCourtIdFoodCourtIdResponse> => {
-  
   const res = await fetch(getGetProductListByFoodCourtIdFoodCourtIdUrl(foodCourtId),
   {      
     ...options,
@@ -2607,10 +2616,10 @@ export const getProductListByFoodCourtIdFoodCourtId = async (foodCourtId: Uuid, 
     
   }
 )
-
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
   
   const data: getProductListByFoodCourtIdFoodCourtIdResponse['data'] = body ? JSON.parse(body) : {}
+  console.log("DATA",data);
   return { data, status: res.status, headers: res.headers } as getProductListByFoodCourtIdFoodCourtIdResponse
 }
   
@@ -2648,7 +2657,7 @@ export const getGetProductListAllUrl = () => {
 
   
 
-  return `/product/list_all`
+  return `/ffb/product/list_all`
 }
 
 export const getProductListAll = async ( options?: RequestInit): Promise<getProductListAllResponse> => {
@@ -2701,7 +2710,7 @@ export const getPutProductUpdateCountProductIdNewCountUrl = (productId: Uuid,
 
   
 
-  return `/product/update/count/${productId}/${newCount}`
+  return `/ffb/product/update/count/${productId}/${newCount}`
 }
 
 export const putProductUpdateCountProductIdNewCount = async (productId: Uuid,
@@ -2761,7 +2770,7 @@ export const getGetProductIdUrl = (id: Uuid,) => {
 
   
 
-  return `/product/${id}`
+  return `/ffb/product/${id}`
 }
 
 export const getProductId = async (id: Uuid, options?: RequestInit): Promise<getProductIdResponse> => {
@@ -2825,7 +2834,7 @@ export const getDeleteProductsAssignmentsUrl = () => {
 
   
 
-  return `/products/assignments`
+  return `/ffb/products/assignments`
 }
 
 export const deleteProductsAssignments = async (productLinkRequest: ProductLinkRequest, options?: RequestInit): Promise<deleteProductsAssignmentsResponse> => {
@@ -2890,7 +2899,7 @@ export const getPostProductsAssignmentsUrl = () => {
 
   
 
-  return `/products/assignments`
+  return `/ffb/products/assignments`
 }
 
 export const postProductsAssignments = async (productLinkRequest: ProductLinkRequest, options?: RequestInit): Promise<postProductsAssignmentsResponse> => {
@@ -2948,7 +2957,7 @@ export const getDeleteProductsAssignmentsByIdIdUrl = (id: Uuid,) => {
 
   
 
-  return `/products/assignments/by_id/${id}`
+  return `/ffb/products/assignments/by_id/${id}`
 }
 
 export const deleteProductsAssignmentsByIdId = async (id: Uuid, options?: RequestInit): Promise<deleteProductsAssignmentsByIdIdResponse> => {
@@ -3002,7 +3011,7 @@ export const getGetTicketAdminListAllUrl = () => {
 
   
 
-  return `/ticket/admin/list_all`
+  return `/ffb/ticket/admin/list_all`
 }
 
 export const getTicketAdminListAll = async ( options?: RequestInit): Promise<getTicketAdminListAllResponse> => {
@@ -3061,7 +3070,7 @@ export const getPostTicketAdminRegisterUrl = () => {
 
   
 
-  return `/ticket/admin/register`
+  return `/ffb/ticket/admin/register`
 }
 
 export const postTicketAdminRegister = async (ticketRequest: TicketRequest, options?: RequestInit): Promise<postTicketAdminRegisterResponse> => {

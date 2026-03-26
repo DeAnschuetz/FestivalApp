@@ -204,6 +204,7 @@
     {
       "accountId": "e5a6778b-8576-4b4c-a4a3-97c5a3ac2cf0",
       "loginNr": "F-000-000-001",
+      "devPassword": "1",
       "type": "FOOD_COURT_WORKER",
       "ownFoodCourtId": "a6caa51c-52e0-4ea8-80bc-bcf3d2c03efc",
       "cart": null,
@@ -1192,6 +1193,7 @@
     {
       "accountId": "50c3ba6b-903e-4d00-81dd-2314c3ed478f",
       "loginNr": "F-000-000-002",
+      "devPassword": "1",
       "type": "FOOD_COURT_WORKER",
       "ownFoodCourtId": "e9b30a36-d946-4295-b934-9aec9014c8c1",
       "cart": null,
@@ -1521,6 +1523,7 @@
     {
       "accountId": "484b61d1-064e-4f69-be9e-9cacd5a773f6",
       "loginNr": "V-000-000-001",
+      "devPassword": "1",
       "type": "GUEST",
       "ownFoodCourtId": null,
       "cart": {
@@ -2402,6 +2405,7 @@
     {
       "accountId": "dcddd091-cec9-4710-8cf2-c885d1b89e1f",
       "loginNr": "V-000-000-002",
+      "devPassword": "1",
       "type": "GUEST",
       "ownFoodCourtId": null,
       "cart": {

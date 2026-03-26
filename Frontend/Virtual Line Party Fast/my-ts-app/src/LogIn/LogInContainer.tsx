@@ -4,9 +4,30 @@ import InputElement from "../Components/InputElement";
 import { Checkbox } from "@progress/kendo-react-inputs";
 import { Button } from "@progress/kendo-react-buttons";
 import { useNavigate } from "react-router-dom";
-import { login, LoginResult } from "../Api/ffb";
-import { LoginRequest } from "../Api/generated/ffbAPI.schemas";
+import { apiLogin, LoginResult } from "../Api/ffb";
+import { AccountType } from "../Api/generated/ffbAPI.schemas";
 import { getAccountTypeForRouting } from "./loginHelpers";
+import { useAuth } from "../Auth/AuthContext";
+
+const formatLoginNr = (value: string): string => {
+  const upper = value.toUpperCase();
+
+  const firstCharMatch = upper.match(/[AFV]/);
+  const firstChar = firstCharMatch ? firstCharMatch[0] : "";
+
+  const digits = upper.replace(/\D/g, "").slice(0, 9);
+
+  if (!firstChar) {
+    return digits ? "" : "";
+  }
+
+  const parts = [];
+  if (digits.length > 0) parts.push(digits.slice(0, 3));
+  if (digits.length > 3) parts.push(digits.slice(3, 6));
+  if (digits.length > 6) parts.push(digits.slice(6, 9));
+
+  return [firstChar, ...parts].join("-");
+};
 
 function LogInContainer() {
   const [loginNr, setLoginNr] = useState("");
@@ -16,55 +37,52 @@ function LogInContainer() {
   );
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  const { login } = useAuth();
+  
   useEffect(() => {
     setLoginNr("");
     setPassword("");
     setError("");
   }, []);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    
+    const isValidLoginNr = (value: string) => /^[AFV]-\d{3}-\d{3}-\d{3}$/.test(value);
+    if (!isValidLoginNr(loginNr)) {
+      setError("Invalid Login Nr.");
+      return;
+    }
     e.preventDefault();
     setError("");
-
-    const registeredUser = users.find((u) => u.login_Nr === loginNr);
-
-    if (!registeredUser) {
-      setError("Not registered yet. \nPlease Register first.");
-      return;
-    }
-
-    const user = users.find(
-      (u) => u.login_Nr === loginNr && u.password === password,
-    );
-
-    if (!user) {
-      setError("Login number or password is incorrect.");
-      return;
-    }
-
-    localStorage.setItem("currentUser", user.login_Nr);
-
-    if (rememberMe) {
-      localStorage.setItem("rememberedPassword_" + loginNr, password);
-    } else {
-      localStorage.removeItem("rememberedPassword_" + loginNr);
-    }
-
-    login(user.type);
-
-    switch (user.type) {
-      case "ADMIN":
-        navigate("/admin_view");
-        break;
-
-      case "GUEST":
-        navigate("/user_view");
-        break;
-
-      case "FOOD_COURT_WORKER":
-        navigate("/foodcourt_view");
-        break;
+    try {
+      const data: LoginResult = await apiLogin({loginNr, password});
+      localStorage.setItem("currentUser", data.loginNr);
+  
+      if (rememberMe) {
+        localStorage.setItem("rememberedPassword_" + loginNr, password);
+      } else {
+        localStorage.removeItem("rememberedPassword_" + loginNr);
+      }
+      const type: AccountType = getAccountTypeForRouting(data.loginNr);
+      login(type);
+      switch (type) {
+        case AccountType.ADMIN:
+          console.log(type)
+          navigate("/admin_view");
+          break;
+  
+        case AccountType.GUEST:
+          console.log(type)
+          navigate("/user_view");
+          break;
+  
+        case AccountType.FOOD_COURT_WORKER:
+          console.log(type)
+          navigate("/food_court_view");
+          break;
+      }
+    } catch (error) {
+      
     }
   };
 
@@ -92,11 +110,12 @@ function LogInContainer() {
           editorId="login_nr"
           value={loginNr}
           onChange={(value) => {
-            setLoginNr(value);
+            const formattedValue = formatLoginNr(value);
+
+            setLoginNr(formattedValue);
             setError("");
 
-            const saved = localStorage.getItem("rememberedPassword_" + value);
-            setError("");
+            const saved = localStorage.getItem("rememberedPassword_" + formattedValue);
 
             if (saved) {
               setPassword(saved);
@@ -126,6 +145,7 @@ function LogInContainer() {
             border: error ? "1px solid red" : undefined,
           }}
           type="password"
+          maxLength={13}
         />
 
         <div className={styles.Checkbox}>

@@ -2,11 +2,13 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider } from "./Auth/AuthContext";
 import ProtectedRoute from "./Auth/ProtectedRoute";
 import User from "./User/User";
-import FoodCourt from "./FoodCourt/FoodCourt";
 import Admin from "./Admin/Admin";
 import LogIn from "./LogIn/LogIn";
 import { useEffect } from "react";
 import { bootstrapOfflineDemo } from "./Api/ffb/initialImportBootstrap";
+import HomePage from "./FoodCourt/HomePage";
+import { AccountType } from "./Api/generated/ffbAPI.schemas";
+import StandPage from "./FoodCourt/StandPage";
 
 function App() {
 
@@ -26,7 +28,7 @@ function App() {
           <Route
             path="/admin_view"
             element={
-              <ProtectedRoute role="ADMIN">
+              <ProtectedRoute role={AccountType.ADMIN}>
                 <Admin />
               </ProtectedRoute>
             }
@@ -35,21 +37,28 @@ function App() {
           <Route
             path="/user_view"
             element={
-              <ProtectedRoute role="GUEST">
+              <ProtectedRoute role={AccountType.GUEST}>
                 <User />
               </ProtectedRoute>
             }
           />
 
           <Route
-            path="/foodcourt_view"
+            path="/food_court_view"
             element={
-              <ProtectedRoute role="FOOD_COURT_WORKER">
-                <FoodCourt />
+              <ProtectedRoute role={AccountType.FOOD_COURT_WORKER}>
+                <HomePage />
               </ProtectedRoute>
             }
           />
-
+          <Route
+            path="/food_court_view/stand"
+            element={
+            <ProtectedRoute role={AccountType.FOOD_COURT_WORKER}>
+              <StandPage />
+            </ProtectedRoute>
+            }
+          />
         </Routes>
       </Router>
     </AuthProvider>

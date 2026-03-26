@@ -3,12 +3,17 @@ import styles from "./Modules/User.module.css";
 import Header from "./Header";
 import ReadyforPickUp from "./ReadyforPickUp";
 import InProgress from "./InProgress";
-import Orders from "./Orders";
 import FoodCourtTab from "./FoodCourtTab";
-import { BasketItem, FoodCourt, Order } from "../Types";
+import { BasketItem } from "../Types";
 import Pay from "./Pay";
 import ViewOrder from "./ViewOrder";
+import { Cart, Credit, FoodCourt, Order } from "../Api/ffb/types";
+import { getCredit } from "../Api/ffb/creditApi";
+import { getVisibleOrders } from "../Api/ffb/foodOrderApi";
+import { FoodOrderStatus as OrderStatus  } from "../Api/generated/ffbAPI.schemas";
+import Orders from "./Orders";
 import FoodCourtProducts from "./FoodCourtProducts";
+import { getAllFoodCourts } from "../Api/ffb/foodCourtApi";
 import ShoppingBasket from "./ShoppingBasket";
 
 interface UserProps {}
@@ -21,62 +26,59 @@ function User(props: UserProps) {
   const [payisOpen, setPayisOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState("");
   const [credits, setCredits] = useState<number>(0);
-  const [clickedCrad, setClickedCard] = useState("");
+  const [clickedCard, setClickedCard] = useState("");
   const [foodCourts, setFoodCourts] = useState<FoodCourt[]>([]);
   const [clickedFoodCourt, setClickedFoodCourt] = useState("");
-  const [orderBasket, setOrderBasket] = useState<{
-    foodcourt_name: string;
-    waiting_time: number;
-    Items: BasketItem[];
-  }>({
-    foodcourt_name: "",
-    Items: [],
-    waiting_time: 0,
-  });
-  const [openBasket, setOpenBasket] = useState(false);
+  const [cart, setCart] = useState<Cart>({} as Cart);
+  const [cartOpen, setCartOpen] = useState(false);
 
   useEffect(() => {
-    const loginNr = localStorage.getItem("currentUser");
-    if (!loginNr) return;
+    const loadUserData = async () => {
+      try {
+        const loginNr = localStorage.getItem("currentUser");
+        if (!loginNr) return;
+        setCurrentUser(loginNr);
 
-    setCurrentUser(loginNr);
+        const credit: Credit = await getCredit();
+        setCredits(credit.credit);
 
-    const storedCredits = localStorage.getItem("credits");
-    if (storedCredits) {
-      const creditsArray: { login_Nr: string; credits: number }[] =
-        JSON.parse(storedCredits);
-      const userCredit = creditsArray.find((c) => c.login_Nr === loginNr);
-      setCredits(userCredit ? userCredit.credits : 0);
-    }
+        const order: Order[] = await getVisibleOrders();
+        setOrders(order);
+      } catch (error) {
 
-    const storedOrders = localStorage.getItem("orders");
-    if (storedOrders) {
-      const allOrders: Order[] = JSON.parse(storedOrders);
-      setOrders(allOrders.filter((order) => order.loginNr === loginNr));
-    }
+      }
+    };
+
+    void loadUserData();
   }, []);
 
   useEffect(() => {
-    const stored = localStorage.getItem("foodcourts");
-    if (stored) {
-      setFoodCourts(JSON.parse(stored));
-    }
+    const loadFoodCourtData = async () => {
+      try {
+        const foodCourts: FoodCourt[] = await getAllFoodCourts();
+        setFoodCourts(foodCourts);
+      } catch (error) {
+
+      }
+      };
+
+      void loadFoodCourtData();
   }, []);
 
   const readyForPickup = orders.filter(
-    (order: Order) => order.order_status === "ready_for_pickup",
+    (order: Order) => order.status === OrderStatus.READY_FOR_PICKUP,
   );
 
   const inProgress = orders.filter(
-    (order: Order) => order.order_status === "in_progress",
+    (order: Order) => order.status === OrderStatus.IN_PROGRESS,
   );
 
   const currentOrder = orders.find(
-    (order: Order) => order.order_number === clickedCrad,
+    (order: Order) => order.id === clickedCard,
   );
 
   const currentFoodcourt = foodCourts.find(
-    (court: FoodCourt) => court.name === clickedFoodCourt,
+    (court: FoodCourt) => court.id === clickedFoodCourt,
   );
 
   return (
@@ -84,9 +86,9 @@ function User(props: UserProps) {
       <Header
         setPayisOpen={setPayisOpen}
         credits={credits}
-        setOpenBasket={setOpenBasket}
-        openBasket={openBasket}
-        orderBasket={orderBasket}
+        setOpenBasket={setCartOpen}
+        openBasket={cartOpen}
+        cart={cart ?? {} as Cart}
         setClickedFoodCourt={setClickedFoodCourt}
       />
       {payisOpen ? (
@@ -95,7 +97,7 @@ function User(props: UserProps) {
           currentUser={currentUser}
           onCreditsUpdate={(newCredits) => setCredits(newCredits)}
         />
-      ) : clickedCrad !== "" ? (
+      ) : clickedCard !== "" ? (
         <ViewOrder
           currentOrder={currentOrder}
           setClickedCard={setClickedCard}
@@ -104,14 +106,14 @@ function User(props: UserProps) {
         <FoodCourtProducts
           currentFoodCourt={currentFoodcourt}
           setClickedFoodCourt={setClickedFoodCourt}
-          setOrderBasket={setOrderBasket}
-          orderBasket={orderBasket}
+          setCart={setCart}
+          cart={cart}
         />
-      ) : openBasket ? (
+      ) : cartOpen ? (
         <ShoppingBasket
-          orderBasket={orderBasket}
-          setOpenBasket={setOpenBasket}
-          setOrderBasket={setOrderBasket}
+          cart={cart}
+          setCartOpen={setCartOpen}
+          setCartOutside={setCart}
           credits={credits}
           setCredits={setCredits}
           orders = {orders}

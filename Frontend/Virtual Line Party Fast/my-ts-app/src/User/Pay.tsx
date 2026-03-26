@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import styles from "./Modules/Pay.module.css";
 import { Button } from "@progress/kendo-react-buttons";
 import InputElement from "../Components/InputElement";
+import { addCredit, getCredit } from "../Api/ffb/creditApi";
+import { Credit } from "../Api/ffb/types";
+import { CreditAddRequest } from "../Api/generated/ffbAPI.schemas";
 
 interface PayProps {
   setPayisOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -11,7 +14,7 @@ interface PayProps {
 
 function Pay({ setPayisOpen, currentUser, onCreditsUpdate }: PayProps) {
   const [selectedPayment, setSelectedPayment] = useState<string>("");
-  const [betrag, setBetrag] = useState<string>("");
+const [betrag, setBetrag] = useState<number | "">("");
   const [blz, setBlz] = useState<string>("");
   const [iban, setIban] = useState<string>("");
   const [submitted, setSubmitted] = useState(false);
@@ -32,40 +35,25 @@ function Pay({ setPayisOpen, currentUser, onCreditsUpdate }: PayProps) {
     iban: submitted && isCardPayment && !iban,
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-
-    const isValid =
-      selectedPayment &&
-      betrag &&
-      /^\d+$/.test(betrag) &&
-      (!isCardPayment || (blz && iban));
-    if (!isValid) return;
-
-    const storedCredits = localStorage.getItem("credits");
-    let creditsArray: { login_Nr: string; credits: number }[] = storedCredits
-      ? JSON.parse(storedCredits)
-      : [];
-
-    const userCredit = creditsArray.find((c) => c.login_Nr === currentUser);
-
-    if (userCredit) {
-      userCredit.credits += parseInt(betrag, 10);
-    } else {
-      creditsArray.push({
-        login_Nr: currentUser,
-        credits: parseInt(betrag, 10),
-      });
+  const handleSubmit = async (e: React.FormEvent) => {
+    try {
+      e.preventDefault();
+      setSubmitted(true);
+  
+      const isValid =
+        selectedPayment &&
+        betrag &&
+        (!isCardPayment || (blz && iban));
+      if (!isValid) return;
+  
+      const credit: Credit = await addCredit({amount: betrag} as CreditAddRequest);
+      console.log(credit);
+      onCreditsUpdate?.(credit.credit);
+  
+      setPayisOpen(false);
+    } catch (error) {
+      
     }
-
-    localStorage.setItem("credits", JSON.stringify(creditsArray));
-
-    const updatedUserCredit =
-      creditsArray.find((c) => c.login_Nr === currentUser)?.credits || 0;
-    onCreditsUpdate?.(updatedUserCredit);
-
-    setPayisOpen(false);
   };
   const getIconClasses = (optionId: string) => {
     return [
@@ -149,19 +137,14 @@ function Pay({ setPayisOpen, currentUser, onCreditsUpdate }: PayProps) {
         <InputElement
           label="Betrag"
           editorId="betrag"
+          type="number"
           value={betrag}
-          onChange={(val) => {
-            setBetrag(val);
-          }}
+          onChange={(val: string) => setBetrag(val === "" ? "" : Number(val))}
           inputStyle={{
             border: validation.betrag ? "1px solid red" : undefined,
           }}
         />
         {validation.betrag && <div className={styles.ErrorText}>Required</div>}
-        {betrag && !/^\d+$/.test(betrag) && (
-          <div className={styles.ErrorText}>Please put in number</div>
-        )}
-
         <div className={styles.PayBtnContainer}>
           <Button className={styles.PayBtn} type="submit">
             Bezahlen

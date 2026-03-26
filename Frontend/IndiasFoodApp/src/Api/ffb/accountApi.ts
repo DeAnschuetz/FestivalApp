@@ -1,23 +1,14 @@
+
 import { postAccountLogin, postAccountRegister } from "../generated/ffbAPI";
-import type {
-  AccountType,
-  LoginRequest,
-  PostAccountLogin200,
-  PostAccountRegister201,
-  RegisterRequest,
-} from "../generated/ffbAPI.schemas";
-import {
-  clearStoredSession,
-  createRequestOptions,
-  getStoredSession,
-  logoutLocallyAndTryApi,
-  mutateWithOfflineFallback,
-  saveStoredSession,
-} from "./core/api";
+import type { AccountType, LoginRequest, RegisterRequest, } from "../generated/ffbAPI.schemas";
+import { clearStoredSession, createRequestOptions, getStoredSession, logoutLocallyAndTryApi, mutateWithOfflineFallback, saveStoredSession } from "./core/api";
+import { applyImportedAccount, findImportedAccount } from "./initialImport";
+import { inferAccountTypeFromLoginNr, normalizeLoginResult, normalizeRegisterResult } from "./normalizers";
+import type { LoginResult, RegisterResult } from "./types";
 
 type StoredOfflineAccount = {
   loginNr: string;
-  password: string;
+  devPassword: string;
   type: AccountType;
 };
 
@@ -27,6 +18,7 @@ function getOfflineAccounts(): StoredOfflineAccount[] {
   try {
     const raw =
       typeof window !== "undefined" ? window.localStorage.getItem(OFFLINE_ACCOUNTS_KEY) : null;
+
     return raw ? (JSON.parse(raw) as StoredOfflineAccount[]) : [];
   } catch {
     return [];
@@ -39,14 +31,27 @@ function setOfflineAccounts(accounts: StoredOfflineAccount[]): void {
       window.localStorage.setItem(OFFLINE_ACCOUNTS_KEY, JSON.stringify(accounts));
     }
   } catch {
-    // ignore storage write failures in this helper
+    // ignore local storage write failures in offline demo mode
   }
 }
 
 function rememberOfflineAccount(account: StoredOfflineAccount): void {
-  const accounts = getOfflineAccounts().filter((item) => item.loginNr !== account.loginNr);
-  accounts.push(account);
-  setOfflineAccounts(accounts);
+  const nextAccounts = getOfflineAccounts().filter((item) => item.loginNr !== account.loginNr);
+  nextAccounts.push(account);
+  setOfflineAccounts(nextAccounts);
+}
+
+function resolveAccountType(loginNr: string, hintedType?: AccountType): AccountType {
+  if (hintedType) {
+    return hintedType;
+  }
+
+  const importedType = findImportedAccount(loginNr)?.type;
+  if (importedType) {
+    return importedType;
+  }
+
+  return inferAccountTypeFromLoginNr(loginNr);
 }
 
 export function getSession() {
@@ -65,38 +70,41 @@ export function clearSession(): void {
   clearStoredSession();
 }
 
-export async function login(loginRequest: LoginRequest): Promise<PostAccountLogin200> {
-  return mutateWithOfflineFallback<PostAccountLogin200>({
+export async function login(loginRequest: LoginRequest): Promise<LoginResult> {
+  return mutateWithOfflineFallback<LoginResult>({
     apiCall: () => postAccountLogin(loginRequest, createRequestOptions()),
     expectedStatuses: [200],
-    mapApiData: (data) => data as PostAccountLogin200,
+    mapApiData: (data) => normalizeLoginResult(data as Parameters<typeof normalizeLoginResult>[0]),
     onApiSuccess: (data) => {
+      const accountType = resolveAccountType(data.loginNr, getStoredSession().accountType);
+
       saveStoredSession({
         loginNr: data.loginNr,
         token: data.token,
+        accountType,
       });
 
       if (loginRequest.loginNr && loginRequest.password) {
         rememberOfflineAccount({
           loginNr: loginRequest.loginNr,
-          password: loginRequest.password,
-          type: getStoredSession().accountType ?? "GUEST",
+          devPassword: loginRequest.password,
+          type: accountType,
         });
       }
     },
     applyOffline: () => {
       const offlineAccount = getOfflineAccounts().find(
         (item) =>
-          item.loginNr === loginRequest.loginNr && item.password === loginRequest.password,
+          item.loginNr === loginRequest.loginNr && item.devPassword === loginRequest.password,
       );
 
       if (!offlineAccount) {
-        throw new Error(
-          "Offline login failed. No cached login for this account was found.",
-        );
+        throw new Error("Offline login failed. Invalid login number or password.");
       }
 
-      const offlineResult: PostAccountLogin200 = {
+      applyImportedAccount(offlineAccount.loginNr);
+
+      const offlineResult: LoginResult = {
         loginNr: offlineAccount.loginNr,
         token: `offline-token-${offlineAccount.loginNr}`,
       };
@@ -113,35 +121,38 @@ export async function login(loginRequest: LoginRequest): Promise<PostAccountLogi
   });
 }
 
-export async function register(registerRequest: RegisterRequest): Promise<PostAccountRegister201> {
-  return mutateWithOfflineFallback<PostAccountRegister201>({
+export async function register(registerRequest: RegisterRequest): Promise<RegisterResult> {
+  return mutateWithOfflineFallback<RegisterResult>({
     apiCall: () => postAccountRegister(registerRequest, createRequestOptions()),
     expectedStatuses: [201],
-    mapApiData: (data) => data as PostAccountRegister201,
+    mapApiData: (data) =>
+      normalizeRegisterResult(data as Parameters<typeof normalizeRegisterResult>[0]),
     onApiSuccess: (data) => {
-      if (registerRequest.loginNr && registerRequest.password) {
-        rememberOfflineAccount({
-          loginNr: registerRequest.loginNr,
-          password: registerRequest.password,
-          type: data.type ?? "GUEST",
-        });
-      }
+      rememberOfflineAccount({
+        loginNr: data.loginNr,
+        devPassword: registerRequest.password ?? "",
+        type: data.type,
+      });
+
+      saveStoredSession({
+        accountType: data.type,
+      });
     },
     applyOffline: () => {
       if (!registerRequest.loginNr || !registerRequest.password) {
         throw new Error("Offline registration requires loginNr and password.");
       }
 
-      const created: PostAccountRegister201 = {
+      const created: RegisterResult = {
         id: crypto.randomUUID(),
         loginNr: registerRequest.loginNr,
-        type: "GUEST",
+        type: inferAccountTypeFromLoginNr(registerRequest.loginNr),
       };
 
       rememberOfflineAccount({
-        loginNr: registerRequest.loginNr,
-        password: registerRequest.password,
-        type: created.type ?? "GUEST",
+        loginNr: created.loginNr,
+        devPassword: registerRequest.password,
+        type: created.type,
       });
 
       return created;
